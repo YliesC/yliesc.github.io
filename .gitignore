@@ -8,8 +8,10 @@ output/
 pelican-plugins/
 pelican.pid
 pelicanconf.pyc
+pelicanconf.py
 pip-selfcheck.json
 publishconf.pyc
 share/
 srv.pid
 *.pyc
+Makefile
