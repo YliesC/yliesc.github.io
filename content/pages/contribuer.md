@@ -1,39 +1,34 @@
 Title: Contribuer
 Order: 4
 Date: 2017-03-27
-Tags: wiki, blockchain, trm, yunohost
+Tags: wiki, articles, tutorial, yunohost
 Slug: contribute
-Authors: cgeek
+Authors: YliesC
 
-Selon que vous êtes totalement nouveau dans le monde de Ğ1, déjà membre, postulant, utilsateur de la monnaie ou informaticien (liste non exhaustive), vous trouverez dans tous les cas d'excellentes choses à réaliser pour faire vivre cette monnaie et contribuer à son partage et son utilisation avec d'autres humains.
+Ce site a pour volonté d'être le plus transparent et ouvert possible. Dans cette optique, il vous est possible d'éditer chaque page/article de ce site de manière très simple.
 
-Voici quelques possibilités.
+Ce site est comme un logiciel libre : tout son code source est [disponible](https://github.com/YliesC/website) et modifiable.
 
-#### Vous êtes totalement nouveau
+Vous trouverez sur chacune des pages/articles, dans la barre latérale, un bouton « *Modifier la page sur GitHub* » ou « *Modifier l'article sur GitHub* ». Il ressemble à ceci :
 
-Suivez quelques tutoriels pour [tenter de devenir membre de la Toile de Confiance Ğ1](../wiki/devenir-membre). C'est la toute 1ère étape : devenir utilisateur !
+![](../images/contribuer/btn_github.png)
 
-#### Vous avez déjà utilisé un peu Ğ1
+En cliquant dessus, vous serez rediriger sur le site web GitHub qui héberge le code source du site. *Vous pourrez donc le modifier*.
 
-Vous avez certainement appris beaucoup de choses : partagez-les ! Par exemple vous pouvez relater votre expérience, vos difficultés et vos solutions sur votre propre blog, sur le [forum duniter.org](https://forum.duniter.org) ou [ici même](../wiki/ameliorer-le-site) !
+### Nécessite un compte GitHub
 
-#### Vous êtres membre de Ğ1
+Toutefois après avoir cliqué sur ce bouton, vous noterez rapidement que GitHub requiert d'ouvrir un compte pour aller plus loin. Cela peut vous rebuter, mais sachez que vous n'aurez besoin de créer ce compte qu'une fois pour modifier toutes les pages de notre site (et même d'autres sites proposant cette fonctionnalité).
 
-Invitez de nouvelles personnes ! Si vous les connaissez bien et qu'elles souhaitent devenir membre, aidez-les à s'inscrire puis donnez-leur votre certification !
+Ce fonctionnement **permet à tous** de corriger une faute de frappe, une mauvaise tournure de phrase, ou même de proposer de nouveaux contenus sans attendre !
 
-La meilleure façon de faire prendre de la valeur à Ğ1 est de la faire adopter par le plus grande nombre.
+### Est soumis à modération
 
-#### Vous êtes informaticien
+Bien sûr, vous ne pouvez pas modifier le site sans contrôle de ma part. Mais sachez que grâce à GitHub, je peux *très rapidement répondre* à votre proposition : il me suffit de cliquer sur un bouton, et hop ! vos modifications apparaissent dans les secondes qui suivent.
 
-**Si vous êtes développeur**, vous avez l'embarras du choix : il est possible de participer au développement du cœur (Node.js), ou encore des clients tels Sakia (Python) / Cesium (HTML/CSS/JS) / Silkaj (Python), ou même de développer votre propre logiciel reposant sur Ğ1 et Duniter. Par exemple, il n'existe pas encore de marché pour réaliser des échanges : ce serait pourtant un formidable outil pour immédiatement donner tout son intérêt à la monnaie Ğ1 : faire des échanges !
+## Créer une nouvelle page, un nouvel article
 
-**Si vous n'êtes pas développeur**, il vous reste des qualités ! Notamment votre œil d'informaticien saura repérer les problématiques de sécurité, d'installation ou encore d'ergonomie des logiciels ! Faites donc profitez l'ensemble de la communauté de vos propres compétences et de votre énergie.
+Rédiger un nouveau contenu est un peu plus difficile, puisqu'il faut créer un ou plusieurs nouveaux fichiers.
 
-Dans tous les cas, vous pouvez aller faire un tour sur le [Wiki](../wiki) afin de réperer les sujets pouvant vous intéresser.
+Nous détaillerons cela un peu plus tard. Mais si vous vous sentez déjà à l'aise avec GitHub, sachez qu'ajouter un article sur ce blog revient simplement à ajouter un fichier au format `YYYY-MM-DD-nom-article.md` dans le répertoire `content/` pour un article (par exemple `2017-04-28-article-du-28-avril`), ou un fichier `nom-de-la-page.md` dans le répertoire `content/pages/` ou l'un de ses sous-répertoires selon la catégorie visée, de rédiger son contenu en s'inspirant d'autres articles déjà existants pour finalement envoyer une *pull request* via le bouton dédié sur GitHub.
 
-### Vous avez trouvé un bug !
-
-N'hésitez surtout pas à le rapporter ! Cela permet aux logiciels d'évoluer et évitera à d'autres de tomber dessus.
-
-Instructions sur la page [Wiki > Rapporter un bug](../wiki/rapporter-un-bug).
-
+De mon côté, la validation est toujours un simple bouton.
