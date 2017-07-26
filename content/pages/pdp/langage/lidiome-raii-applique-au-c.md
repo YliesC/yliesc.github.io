@@ -9,7 +9,7 @@ La gestion des ressources est un problème récurrent en informatique. En effet,
 
 Le C++, de par l'approche historique qui en est malheureusement faite dans beaucoup d'ouvrages, est utilisé par certains développeurs comme le C, en gérant les ressources de manière manuelle. Pourtant, il existe un idiome très simple et efficace que nous allons découvrir dans cet article. Alors oubliez vos `new` et `delete` et découvrez ce que C++ vous offre.
 
-*Les auteurs tiennent à remercier tous ceux qui ont participé à la [bêta](http://progdupeu.pl/forums/sujet/384/tutoriel-le-principe-raii-en-c?page=1) ainsi qu'aux [corrections post-publication](http://progdupeu.pl/forums/sujet/825/tutoriel-lidiome-raii-applique-au-c). Ce tutoriel est sous licence **CC-BY-NC-SA.*** 
+Ce tutoriel est sous licence **CC-BY-NC-SA**.
 
 # Gestion manuelle de la mémoire
 Bien souvent, dès qu'on manipule des ressources externes, du type image à charger et afficher, connexion à une base de données ou à un serveur ou autres, il est inévitable de devoir réserver de la mémoire de façon dynamique. Pour ceux qui ont fait du C, vous pensez sans doute **aux pointeurs** et vous avez bien raison. Prenons donc un bête exemple : on se connecte à une base de données, on récupère un nombre fixé de noms de trains, on ouvre un fichier, on le verrouille, on travaille ensuite dessus avant de tout refermer comme il se doit.
@@ -48,7 +48,7 @@ void get_infos_from_db()
 }
 ```
 
-Pourtant, ce code est juste une horreur à éviter. Pourquoi ? Parce qu'aucune vérification n'est faite. Si une seule opération échoue, on est bon pour un segfault. Alors, sécurisons ce code (merci à [Taurre ](http://progdupeu.pl/membres/voir/Taurre) !) .
+Pourtant, ce code est juste une horreur à éviter. Pourquoi ? Parce qu'aucune vérification n'est faite. Si une seule opération échoue, on est bon pour un segfault. Alors, sécurisons ce code.
 
 ```c
 void darray_delete(void ** self, unsigned n)

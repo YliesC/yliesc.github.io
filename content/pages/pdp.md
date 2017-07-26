@@ -17,6 +17,13 @@ Chaque tutoriel/ que vous verrez ici est distribué sous sa licence original et 
   * [C++, auto et decltype](langage/c-auto-et-decltype)
   * [Type Erasure](langage/type-erasure)
   * [L'idiome RAII appliqué au C++](langage/lidiome-raii-applique-au-c)
+  * [À la découverte d’Erlang](langage/a-la-decouverte-derlang)
+  * [Interpréter un petit langage impératif avec OCaml](langage/interpreter-un-petit-langage-imperatif-avec-ocaml)
+  * [Liaisons en C++](langage/liaisons-en-c)
+  * [Idiome NVI & Paramétrage par politique en C++](langage/idiome-nvi-parametrage-par-politique-en-c)
+  * [Brève présentation du langage Ada](langage/breve-presentation-du-langage-ada)
+  * [L'assembleur avec GCC](langage/lassembleur-avec-gcc)
+  * [Le langage C](langage/le-langage-c)
 
 ### Sécurité
 
