@@ -58,13 +58,13 @@
             </a>
         {% endif %}
             <div class="entry-content">
-                <div class="panel">
-                    <div class="panel-body">
-                        {% if page.display  == true %}
+                {% if page.display  == true %}
+                    <div class="panel">
+                        <div class="panel-body">
                             {% include "includes/page_info.html" %}
-                        {% endif %}
+                        </div>
                     </div>
-            </div>
+                {% endif %}
             {{ page.content }}
             {% if page.comments == 'enabled' %}
                 {% include 'includes/comments.html' %}
