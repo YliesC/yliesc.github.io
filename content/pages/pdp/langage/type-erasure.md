@@ -1,7 +1,3 @@
-% Type Erasure
-% Freedom
-% 28/03/2015
-
 Title: Type Erasure
 Order: 9
 Date: 2015-03-28

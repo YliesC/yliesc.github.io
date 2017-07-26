@@ -1,7 +1,3 @@
-% L’idiome RAII appliqué au C++
-% informaticienzero; MicroJoe; lmghs
-% 08/06/2015
-
 Title:  L’idiome RAII appliqué au C++
 Order: 9
 Date: 2015-06-08
