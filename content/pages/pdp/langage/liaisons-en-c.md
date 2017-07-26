@@ -6,7 +6,6 @@ Slug: liaisons-en-c
 Author: Höd
 Display: true
 
-# Article
 ### Introduction
 
 L'objectif de cet article est de présenter les différents types de liaisons en C++. Pour cela, nous introduirons la notion de liaisons et donnerons quelques exemples des mécanismes de liaisons proposés par le C++ et, à titre d'information supplémentaire, comment émuler des mécanismes absents du C++.    
@@ -14,6 +13,8 @@ Nous présenterons enfin une technique dite du _Tag Dispatching_, que l'on pourr
 Cependant, même si l'ensemble des exemples et techniques sont réalisés en C++, le lecteur trouvera des informations plus générales et pourra tout aussi bien adapter le code à son langage favori, en faisant attention aux caractéristiques propres de ce langage.
 
 A noter que cet article ne se veut pas exhaustif sur les différents types de liaisons qui peuvent exister mais essaye simplement de renseigner sur les notions basiques gravitant autour du concept de liaison, d'où l'appellation d'« usuelles » pour les liaisons traitées ici. Pour de plus amples détails, la lecture de la thèse de Coplien est un bon point de départ.
+
+[TOC]
 
 ### Notion de liaison
 

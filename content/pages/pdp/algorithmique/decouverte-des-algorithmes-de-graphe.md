@@ -17,17 +17,14 @@ Ce document n'a pas pour ambition de faire une démonstration formelle de la com
 
 * Savoir programmer (variables, boucles, tableaux, fonctions)   
 * Avoir des notions de base en algorithmique : récursivité, structures de données courantes, tris...  
-* Comprendre ce qu'est la [complexité](../algorithmique-pour-lapprenti-programmeur) (facultatif mais utile)   
+* Comprendre ce qu'est la [complexité](../algorithmique-pour-lapprenti-programmeur) (facultatif mais utile) 
+
+[TOC]
 
 # Graphes et représentation de graphe
 Dans ce chapitre vous verrons la définition d'un graphe, ainsi que ses différentes caractéristiques remarquables.   
 Nous donnerons un premier aperçu des problèmes pouvant être identifiés comme des problèmes de graphe.  
 Puis nous étudierons les deux principaux moyens de le stocker en mémoire.  
-
-  
-
-  
-
 
 ## Dessine moi un graphe !
 #### Le graphe  
@@ -95,8 +92,6 @@ Il doit son nom à Leonhard Euler, qui chercha à savoir s'il était possible de
 ![](../../../progdupeupl//galleries/108/9ba4517e-b878-4fef-97eb-55be8cdd516b.png )  
 
 #### ...et tout le reste !  
-
-Vous pensez manquer d'exemples ? Eh bien regardez donc les problématiques du peuple : [les polyominos](http://progdupeu.pl/forums/sujet/323/exercices-ouvert-les-polyominos), du [pathfinding](http://progdupeu.pl/forums/sujet/566/a-a-la-recherche-du-meilleur-chemin-dans-un-tableau) et encore du [pathfinding](http://progdupeu.pl/forums/sujet/703/pathfinding-a-trop-lent), du [tag clustering](http://progdupeu.pl/forums/sujet/706/tag-clustering), [dobble](http://progdupeu.pl/forums/sujet/185/exercice-un-generateur-de-carte-dobble), le [dual d'un graphe](http://progdupeu.pl/forums/sujet/577/calcul-du-dual-dun-graphe-oriente-en-on), de [l’appariement de joueurs](http://progdupeu.pl/forums/sujet/595/innocente-question-algomath-appariment-de-joueurs) et bien d'autres... le mot graphe n'est pas prononcé partout, mais il y en a toujours un qui se cache quelque part.  
 
 Pensez à Youtube qui suggère des vidéos proches de celle que vous regardez (d'aucun prétendent qu'on finira toujours par aboutir à des vidéos de chats), pensez à wikipédia qui propose des articles **connexes** (nous reviendrons sur ce terme), pensez au cerveau humain, à ses milliards de neurones et à ses centaines de milliards de connexions entre eux ! Les graphes sont partout.  
 

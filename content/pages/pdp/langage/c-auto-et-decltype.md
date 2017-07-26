@@ -12,6 +12,8 @@ La détection de type par le compilateur est une fonctionnalité intéressante q
 
 Deuxièmement, pour pouvoir tester les codes mis en exemple, il faut au minimum un compilateur supportant C++11. Pour les exemples illustrant C++14, là encore, il faut un compilateur bien à jour. Dans mon cas, il s'agit de GCC 5.1.0 sous Archlinux. À noter également que bien que facultatif pour la compréhension de ce tutoriel, boost est nécessaire pour tester la partie où l'on affichera le type d'un objet.
 
+[TOC]
+
 # Les règles de déduction des templates
 Avant d'aller plus loin, il est important de comprendre comment les templates fonctionnent, puique `auto` va utiliser quasiment les mêmes règles. Pour cela, nous allons utiliser une bête fonction comme celle-là.
 

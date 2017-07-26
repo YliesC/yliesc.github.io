@@ -6,8 +6,8 @@ Slug: breve-presentation-du-langage-ada
 Author: MicroJoe
 Display: true
 
+[TOC]
 
-# Article
 ## Pourquoi Ada ?
 
 ### Historique (très résumé)

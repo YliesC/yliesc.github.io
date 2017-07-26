@@ -3,7 +3,7 @@ Order: 9
 Date: 2014-09-27
 Tags: decouverte, erlang, tutoriel
 Slug: a-la-decouverte-derlang
-Authors: MicroJoe, gasche, Poulet
+Authors: rks, gasche, MicroJoe
 Display: true
 
 Ce tuto est un peu inhabituel car, au lieu de vous apprendre un langage de
@@ -19,8 +19,7 @@ d'avoir un aperçu des *concepts* du langage. C'est à vous, le programmeur, de
 faire le travail d'adaptation ; en espérant que cela vous donne peut-être envie
 d'en savoir plus sur ce langage surprenant !
 
-*Note :* ce tutoriel a été rédigé collaborativement par rks et
-gasche et adapté par MicroJoe pour Progdupeupl.
+[TOC]
 
 # Présentation du langage
 ### Le problème du parallélisme

@@ -5,10 +5,11 @@ Slug: similarite-cosinus-et-recherche-textuelle
 Author: Graphox
 Display: true
 
-# Article
 De nombreux domaines de recherche sont sollicités par le développement d'Internet, notamment l'évaluation des similarités : similarité entre une requête et des documents (moteur de recherche), entre des artistes (système de recommandation), entre des utilisateurs ou produits (site marchand), entre des images… Tout l'enjeu de ce pan de recherche est donc de départager de manière pertinente le nombre toujours croissant de données qui circulent sur Internet et d'en extraire des informations utiles pour répondre à divers problèmes. L'objectif de cet article est d'amorcer la réflexion en présentant les bases de la similarité cosinus, une méthode principalement utilisée pour l'analyse de texte.
 
 Les exemples en Python qui suivent sont volontairement peu optimisés et n'utilisent pas de bibliothèques spécifiques.
+
+[TOC]
 
 ## Une approche du problème : recherche d'artistes similaires
 

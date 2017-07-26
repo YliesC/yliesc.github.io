@@ -6,6 +6,8 @@ Slug: type-erasure
 Author: Freedom
 Display: true
 
+[TOC]
+
 # Introduction
 
 Le C++ ne permet pas de stocker des objets hétérogènes dans un même conteneur, ce qui peut être nécessaire dans certaines situations.

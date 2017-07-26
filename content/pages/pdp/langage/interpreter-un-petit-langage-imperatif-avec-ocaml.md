@@ -19,6 +19,7 @@ curieux de le savoir, vous êtes au bon endroit. Cet article vous
 montrera en détail comment interpréter un petit langage impératif,
 sous forme de cours-TP où nous mettrons cela en place ensemble.
 
+[TOC]
 
 # Commençons !
 ## Comment nous fonctionnerons

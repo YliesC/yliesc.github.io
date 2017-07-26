@@ -6,7 +6,6 @@ Slug: idiome-nvi-parametrage-par-politique-en-c
 Author: Höd
 Display: true
 
-# Article
 ### Introduction & Motivations
 
 Cet article, sur le C++, vise à présenter d'une part l'idiome NVI, pour « Non Virtual Interface », et d'autre part, une technique de conception développée par Andreï Alexandrescu, notamment présentée dans son livre Modern C++ Design, à savoir le paramétrage pas politique.   
@@ -16,6 +15,8 @@ Dans un premier temps nous aborderons l'idiome NVI, ses applications et sa mise 
 Enfin, nous mettrons en application la combinaison des deux techniques afin de produire du code tirant bénéfice de ces deux techniques.
 
 Dans la suite de l'article on se placera dans une situation générale où l'on écrit du code dit « service », pour un client qui écrira du code dit « client ».
+
+[TOC]
 
 ### L'idiome NVI
 #### Violation du SRP

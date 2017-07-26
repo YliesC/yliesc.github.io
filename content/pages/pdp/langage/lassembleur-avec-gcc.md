@@ -6,8 +6,9 @@ Slug: lassembleur-avec-gcc
 Author: informaticienzero
 Display: true
 
-
 Connaissez-vous les fonctions *inline* ? On les utilise pour optimiser un code, puisque l'appel de la fonction est remplacé par le corps de la fonction elle-même. Pour ceux qui connaissent le C, c'est dans le même principe que les macros. En général, on écrit des fonctions inlines dans le même langage que le reste du code. En général ... car il est possible d'écrire des fonctions en assembleur depuis un code C. A quoi ça peut servir ? Allier la puissance de l'assembleur avec le côté pratique du C.
+
+[TOC]
 
 # La syntaxe AT&T
 Avant de commencer, il est important de faire un point sur la syntaxe AT&T. En effet, celle-ci est moins courante que la syntaxe Intel et diffère pas mal. Voici une liste des différences majeures entre les deux syntaxes. Sachez néanmoins que même si vous n'êtes pas familier ou à l'aise avec cette syntaxe, cela ne sera pas gênant pour comprendre la suite.

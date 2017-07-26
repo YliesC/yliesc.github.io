@@ -5,12 +5,13 @@ Tags: raii, c++, tutoriel
 Slug: lidiome-raii-applique-au-c
 Authors: informaticienzero, MicroJoe, lmghs
 Display: true
+Licence: CC-BY-NC-SA
 
 La gestion des ressources est un problème récurrent en informatique. En effet, on ne dispose que de ressources limitées (RAM, disques durs, nombre de calculs par seconde, etc). Et aujourd'hui, il faut admettre qu'on charge de plus en plus de ressources qui prennent de la place. Il faut donc les gérer efficacement. Certains langages, comme le C, oblige l'utilisateur à allouer et libérer de la mémoire pour les ressources et il faut dire que c'est contraignant.
 
 Le C++, de par l'approche historique qui en est malheureusement faite dans beaucoup d'ouvrages, est utilisé par certains développeurs comme le C, en gérant les ressources de manière manuelle. Pourtant, il existe un idiome très simple et efficace que nous allons découvrir dans cet article. Alors oubliez vos `new` et `delete` et découvrez ce que C++ vous offre.
 
-Ce tutoriel est sous licence **CC-BY-NC-SA**.
+[TOC]
 
 # Gestion manuelle de la mémoire
 Bien souvent, dès qu'on manipule des ressources externes, du type image à charger et afficher, connexion à une base de données ou à un serveur ou autres, il est inévitable de devoir réserver de la mémoire de façon dynamique. Pour ceux qui ont fait du C, vous pensez sans doute **aux pointeurs** et vous avez bien raison. Prenons donc un bête exemple : on se connecte à une base de données, on récupère un nombre fixé de noms de trains, on ouvre un fichier, on le verrouille, on travaille ensuite dessus avant de tout refermer comme il se doit.

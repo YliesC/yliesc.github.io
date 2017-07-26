@@ -16,3 +16,4 @@ share/
 srv.pid
 *.pyc
 Makefile
+*.old
