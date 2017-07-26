@@ -4,9 +4,9 @@
     </span>
     <br>
     {% if page.authors %}
-        <i class="fa fa-user"></i> {{ page.authors | join(',') }}
+        <i class="fa fa-user"></i> Écrit par {{ page.authors | join(', ') }}
     {% elif page.author %}
-        <i class="fa fa-user"></i> {{ page.author }}
+        <i class="fa fa-user"></i> Écrit par {{ page.author }}
     {% endif %}
     
 </footer><!-- /.page-info -->
