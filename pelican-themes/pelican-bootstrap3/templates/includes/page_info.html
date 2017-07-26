@@ -1,9 +1,8 @@
 <footer class="post-info">
-    <span class="label label-default">Date</span>
     <span class="published">
         <i class="fa fa-calendar"></i><time datetime="{{ page.date.isoformat() }}"> {{ page.locale_date }}</time>
     </span>
-    
+    <br>
     {% if page.authors %}
         <span class="label label-default">{{ _('By') }}</span>
         <i class="fa fa-user"></i> {{ page.authors | join(',') }}
