@@ -439,7 +439,7 @@ int main()
 ```
 
 Nous obtenons la sortie suivante :
-```c++
+```text
 On lance l'algorithme !
 Quelques étapes d'initiatialisation
 Chouette, mon heuristique est protégée, je peux la lancer en parallèle
@@ -450,7 +450,7 @@ On delock le scope !
 ```
 
 Et si l'on change la politique de l'heuristique pour MonoThread :
-```c++
+```text
 On lance l'algorithme !
 Quelques étapes d'initiatialisation
 Mince, mon heuristique n'est pas parallèle.
