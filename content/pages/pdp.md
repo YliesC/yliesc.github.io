@@ -24,9 +24,13 @@ Chaque tutoriel/ que vous verrez ici est distribué sous sa licence original et 
 
 ### Sécurité
 
+  * [Programmez votre premier virus UNIX](securite/programmez-votre-premier-virus-unix)
+
 
 ### Algorithmique
 
+  * [Similarité cosinus et recherche textuelle](algorithmique/similarite-cosinus-et-recherche-textuelle)
+  * [Découverte des algorithmes de graphe](algorithmique/decouverte-des-algorithmes-de-graphe)
 
 ### Conception
 
