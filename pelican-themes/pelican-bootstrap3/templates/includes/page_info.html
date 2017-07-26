@@ -1,5 +1,5 @@
 <footer class="post-info">
-    {% if page.display %}
+    {% if page.display  == true %}
         <span class="published">
             <i class="fa fa-calendar"></i><time datetime="{{ page.date.isoformat() }}"> {{ page.locale_date }}</time>
         </span>
