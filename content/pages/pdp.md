@@ -38,3 +38,5 @@ Pour toute informations, questions ou réclamations, vous trouverai les moyens d
 
 ### Conception
 
+  * [Introduction à la compilation](conception/introduction-a-la-compilation)
+  * [Trouver et supprimer les goulots d'étranglement en Erlang](conception/trouver-et-supprimer-les-goulots-detranglement-en-erlang)
