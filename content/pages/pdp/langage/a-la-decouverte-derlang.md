@@ -4,6 +4,7 @@ Date: 2014-09-27
 Tags: decouverte, erlang, tutoriel
 Slug: a-la-decouverte-derlang
 Authors: MicroJoe, gasche, Poulet
+Display: true
 
 Ce tuto est un peu inhabituel car, au lieu de vous apprendre un langage de
 programmation, en partant des bases et en exposant toutes ses caractéristiques,
@@ -200,21 +201,21 @@ Le serveur fonctionne d'une manière assez spécifique aux programmes Erlang, qu
 l'on peut décrire de la manière suivante : 
 
  - On donne la liste à un « employé », on
-  lui dit « garde là tant que tu ne reçois pas de message ».
+     lui dit « garde là tant que tu ne reçois pas de message ».
  - S'il reçoit un
-  message, différents cas se présentent, selon le contenu du message ; on gérera
-  ici trois types de messages : 
+     message, différents cas se présentent, selon le contenu du message ; on gérera
+       ici trois types de messages : 
    - « ajouter la tâche machin » ;
    - « retirer la tâche
     bidule » ;
    - « montrer la liste à la personne truc ».
  - Il agit en conséquence, et la
-  partie spécifique se déroule à ce moment là : au lieu de *modifier* la liste
-  des tâches, il donne une *autre* liste à un nouvel employé, qui est alors
-  chargé de répéter le processus. Par exemple, si le message était « ajoute la
-  tâche 'manger' », il va donner à un autre employé sa liste de tâches ainsi que la nouvelle tâche
-  "manger" (ce qui constitue donc une nouvelle liste plus grande), et c'est ce
-  nouvel employé qui s'occupera des messages suivants.
+     partie spécifique se déroule à ce moment là : au lieu de *modifier* la liste
+       des tâches, il donne une *autre* liste à un nouvel employé, qui est alors
+       chargé de répéter le processus. Par exemple, si le message était « ajoute la
+       tâche 'manger' », il va donner à un autre employé sa liste de tâches ainsi que la nouvelle tâche
+       "manger" (ce qui constitue donc une nouvelle liste plus grande), et c'est ce
+       nouvel employé qui s'occupera des messages suivants.
 
 C'est une mise en œuvre particulière de la **récursivité**.
 

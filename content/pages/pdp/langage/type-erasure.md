@@ -3,7 +3,8 @@ Order: 9
 Date: 2015-03-28
 Tags: type, erasure, tutoriel
 Slug: type-erasure
-Authors: Freedom
+Author: Freedom
+Display: true
 
 # Introduction
 

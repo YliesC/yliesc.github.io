@@ -3,7 +3,8 @@ Order: 9
 Date: 2015-01-23
 Tags: idiome, nvi, c++, tutoriel
 Slug: idiome-nvi-parametrage-par-politique-en-c
-Authors: Höd
+Author: Höd
+Display: true
 
 # Article
 ### Introduction & Motivations

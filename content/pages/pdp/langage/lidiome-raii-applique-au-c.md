@@ -4,6 +4,7 @@ Date: 2015-06-08
 Tags: raii, c++, tutoriel
 Slug: lidiome-raii-applique-au-c
 Authors: informaticienzero, MicroJoe, lmghs
+Display: true
 
 La gestion des ressources est un problème récurrent en informatique. En effet, on ne dispose que de ressources limitées (RAM, disques durs, nombre de calculs par seconde, etc). Et aujourd'hui, il faut admettre qu'on charge de plus en plus de ressources qui prennent de la place. Il faut donc les gérer efficacement. Certains langages, comme le C, oblige l'utilisateur à allouer et libérer de la mémoire pour les ressources et il faut dire que c'est contraignant.
 
@@ -659,7 +660,7 @@ void example_usage()
 
     /* logfile est correctement fermé sans appel explicite à fclose */
 }
-``` 
+```
 
 ### Avec D ###
 
@@ -770,6 +771,6 @@ $ rustc raii.rs && valgrind ./raii
 ==26873==
 ==26873== For counts of detected and suppressed errors, rerun with: -v
 ==26873== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 2 from 2)
-``` 
+```
 
 Nous voilà arrivé à la fin de cet article qui, je l'espère, vous en aura appris un peu plus sur C++. Bien entendu, le RAII n'est pas parfait : le pire qui puisse arriver est une erreur dans le destructeur. Mais hormis ces cas critiques, c'est un idiome particulièrement pratique et puissant, alors usez-en et abusez-en !

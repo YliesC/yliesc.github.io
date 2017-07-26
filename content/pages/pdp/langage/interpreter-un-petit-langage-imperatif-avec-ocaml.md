@@ -3,7 +3,8 @@ Order: 9
 Date: 2014-09-27
 Tags: interpreter, imperatif, ocaml
 Slug: interpreter-un-petit-langage-imperatif-avec-ocaml
-Authors: thizanne
+Author: thizanne
+Display: true
 
 Vous avez appris un langage de programmation, vous avez écrit plein de
 jolies choses avec. Une fois vos codes écrits, vous utilisiez un

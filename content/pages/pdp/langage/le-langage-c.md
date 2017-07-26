@@ -4,13 +4,13 @@ Date: 2015-06-11
 Tags: langage, c, tutoriel
 Slug: le-langage-c
 Authors: mewtow, paraze, Lucas-84, informaticienzero, Taurre
+Licence: CC-BY-NC-SA
+Display: true
 
 **Vous souhaitez apprendre à programmer, mais vous ne savez pas comment vous y prendre ? Ou bien vous voulez réviser ?** Alors, permettez-nous de vous souhaiter la bienvenue dans ce cours de programmation en C pour débutants. La programmation est devenue aujourd'hui incontournable, si bien qu’elle est utilisée partout. Tous les logiciels de votre ordinateur ont été programmés. Et ce cours va vous apprendre les bases de la programmation en C pour vous permettre de créer des programmes à votre tour.
 
 Pour pouvoir suivre ce tutoriel, vous n’avez aucun pré-requis ; tout sera détaillé de la manière la plus complète possible.
 Nous commencerons par une introduction à la programmation et au C, puis nous avancerons peu à peu dans l'univers de la programmation, tout cela grâce à des cours, des exemples, des exercices d’applications et des travaux pratiques.
-
-Ce tutoriel est sous licence **CC-BY-NC-SA**.
 
 # Introduction
 Cette première partie sera l'occasion de se familiariser avec les concepts de base de la programmation et du C et de pouvoir commencer à pratiquer en écrivant quelques programmes. Lisez-la bien attentivement, même si vos avez déjà une expérience en programmation, car il est impossible de bien programmer en C si les bases ne sont pas solides.

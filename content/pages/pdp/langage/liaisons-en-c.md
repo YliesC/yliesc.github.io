@@ -3,7 +3,8 @@ Order: 9
 Date: 2014-09-27
 Tags: liaisons, c++, tutoriel
 Slug: liaisons-en-c
-Authors: Höd
+Author: Höd
+Display: true
 
 # Article
 ### Introduction

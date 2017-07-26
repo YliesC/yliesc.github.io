@@ -1,7 +1,7 @@
 Title: Crédits
 Date: 2017-07-29
 Slug: credits
-Authors: YliesC
+Author: YliesC
 Status: hidden
 
 ## Images et logos

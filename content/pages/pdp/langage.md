@@ -2,7 +2,7 @@ Title: Langage
 Order: 9
 Date: 2017-07-27
 Slug: Langage
-Authors: YliesC
+Author: YliesC
 
 Liste des tutoriels concernant les langages de programmation de manière général:
 

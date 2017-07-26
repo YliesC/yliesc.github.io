@@ -3,7 +3,8 @@ Order: 9
 Date: 2014-09-27
 Tags: assembleur, gcc, tutoriel
 Slug: lassembleur-avec-gcc
-Authors: informaticienzero
+Author: informaticienzero
+Display: true
 
 
 Connaissez-vous les fonctions *inline* ? On les utilise pour optimiser un code, puisque l'appel de la fonction est remplacé par le corps de la fonction elle-même. Pour ceux qui connaissent le C, c'est dans le même principe que les macros. En général, on écrit des fonctions inlines dans le même langage que le reste du code. En général ... car il est possible d'écrire des fonctions en assembleur depuis un code C. A quoi ça peut servir ? Allier la puissance de l'assembleur avec le côté pratique du C.

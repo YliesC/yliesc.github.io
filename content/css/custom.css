@@ -164,6 +164,11 @@ img.credits {
     border: 1px dashed gray;
 }
 
+.panel-body {
+    padding-left: 0px;
+    padding-top: 0px;
+}
+
 @media (max-width:992px) {
 
     .navbar-header a {

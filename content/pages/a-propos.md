@@ -3,7 +3,7 @@ Order: 9
 Date: 2017-07-27
 Tags: presentation
 Slug: a-propos
-Authors: YliesC
+Author: YliesC
 
 ## Licence
 

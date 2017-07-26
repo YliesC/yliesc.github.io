@@ -3,7 +3,8 @@ Order: 9
 Date: 2014-09-27
 Tags: ada, tutoriel
 Slug: breve-presentation-du-langage-ada
-Authors: MicroJoe
+Author: MicroJoe
+Display: true
 
 
 # Article

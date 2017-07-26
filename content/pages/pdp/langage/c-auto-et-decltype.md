@@ -3,7 +3,8 @@ Order: 9
 Date: 2015-09-14
 Tags: c, decltype, tutoriel
 Slug: c-auto-et-decltype
-Authors: informaticienzero
+Author: informaticienzero
+Display: true
 
 La détection de type par le compilateur est une fonctionnalité intéressante qui nous permet d'éviter de la redondance dans le code. Plusieurs langages modernes intègrent cette fonctionnalité. Or, avant 2011, la seule déduction de type qui existait en C++ était celle des templates. Mais avec C++11 sont apparus deux nouveaux mots-clefs : `auto` et `decltype`. Durant ce tutoriel, nous allons voir ce qu'ils peuvent nous apporter, les règles de détection de type qu'ils emploient, les points auxquels faire attention afin que ces deux mots-clefs n'ait plus de secret !
 
@@ -479,25 +480,25 @@ Tu ne sais pas penser de ces nouveautés et tu es tout perdu ? Pour t'aider, voi
 > Principalement pour les types moches et à rallonge, avec plein de templates dedans. De temps à autre je tente du AAA, mais sans trop me forcer à l'utiliser.
 >
 > *[AAA]: Almost Always Auto
-Source: [Luthaf](https://zestedesavoir.com/forums/sujet/3216/c-auto-et-decltype/#p57958)
+> Source: [Luthaf](https://zestedesavoir.com/forums/sujet/3216/c-auto-et-decltype/#p57958)
 
 > * `auto` : je l'utilise quand le type est très long, souvent avec la ST(L) et ses noms template à rallonge en retour de fonction. Mais quand je sais ce que je vais manipuler bien sûr (des itérateurs, conteneurs, etc.). Je l'utilise aussi pour des types numériques qui peuvent varier dans le temps (passer de float à double par exemple), ça permet de gagner pas mal de temps !
 >
 > * `decltype` : je l'utilise moins que le précédent mais lorsque je m'en sers c'est souvent avec auto (pas decltype(auto)), pour bien montrer que le type d'une variable doit absolument être le même que celui d'une autre.
 >
-Source: [zeFresk](https://openclassrooms.com/forum/sujet/c-auto-decltype-et-deduction-de-types#message-88695630)
+> Source: [zeFresk](https://openclassrooms.com/forum/sujet/c-auto-decltype-et-deduction-de-types#message-88695630)
 
 > Sinon, je mets `auto` quand la variable est initialisée avec une autre variable ou avec un retour de fonction. Dans les autres cas, j'appelle directement le constructeur `T x{...};` et non pas `auto x = T{...}`.
 > Aussi dans les boucles sur intervalle (sauf si l'IDE décide de ne pas reconnaître le type... -_-).
 >
 > Je ne le mets pas quand je veux une interface. À la place, je mets le type de l'interface.
-> 
+>
 > Je ne l'utilise pas quand il y a `std::reference_wrapper`, sinon il faut mettre machin.get() partout. Je trouve ça regrettable en fait, j'espère que la proposition de surcharge de l'opérateur . va être accepté (pas du tout suivit le truc).
 > (D'ailleurs, je remplace souvent reference_wrapper par à un proxy rien que pour cette raison...)
 >
 > `decltype` quand j'ai besoin de construire une variable du même type. Généralement, dans un alias (`using Truc = decltype(machin)`).
 >
-Source: [jo_link_noir](https://openclassrooms.com/forum/sujet/c-auto-decltype-et-deduction-de-types#message-88695917)
+> Source: [jo_link_noir](https://openclassrooms.com/forum/sujet/c-auto-decltype-et-deduction-de-types#message-88695917)
 
 > Salut ! Mon avis :
 >
@@ -507,29 +508,29 @@ Source: [jo_link_noir](https://openclassrooms.com/forum/sujet/c-auto-decltype-et
 >
 > * `decltype(auto)` : je n'ai jamais rencontré un cas de figure ou j'ai eu à l'utiliser, et je préfère l'éviter car je le trouve peu explicite, car il faut aller voir quels qualificateurs (`const`, `volatile`, référence) marquent la "variable source", ce qui est peu lisible. Je préfère dans ce cas réécrire `auto const&` par exemple.
 >
-Source: [mehdidou99](https://openclassrooms.com/forum/sujet/c-auto-decltype-et-deduction-de-types#message-88695943)
+> Source: [mehdidou99](https://openclassrooms.com/forum/sujet/c-auto-decltype-et-deduction-de-types#message-88695943)
 
 > Les `auto`, c'est bien, mangez-en.
-Source: [gbdivers](https://openclassrooms.com/forum/sujet/c-auto-decltype-et-deduction-de-types#message-88696449)
+> Source: [gbdivers](https://openclassrooms.com/forum/sujet/c-auto-decltype-et-deduction-de-types#message-88696449)
 
 > Personnellement, je suis dans la même optique que **@jo_link_noir**, j'utilise `auto` quand je crée un élément qui est dépendant d'un autre. Pour `decltype`, j'ajouterai une autre petite utilisation que pour la création d'un alias : une dépendance de type mais où la première utilisation ne nous donne pas l'info. Cas typique :
 >
 > ```c++
->std::vector<bidule> v;
-> 
->//...
-> 
->for(decltype(v)::size_type i = 0; i < v.size(); ++i){
+> std::vector<bidule> v;
 >
->}
->```
+> //...
+>
+> for(decltype(v)::size_type i = 0; i < v.size(); ++i){
+>
+> }
+> ```
 > Après, dans ce cas, on aura effectivement envie de définir le type avant avec un using.
 >
-Source: [Ksass`Peuk](https://openclassrooms.com/forum/sujet/c-auto-decltype-et-deduction-de-types#message-88701634)
+> Source: [Ksass`Peuk](https://openclassrooms.com/forum/sujet/c-auto-decltype-et-deduction-de-types#message-88701634)
 
 > - Use `auto` if a reference type **would never be correct**.
 > - Use `decltype(auto)` only if a reference type could be correct.
-Source:[Scott Meyers](http://www.aristeia.com/TalkNotes/C++TypeDeductionandWhyYouCareCppCon2014.pdf)
+>   Source:[Scott Meyers](http://www.aristeia.com/TalkNotes/C++TypeDeductionandWhyYouCareCppCon2014.pdf)
 
 - Un peu de [StackOverflow](http://stackoverflow.com/questions/21369131/when-should-i-use-decltypex-instead-of-auto-to-declare-the-type-of-a-variable).
 - Encore [un peu plus](http://stackoverflow.com/questions/24109737/what-are-some-uses-of-decltypeauto).
