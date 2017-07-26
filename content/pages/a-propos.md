@@ -17,6 +17,11 @@ Certains logos ou images sont la production d'autres personnes, vous trouverez l
 
 ## Qui suis-je ?
 
+Un simple internaute comme toi, qui s'efforce d'ouvrir la connaissance à qui en voudra.
+De manière plus personnel, je suis un jeune homme de 22 ans, étudiant en 5ème d'école d'informatique qui s'intéresse à quelques sujets qui portent mon attention notamment l'économie, la finance, la géopolitique ainsi que certains sujets sociaux.
+
+Ce blog est là, à la fois pour partager du contenu lié au domaine des nouvelles technologies, mais ne s'y en limitera pas. Les idées exposées dans les articles du blog ne sont que l'expression de ma pensée à un instant t, et seulement la mienne. 
+
 ## Contact
 
 Plus d'informations sur la page [Contact](../contact).
