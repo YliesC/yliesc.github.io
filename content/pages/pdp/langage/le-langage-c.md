@@ -889,7 +889,7 @@ Nous avons dit que l’ordinateur utilisait plusieurs mémoires. Et il faut savo
 * la RAM ;
 * le disque dur
 
-Alors évidemment, ce ne sont pas les seules : on pourrait aussi citer la mémoire cache et d’autres encore, mais cela n’a rien à faire dans un tutoriel sur le C. Et puis il y a déjà des cours à ce sujet sur le Site du Zéro, citons par exemple *[Fonctionnement d'un ordinateur depuis zéro](http://www.siteduzero.com/tutoriel-3-509203-fonctionnement-d-un-ordinateur-depuis-zero.html)*.
+Alors évidemment, ce ne sont pas les seules : on pourrait aussi citer la mémoire cache et d’autres encore, mais cela n’a rien à faire dans un tutoriel sur le C.
 
 Les **registres** sont des mémoires intégrées dans notre processeur. Elles sont très rapides, mais ne peuvent contenir que des données très simples : on peut difficilement mettre plus qu’un nombre dedans. Leur utilité est de stocker des données temporaires afin d’y accéder plus rapidement.
 
