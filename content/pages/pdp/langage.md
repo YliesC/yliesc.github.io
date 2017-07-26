@@ -4,7 +4,7 @@ Date: 2017-07-27
 Slug: langage
 Author: YliesC
 
-Liste des tutoriels concernant les langages de programmation issu de Progdupeupl:
+Liste des tutoriels concernant les langages de programmation issus de Progdupeupl:
 
   * [C++, auto et decltype](c-auto-et-decltype)
   * [Type Erasure](type-erasure)
