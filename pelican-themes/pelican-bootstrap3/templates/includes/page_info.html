@@ -1,14 +1,13 @@
 <footer class="post-info">
-    {% if page.display  == true %}
-        <span class="published">
-            <i class="fa fa-calendar"></i><time datetime="{{ page.date.isoformat() }}"> {{ page.locale_date }}</time>
-        </span>
-        <br>
-        {% if page.authors %}
-            <i class="fa fa-user-circle"></i> {{ page.authors | join(', ') }}
-        {% elif page.author %}
-            <i class="fa fa-user-circle"></i> {{ page.author }}
-        {% endif %}
+    
+    <span class="published">
+        <i class="fa fa-calendar"></i><time datetime="{{ page.date.isoformat() }}"> {{ page.locale_date }}</time>
+    </span>
+    <br>
+    {% if page.authors %}
+        <i class="fa fa-user-circle"></i> {{ page.authors | join(', ') }}
+    {% elif page.author %}
+        <i class="fa fa-user-circle"></i> {{ page.author }}
     {% endif %}
     
 </footer><!-- /.page-info -->
