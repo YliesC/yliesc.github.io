@@ -1,0 +1,15 @@
+<footer class="post-info">
+    <span class="label label-default">Date</span>
+    <span class="published">
+        <i class="fa fa-calendar"></i><time datetime="{{ page.date.isoformat() }}"> {{ page.locale_date }}</time>
+    </span>
+
+    {% if SHOW_ARTICLE_AUTHOR %}
+        {% if page.author %}
+            <span class="label label-default">{{ _('By') }}</span>
+            <a href="{{ SITEURL }}/{{ page.author.url }}"><i class="fa fa-user"></i> {{ page.author }}</a>
+        {% endif %}
+    {% endif %}
+
+    {% include 'includes/taglist.html' %}
+</footer><!-- /.page-info -->
