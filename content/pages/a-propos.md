@@ -13,7 +13,7 @@ Son code est par ailleurs intégralement disponible sur le dépôt [github.com/Y
 
 ## Images utilisées sur ce site
 
-Certains logos ou images sont la production d'autres personnes, vous trouverez leur origine sur la page [Crédits](credits).
+Certains logos ou images sont la production d'autres personnes, vous trouverez leur origine sur la page [Crédits](../credits).
 
 ## Qui suis-je ?
 
