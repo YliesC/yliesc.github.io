@@ -3,10 +3,12 @@
         <i class="fa fa-calendar"></i><time datetime="{{ page.date.isoformat() }}"> {{ page.locale_date }}</time>
     </span>
     <br>
-    {% if page.authors %}
-        <i class="fa fa-user-circle"></i> {{ page.authors | join(', ') }}
-    {% elif page.author %}
-        <i class="fa fa-user-circle"></i> {{ page.author }}
+    {% if page.display %}
+        {% if page.authors %}
+            <i class="fa fa-user-circle"></i> {{ page.authors | join(', ') }}
+        {% elif page.author %}
+            <i class="fa fa-user-circle"></i> {{ page.author }}
+        {% endif %}
     {% endif %}
     
 </footer><!-- /.page-info -->
