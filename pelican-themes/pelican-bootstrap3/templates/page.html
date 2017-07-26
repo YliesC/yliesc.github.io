@@ -52,8 +52,6 @@
         {% if page.title %}
         <h1 class="entry-title">{{ page.title }}</h1>
         {% endif %}
-        {% import 'includes/translations.html' as translations with context %}
-        {{ translations.translations_for(page) }}
         {% if PDF_PROCESSOR %}
             <a href="{{ SITEURL }}/pdf/{{ page.slug }}.pdf">
                 get the pdf
@@ -62,7 +60,9 @@
             <div class="entry-content">
                 <div class="panel">
                     <div class="panel-body">
-                        {% include "includes/page_info.html" %}
+                        {% if page.display  == true %}
+                            {% include "includes/page_info.html" %}
+                        {% endif %}
                     </div>
             </div>
             {{ page.content }}
