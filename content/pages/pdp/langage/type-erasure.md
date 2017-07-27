@@ -1,18 +1,17 @@
 Title: Type Erasure
 Order: 9
 Date: 2015-03-28
-Tags: type, erasure, tutoriel
 Slug: type-erasure
 Author: Freedom
 Display: true
-
-[TOC]
 
 # Introduction
 
 Le C++ ne permet pas de stocker des objets hétérogènes dans un même conteneur, ce qui peut être nécessaire dans certaines situations.
 
 Cette problématique est souvent celle utilisée pour introduire le polymorphisme d'inclusion, cependant la problématique est plus générale et peut exister sans qu'il soit possible d'utiliser directement ce polymorphisme.
+
+[TOC]
 
 # Typage
 ### Définition

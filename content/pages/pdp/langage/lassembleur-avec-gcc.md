@@ -1,7 +1,6 @@
 Title: L'assembleur avec GCC
 Order: 9
 Date: 2014-09-27
-Tags: assembleur, gcc, tutoriel
 Slug: lassembleur-avec-gcc
 Author: informaticienzero
 Display: true

@@ -1,7 +1,6 @@
 Title:  L’idiome RAII appliqué au C++
 Order: 9
 Date: 2015-06-08
-Tags: raii, c++, tutoriel
 Slug: lidiome-raii-applique-au-c
 Authors: informaticienzero, MicroJoe, lmghs
 Display: true

@@ -10,6 +10,8 @@ Une première partie sera dédiée à une erreur classique d'évaluation de la c
 
 Les notions utiles à la compréhension de cet article seront expliquées dans une première partie et la totalité des démonstrations sera omise (mais on peut évidemment grassement payer l'auteur pour qu'il les fasse sur le forum).
 
+[TOC]
+
 ### Rappels sur la complexité temporelle
 #### Complexité en temps
 Il est coutume que de manière informelle, on enseigne aux novices de l'algorithmique que la complexité d'un algorithme correspond au nombre  d'étapes (élémentaires) de l'algorithme, qui est fonction de la taille des données du problème. Cette définition a l'avantage d'être très facile à appliquer, facilement compréhensible et de donner une borne assez fidèle dans la plupart des applications.
@@ -55,7 +57,7 @@ Que faut-il retenir de cette introduction très formelle ?
 + un problème $\Pi$ est non-déterministe polynomial s'il existe un algorithme $A$ non-déterministe polynomial qui résout $\Pi$.
 + $P \subseteq NP$.
 + Tous les problèmes d'une classe donnée sont équivalents (au sens de la réduction polynomiale).
-  
+
 ### Erreur 1 : Évaluation de la complexité d'un algorithme
 #### Le propos
 

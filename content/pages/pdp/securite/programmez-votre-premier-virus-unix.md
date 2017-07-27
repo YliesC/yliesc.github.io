@@ -11,6 +11,8 @@ Mais commençons modestement et contentons-nous d'une petite introduction sur le
 
 Je tiens à préciser que vous pouvez exécuter tous les codes présents ici sans aucune crainte (exécutez-les cependant dans un dossier de tests, isolé du reste), ils ne sont pas malveillants (cet article ayant avant tout un but pédagogique). Lire l'article avec un Shell à côté serait même une très bonne idée pour assimiler ce qui va suivre et bien comprendre les choses (en vous amusant). Ne vous étonnez pas si l'exécution d'un code échoue parfois, lisez l'article !
 
+[TOC]
+
 # Définition et implémentation d'un virus
 Avant de voir du code et de passer à la pratique, quelques petites notions de base en virologie s'imposent. Commençons par le commencement, qu'est-ce qu'un « virus » ?
 

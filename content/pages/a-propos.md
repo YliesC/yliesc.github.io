@@ -1,7 +1,6 @@
 Title: À propos
 Order: 9
 Date: 2017-07-27
-Tags: presentation
 Slug: a-propos
 Author: YliesC
 

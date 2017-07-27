@@ -1,7 +1,6 @@
 Title: À la découverte d’Erlang
 Order: 9
 Date: 2014-09-27
-Tags: decouverte, erlang, tutoriel
 Slug: a-la-decouverte-derlang
 Authors: rks, gasche, MicroJoe
 Display: true

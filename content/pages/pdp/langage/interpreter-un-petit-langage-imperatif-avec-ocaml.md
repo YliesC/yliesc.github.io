@@ -1,7 +1,6 @@
 Title: Interpréter un petit langage impératif avec OCaml
 Order: 9
 Date: 2014-09-27
-Tags: interpreter, imperatif, ocaml
 Slug: interpreter-un-petit-langage-imperatif-avec-ocaml
 Author: thizanne
 Display: true

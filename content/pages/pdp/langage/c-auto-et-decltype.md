@@ -1,7 +1,6 @@
 Title: C++, auto et decltype
 Order: 9
 Date: 2015-09-14
-Tags: c, decltype, tutoriel
 Slug: c-auto-et-decltype
 Author: informaticienzero
 Display: true

@@ -127,7 +127,7 @@ les commandes suivantes :
 
 Pour chaque mesure, 3 lancements successifs ont été réalisés et la moyenne obtenue donne le résultat reporté.
 
-Tous les tests ont été réalisés à l'aide d'un ordinateur doté d'un **i7 870 @ 2.93 GHz** avec l'**HyperThreading activé**, ce qui représente **8 cœurs logique**, ainsi que **16 Gio** de mémoire vive.
+Tous les tests ont été réalisés à l'aide d'un ordinateur doté d'un **i7 870 @ 2.93 GHz** avec **HyperThreading activé**, ce qui représente **8 cœurs logique**, ainsi que **16 Gio** de mémoire vive.
 
 L'ordinateur tourne sous **FreeBSD 9.2-AMD64 GENERIC** et Erlang est en version **16.b.03**.
 
@@ -140,34 +140,34 @@ Chaque **cellule** indique le résultat en **millisecondes**.
 
 ##### Itération 1 : Approche naïve
 
-    \# | 2 |        4 |     6 |     8 |     10
-    --- | --- | --- | --- | --- | ---
-    **1** | 0 | 0 | 0 | 1 | 3
-    **2** | 0 | 1 | 5 | 16 | 37
-    **3** | 1 | 5 | 24 | 84 | 231
-    **4** | 2 | 18 | 105 | 342 | 931
-    **5** | 3 | 54 | 241 | 1021 | 2740
+| \#    | 2    | 4    | 6    | 8    | 10   |
+| ----- | ---- | ---- | ---- | ---- | ---- |
+| **1** | 0    | 0    | 0    | 1    | 3    |
+| **2** | 0    | 1    | 5    | 16   | 37   |
+| **3** | 1    | 5    | 24   | 84   | 231  |
+| **4** | 2    | 18   | 105  | 342  | 931  |
+| **5** | 3    | 54   | 241  | 1021 | 2740 |
 
 ##### Itération 2 : Extraction de la transaction
 
-    \# | 2 |        4 |     6 |     8 |     10
-    --- | --- | --- | --- | --- | ---
-    **1** | 0 | 0 | 0 | 1 | 2
-    **2** | 0 | 1 | 2 | 3 | 6
-    **3** | 0 | 1 | 3 | 7 | 17
-    **4** | 1 | 2 | 6 | 16 | 30
-    **5** | 1 | 4 | 11 | 27 | 49
+| \#    | 2    | 4    | 6    | 8    | 10   |
+| ----- | ---- | ---- | ---- | ---- | ---- |
+| **1** | 0    | 0    | 0    | 1    | 2    |
+| **2** | 0    | 1    | 2    | 3    | 6    |
+| **3** | 0    | 1    | 3    | 7    | 17   |
+| **4** | 1    | 2    | 6    | 16   | 30   |
+| **5** | 1    | 4    | 11   | 27   | 49   |
 
 
 ##### Itération 3 : Extraction du Compte client
 
-    \# | 2 |        4 |     6 |     8 |     10
-    --- | --- | --- | --- | --- | ---
-    **1** | 0 | 0 | 1 | 1 | 1
-    **2** | 0 | 1 | 1 | 2 | 4
-    **3** | 1 | 1 | 2 | 5 | 10
-    **4** | 1 | 2 | 5 | 11 | 24
-    **5** | 1 | 3 | 9 | 21 | 50
+| \#    | 2    | 4    | 6    | 8    | 10   |
+| ----- | ---- | ---- | ---- | ---- | ---- |
+| **1** | 0    | 0    | 1    | 1    | 1    |
+| **2** | 0    | 1    | 1    | 2    | 4    |
+| **3** | 1    | 1    | 2    | 5    | 10   |
+| **4** | 1    | 2    | 5    | 11   | 24   |
+| **5** | 1    | 3    | 9    | 21   | 50   |
 
 On constate que le fait d'avoir extrait la **Transaction** a augmenté drastiquement les performances, puisqu'on observe des performances jusqu'à **60 fois supérieures**.
 
@@ -185,11 +185,11 @@ Chaque **ligne** représente une itération et chaque **colonne** le nombre de *
 
 Chaque **cellule** indique le résultat en **millisecondes**.
 
-    \#  |   1  |    2  |    3  |    4  |    5  |    6  |    7  |    8
-    --- | --- | --- | --- | --- | --- | --- | --- | ---
-    **1** | 1 | 14 | 76 | 272 | 793 | 2152 | 4105 | 8019
-    **2** | 1 | 3 | 7 | 13 | 25 | 44 | 90 | 168
-    **3** | 1 | 4 | 8 | 16 | 30 | 60 | 75 | 190
+| \#    | 1    | 2    | 3    | 4    | 5    | 6    | 7    | 8    |
+| ----- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- |
+| **1** | 1    | 14   | 76   | 272  | 793  | 2152 | 4105 | 8019 |
+| **2** | 1    | 3    | 7    | 13   | 25   | 44   | 90   | 168  |
+| **3** | 1    | 4    | 8    | 16   | 30   | 60   | 75   | 190  |
 
 
 ![Benchmark des trois itérations, pour 8  banques et 10 clients par banque](http://progdupeu.pl/media/galleries/62/d72b69ec-2c27-45ea-aa57-69f5e474510a.png)
@@ -208,11 +208,11 @@ Chaque **ligne** représente une itération et chaque **colonne** un acteur.
 
 Chaque **cellule** indique le **nombre de lignes de code**.
 
-    \#  |   Coordinateur  | Banque  |       Client  |       Transaction  |  Compte client  |        Total
-    --- | --- | --- | --- | --- | --- | --- | --- | ---
-    *1* |   44 |    76 |    23 |    - |     - |     143
-    *2* |   14 |    76 |    15 |    27 |    - |     132
-    *3* |   14 |    39 |    15 |    29 |    28 |    125
+| \#   | Coordinateur | Banque | Client | Transaction | Compte client | Total |
+| ---- | ------------ | ------ | ------ | ----------- | ------------- | ----- |
+| *1*  | 44           | 76     | 23     | -           | -             | 143   |
+| *2*  | 14           | 76     | 15     | 27          | -             | 132   |
+| *3*  | 14           | 39     | 15     | 29          | 28            | 125   |
 
 
 Le système a vu son nombre de lignes diminué de plus de 10%, ce qui implique une simplification de celui-ci. De plus, le nombre moyen de lignes par acteur est, lui, passé de 48 à 25, ce qui indique une diminution de près de la moitié, rendant ainsi les acteurs plus simples, plus compréhensibles et donc plus maintenables.
@@ -246,10 +246,10 @@ Chaque **ligne** représente une itération et chaque **colonne** le nombre de *
 
 Chaque **cellule** indique le résultat en **millisecondes**.
 
-    \#  |   1  |    2  |    3  |    4  |    5  |    6  |    7  |    8
-    --- | --- | --- | --- | --- | --- | --- | --- | ---
-    **2** | 5 | 32 | 85 | 312 | 469 | 1945 | 2037 | 2053
-    **3** | 4 | 18 | 40 | 103 | 512 | 1088 | 1845 | 4016
+| \#    | 1    | 2    | 3    | 4    | 5    | 6    | 7    | 8    |
+| ----- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- |
+| **2** | 5    | 32   | 85   | 312  | 469  | 1945 | 2037 | 2053 |
+| **3** | 4    | 18   | 40   | 103  | 512  | 1088 | 1845 | 4016 |
 
 
 ![Benchmark des deux dernières itérations, pour 15  banques et 1.000.000 clients par banque](http://progdupeu.pl/media/galleries/62/c0f6043d-cfef-4f5f-a741-9d4dc78fba99.png)

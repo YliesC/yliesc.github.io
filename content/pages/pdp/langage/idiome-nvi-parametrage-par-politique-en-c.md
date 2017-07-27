@@ -1,7 +1,6 @@
 Title: Idiome NVI & Paramétrage par politique en C++
 Order: 9
 Date: 2015-01-23
-Tags: idiome, nvi, c++, tutoriel
 Slug: idiome-nvi-parametrage-par-politique-en-c
 Author: Höd
 Display: true

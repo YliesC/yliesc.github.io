@@ -1,7 +1,6 @@
 Title: Contribuer
 Order: 4
 Date: 2017-03-27
-Tags: wiki, articles, tutorial, yunohost
 Slug: contribute
 Author:  YliesC
 
@@ -11,7 +10,7 @@ Ce site est comme un logiciel libre : tout son code source est [disponible](http
 
 Vous trouverez sur chacune des pages/articles, dans la barre latérale, un bouton « *Modifier la page sur GitHub* » ou « *Modifier l'article sur GitHub* ». Il ressemble à ceci :
 
-![btn_github](../images/contribuer/btn_github.png)
+![btn_github](../blog/images/pages/contribuer/btn_github.png)
 
 En cliquant dessus, vous serez rediriger sur le site web GitHub qui héberge le code source du site. *Vous pourrez donc le modifier*.
 
