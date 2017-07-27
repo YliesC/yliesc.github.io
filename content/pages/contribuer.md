@@ -16,7 +16,7 @@ En cliquant dessus, vous serez rediriger sur le site web GitHub qui héberge le 
 
 ### Nécessite un compte GitHub
 
-Toutefois après avoir cliqué sur ce bouton, vous noterez rapidement que GitHub requiert d'ouvrir un compte pour aller plus loin. Cela peut vous rebuter, mais sachez que vous n'aurez besoin de créer ce compte qu'une fois pour modifier toutes les pages de notre site (et même d'autres sites proposant cette fonctionnalité).
+Toutefois après avoir cliqué sur ce bouton, vous noterez rapidement que GitHub requiert d'ouvrir un compte pour aller plus loin. Cela peut vous rebuter, mais sachez que vous n'aurez besoin de créer ce compte qu'une fois pour modifier toutes les pages de ce site (et même d'autres sites proposant cette fonctionnalité).
 
 Ce fonctionnement **permet à tous** de corriger une faute de frappe, une mauvaise tournure de phrase, ou même de proposer de nouveaux contenus sans attendre !
 
