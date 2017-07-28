@@ -208,6 +208,12 @@ img.credits {
     margin-right: 3px;
 }
 
+.center-image
+{
+    margin: 0 auto;
+    display: block;
+}
+
 img.screenshot {
     padding: 30px;
 }
