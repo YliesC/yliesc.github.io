@@ -1,6 +1,15 @@
 {% extends "base.html" %}
 {% block content %}
     {% if articles %}
+        <div class="row">
+            <div class="col-md-1"></div>
+            <div class="col-md-10 download">
+                <h3>Bienvenue!</h3>
+                <p>Tu te retrouve ici mais tu ne sais pas pourquoi ? J'en sais pas plus que toi malheureusement mais ce que tu pourra trouver en étant ici te servira peut-être, alors n'hésite surtout pas à faire un petit tour du propriétaire, c'est gratuit et libre.
+                <br>Peace out l'ami !</p>
+            </div>
+            <div class="col-md-1"></div>
+        </div>
         {% for article in (articles_page.object_list if articles_page else articles) %}
             <article>
                 {% if article.thumbnail %}
