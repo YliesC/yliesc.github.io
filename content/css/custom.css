@@ -179,7 +179,9 @@ img.credits {
     }
 
     #siteName {
-        display: none;
+        //display: none;
+        font-size: 17px;
+        margin-left: 15px;
     }
 
     .navbar-collapse li {
