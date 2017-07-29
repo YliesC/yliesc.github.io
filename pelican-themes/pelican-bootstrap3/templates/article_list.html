@@ -1,6 +1,5 @@
 {% extends "base.html" %}
 {% block content %}
-    {% if articles %}
         <div class="row">
             <div class="col-md-1"></div>
             <div class="col-md-10 download">
@@ -10,6 +9,7 @@
             </div>
             <div class="col-md-1"></div>
         </div>
+    {% if articles %}
         {% for article in (articles_page.object_list if articles_page else articles) %}
             <article>
                 {% if article.thumbnail %}
