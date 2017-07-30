@@ -26,8 +26,6 @@ Bien sûr, vous ne pouvez pas modifier le site sans contrôle de ma part. Mais s
 
 ## Créer une nouvelle page, un nouvel article
 
-Rédiger un nouveau contenu est un peu plus difficile, puisqu'il faut créer un ou plusieurs nouveaux fichiers.
-
 ### Ajouter un article
 
 Pour ajouter un article sur ce blog, cela revient à ajouter un fichier au format `YYYY-MM-DD-nom-article.md` dans le répertoire `content/`, (par exemple `2017-04-28-article-du-28-avril`), de rédiger son contenu en s'inspirant d'autres articles déjà existants pour finalement envoyer une *pull request* via le bouton dédié sur GitHub.
@@ -35,5 +33,6 @@ Pour ajouter un article sur ce blog, cela revient à ajouter un fichier au forma
 ### Ajouter une/des pages
 
 L'ajout d'une page sur ce blog est au moins aussi trivial que l'ajout d'un article. En fait, il vous suffit d'ajouter un fichier au format `nom-de-la-page.md` dans le répertoire `content/pages/` ou l'un de ses sous-répertoires selon la catégorie visée. Une fois cette étapes de faite, il suffit juste de rédiger votre contenu et d'envoyer une *pull request* via le bouton dédié sur GitHub.
+  
 ---------------------------------
 De mon côté, la validation est toujours un simple bouton.
