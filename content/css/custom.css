@@ -179,7 +179,7 @@ img.credits {
     }
 
     #siteName {
-        //display: none;
+        /*display: none;*/
         font-size: 17px;
         margin-left: 15px;
     }
@@ -193,7 +193,7 @@ img.credits {
     }
 
     .nav.navbar-nav {
-        width: 90%;
+        /*width: 90%;*/
     }
 }
 
