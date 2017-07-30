@@ -24,15 +24,13 @@
                         {% set name_sanitized = s[0]|lower|replace('+','-plus')|replace(' ','-') %}
                     {% endif %}
                     {% if name_sanitized in ['flickr', 'slideshare', 'spotify', 'stack-overflow', 'weibo', 'line-chart', 'home', 'user', 'users', 'envelope', 'envelope-o', 'stack-exchange', 'hacker-news', 'meetup', 'vk'] %}
-                        {% set iconattributes = '"fa fa-' ~ name_sanitized ~ ' fa-stack-1x"' %}
+                        {% set iconattributes = '"fa fa-' ~ name_sanitized ~ ' fa"' %}
                     {% else %}
-                        {% set iconattributes = '"fa fa-' ~ name_sanitized ~ ' fa-stack-1x"' %}
+                        {% set iconattributes = '"fa fa-' ~ name_sanitized ~ ' fa"' %}
                     {% endif %}
                     <li class="list-group-item"><a href="{{ s[1] }}">
-                      <span class="fa-stack fa-lg">
-                        <i class="fa fa-square-o fa-stack-2x"></i>
                         <i class={{ iconattributes }}></i>
-                      </span> {{ s[0] }}</a>
+                       {{ s[0] }}</a>
                     </li>
                 {% endfor %}
               </ul>
