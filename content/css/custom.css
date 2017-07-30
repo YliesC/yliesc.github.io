@@ -7,6 +7,18 @@ body {
     margin-top: 10px;
 }
 
+.navbar .divider-vertical {
+    border-left: 1px solid #f2f2f2;
+    border-right: 1px solid #ffffff;
+    height: 50px;
+    margin: 9px;
+}
+
+.navbar-inverse .divider-vertical {
+    border-left-color: #111111;
+    border-right-color: #222222;
+}
+
 #tipue_search_input {
     width: 100%;
 }
@@ -194,6 +206,10 @@ img.credits {
 
     .nav.navbar-nav {
         /*width: 90%;*/
+    }
+    
+    .navbar-collapse .nav > .divider-vertical {
+        display: none;
     }
 }
 
