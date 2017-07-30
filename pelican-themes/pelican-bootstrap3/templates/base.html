@@ -128,6 +128,14 @@
                 {%- endif %}
 
                 {% if DISPLAY_PAGES_ON_MENU %}
+		<li role="presentation" class="dropdown">
+			<a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+				Sites miroir <span class="caret"></span>
+			</a>
+			<ul class="dropdown-menu">
+				<li><a href="pdp">Progdupeupl</a></li><li><a href="#">Site du Zéro</a></li>
+			</ul>
+		</li>
                     {% for p in pages | sort(attribute=PAGES_SORT_ATTRIBUTE) %}
                         {% if p.url and p.slug in ACCEPTED_MENUS %}
                          <li{% if page and p.url in page.url %} class="active"{% endif %}><a href="{{ SITEURL }}/{{ p.url }}">
