@@ -16,4 +16,7 @@
     {% for author, articles in authors|sort %}
         <li><a href="{{ SITEURL }}/{{ author.url }}">{{ author }}</a> ({{ articles|count }})</li>
     {% endfor %}
+    {% for author, pages in authors|sort %}
+        <li><a href="{{ SITEURL }}/{{ author.url }}">{{ author }}</a> ({{ pages|count }})</li>
+    {% endfor %}
 {% endblock %}
