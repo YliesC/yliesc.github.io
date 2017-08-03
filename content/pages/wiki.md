@@ -4,6 +4,6 @@ Date: 2017-08-01
 Slug: wiki
 Author: YliesC
 
-### Mes écrits
+### Workflows
 
-[Workflow Medidrone](medidrone)
+[Medidrone](medidrone)
