@@ -1,7 +1,3 @@
-% Les identificateurs en langage C
-% Taurre
-% 27/09/2014
-
 Title: Les identificateurs en langage C
 Order: 9
 Date: 2014-09-27

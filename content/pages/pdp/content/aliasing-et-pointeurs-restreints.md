@@ -1,7 +1,3 @@
-% Aliasing et pointeurs restreints
-% Taurre; Lucas-84
-% 27/09/2014
-
 Title: Aliasing et pointeurs restreints
 Order: 9
 Date: 2014-09-27

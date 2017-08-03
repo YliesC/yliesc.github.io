@@ -24,7 +24,7 @@ Pour toute informations, questions ou réclamations, vous trouverai les moyens d
   * [L'assembleur avec GCC](content/lassembleur-avec-gcc)
   * [Le langage C](content/le-langage-c)
   * [Mise en cache intelligente avec Django](content/mise-en-cache-intelligente-avec-django)
-  * [Introduction à libclang](content/introduction-a-libclang) #287
+  * [Introduction à libclang](content/introduction-a-libclang)
   * [La règle de la "spirale horaire" (Clockwise/Spiral Rule)](content/la-regle-de-la-spirale-horaire-clockwisespiral-rule)
   * [Les nombres à virgule flottante](content/maitrisez-les-nombres-a-virgule-en-c)
   * [Le préprocesseur](content/le-preprocesseur)

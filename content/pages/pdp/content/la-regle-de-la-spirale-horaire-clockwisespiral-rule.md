@@ -1,7 +1,3 @@
-% La règle de la "spirale horaire" (Clockwise/Spiral Rule)
-% victor
-% 27/09/2014
-
 Title: La règle de la "spirale horaire" (Clockwise/Spiral Rule)
 Order: 9
 Date: 2014-09-27
