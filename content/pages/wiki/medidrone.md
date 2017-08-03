@@ -148,7 +148,7 @@ Nous développerons trois parties :
 - une application mobile développée en Java pour Android ainsi qu’en Swift pour iOS qui se chargera d’établir une connexion avec le centre de secours, de transmettre les coordonnées GPS de l’appelant ainsi que de géolocaliser le drone en approche afin d’en connaître sa position ainsi que son tracé GPS. Elle permettra également d’avoir une carte afin de visualiser les centres de secours les plus proches.
 - une application web qui se chargera de toute la partie gestion des drones (configurations, informations techniques, données de géolocalisations), de la partie assistance (appel vocal et vidéo avec l’appelant, enregistrement de la conversation, transmission en direct avec l’équipe en route au sol).
 
-#### ⇒ Devez-vous être ou interagir avec des lieux particuliers pour fabriquer votre projet ?
+#### Devez-vous être ou interagir avec des lieux particuliers pour fabriquer votre projet ?
 
 Pas nécessairement. La seule obligation est de pouvoir faire voler notre Medidrone au-dessus de n'importe quel endroit (urbain, montagneux, rural, etc) sans limitation. Ceci est en bonne voie puisque Amazon et son nouveau service Air prime ont demandé à la NASA, qui s’occupe depuis près d’un an de créer une régulation aérienne automatisée des drones, de créer une zone aérienne de « transit à haute vitesse », dans un couloir allant de 61 à 122 mètres, pour les drones les plus automatisés et les mieux équipés, notamment pour éviter les collisions.
 
