@@ -1,7 +1,18 @@
-
 body {
     padding-top: 85px;
     font-family: sans-serif;
+}
+
+a:link, a:visited, a:hover, a:active {
+    outline:none
+}
+
+img {
+    border: none;
+}
+
+p {
+  line-height: 1.5;
 }
 
 .navbar-search {
