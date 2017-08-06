@@ -4,8 +4,6 @@ Date: 2017-08-02
 Slug: medidrone
 Author: YliesC
 
-[TOC]
-
 #### Description succincte du projet
 
 Drone à usage médical
