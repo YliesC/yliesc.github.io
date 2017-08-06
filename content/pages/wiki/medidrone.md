@@ -1,10 +1,11 @@
 Title: Medidrone
 Order: 9
-Date: 2017-08-02
+Date: 2015-12-24
 Slug: medidrone
 Author: YliesC
+Display: true
+Licence: Tous droits réservés
 
-[TOC]
 
 #### Description succincte du projet
 

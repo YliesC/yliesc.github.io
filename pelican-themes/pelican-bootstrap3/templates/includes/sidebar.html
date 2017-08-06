@@ -9,7 +9,7 @@
         {% if 'tipue_search' in PLUGINS %}
         <li id="searchSideBar" class="list-group-item"><span>
                 <form class="navbar-search" action="{{ SEARCH_URL | default('/search.html') }}">
-                  <input type="text" class="search-query" placeholder="Search" name="q" id="tipue_search_input" required>
+                  <input type="text" class="search-query" placeholder="Rechercher" name="q" id="tipue_search_input" required>
                 </form></span>
         </li>
         {% endif %}
@@ -24,9 +24,9 @@
                         {% set name_sanitized = s[0]|lower|replace('+','-plus')|replace(' ','-') %}
                     {% endif %}
                     {% if name_sanitized in ['flickr', 'slideshare', 'spotify', 'stack-overflow', 'weibo', 'line-chart', 'home', 'user', 'users', 'envelope', 'envelope-o', 'stack-exchange', 'hacker-news', 'meetup', 'vk'] %}
-                        {% set iconattributes = '"fa fa-' ~ name_sanitized ~ ' fa"' %}
+                        {% set iconattributes = '"fa fa-' ~ name_sanitized ~ ' fa-lg"' %}
                     {% else %}
-                        {% set iconattributes = '"fa fa-' ~ name_sanitized ~ ' fa"' %}
+                        {% set iconattributes = '"fa fa-' ~ name_sanitized ~ ' fa-lg"' %}
                     {% endif %}
                     <li class="list-group-item"><a href="{{ s[1] }}">
                         <i class={{ iconattributes }}></i>

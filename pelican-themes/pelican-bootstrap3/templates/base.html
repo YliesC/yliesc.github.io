@@ -134,17 +134,8 @@
                              {{ p.menulabel|default(p.title) }}
                           </a></li>
                         {% endif %}
-                      {% endfor %}
-		    <li class="divider-vertical" role="separator"></li>
-		    <li role="presentation" class="dropdown">
-			<a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-				Sites miroir <span class="caret"></span>
-			</a>
-			<ul class="dropdown-menu">
-				<li><a href="{{ SITEURL }}/pdp">Progdupeupl</a></li>
-				<li><a href="http://sdz.tdct.org/" target="_blank">Site du Zéro  <i class="fa fa-external-link"></i></a></li>
-			</ul>
-		    </li>
+                    {% endfor %}
+                    {% include 'includes/navbar-extend.html' %}
                 {% endif %}
                 {% if DISPLAY_CATEGORIES_ON_MENU %}
                     {% for cat, null in categories %}

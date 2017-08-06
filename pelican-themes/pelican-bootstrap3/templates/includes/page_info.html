@@ -1,7 +1,7 @@
 <footer class="post-info">
     
     <span class="published">
-        <i class="fa fa-calendar"></i><time datetime="{{ page.date.isoformat() }}"> {{ page.locale_date }}</time> | 
+        <span class="label label-default"><i class="fa fa-calendar"></i><time datetime="{{ page.date.isoformat() }}"> {{ page.locale_date }}</time></span> | 
     </span>
     {% if page.authors %}
         <span class="label label-default"><i class="fa fa-user-circle"></i> {{ page.authors | join(', ') }}</span>  | 
@@ -9,7 +9,12 @@
         <span class="label label-default"><i class="fa fa-user-circle"></i> {{ page.author }}</span>  | 
     {% endif %}
     <span class="label label-default">
-        <i class="fa fa-cc"></i> 
+        {% if page.licence|string() == "Tous droits réservés"|string() %}
+            <i class="fa fa-copyright"></i>
+        {% else %}
+            <i class="fa fa-cc"></i> 
+        {% endif %}
+        
         {% if page.licence %}
             {{ page.licence }}
         {% else %}
