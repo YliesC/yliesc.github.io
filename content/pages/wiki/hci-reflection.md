@@ -21,29 +21,22 @@ To take the example of book history "Inviting Disaster", the fact that the desig
 Beside that, designing human-computer interactions well have an important role in an enterprise. On the one hand, when users of the system can use it easily and without having to handle a new way to proceed, they can use the product more efficiently and increase their productivity.
 
 On the other hand, on the business side, if final users are satisfied when they use the product, it will directly impact on the profitability.
-
 Even though HCI is important, it is difficult to find better ways to improve the user experience and usability of computing systems.
 
 Creating user interfaces with few errors and supporting faster user execution is not only about common sense or matter of luck but based on training and experience that impact on designer’s mental models.
 
 And even with years of experience and training, it is never easy to bring a fix.
-
 Don Norman reports: "A true understanding of a tool can only come through usage, in part
-
 because new tools change the system, thereby changing both needs and requirements."
-
 In that, a deep understanding of the users is even more important than technical skills in making user interfaces.
 
 Thereby, that is why HCI has to be be take in account at the very beginning of the software development process. At this point, Human-Centered Design (HCD) can be a solution. HCD is a design approach where the needs, expectations and characteristics of end users are taken into account at each stage of the product iterative development process, stages that are Observation, Ideation, Prototyping and Testing.
 
 ### Bibliography
 
-[https://fr.wikipedia.org/wiki/Interactions_homme-machine](https://fr.wikipedia.org/wiki/Interactions_homme-machine)
+1. [https://fr.wikipedia.org/wiki/Interactions_homme-machine](https://fr.wikipedia.org/wiki/Interactions_homme-machine)
+2. [https://pdfs.semanticscholar.org/3662/f05e01ec0eb8f56e8323b5c27c9338393299.pdf](https://pdfs.semanticscholar.org/3662/f05e01ec0eb8f56e8323b5c27c9338393299.pdf)
+3. [https://prezi.com/8kdud-pwhz4s/impact-of-hci-on-societythe-economy-and-culture/#](https://prezi.com/8kdud-pwhz4s/impact-of-hci-on-societythe-economy-and-culture/#)
+4. Chiles, J.R. (2001). The Really Bad Day. In Inviting Disaster: Lessons from the Edge of Technology. Harper Business: New York, 117-128
+5. Brooks, F.P. Jr. (1987). No silver bullet: Essence and accidents of software engineering. Computer, 20(4), 10-19
 
-[https://pdfs.semanticscholar.org/3662/f05e01ec0eb8f56e8323b5c27c9338393299.pdf](https://pdfs.semanticscholar.org/3662/f05e01ec0eb8f56e8323b5c27c9338393299.pdf)
-
-[https://prezi.com/8kdud-pwhz4s/impact-of-hci-on-societythe-economy-and-culture/#](https://prezi.com/8kdud-pwhz4s/impact-of-hci-on-societythe-economy-and-culture/#)
-
-Chiles, J.R. (2001). The Really Bad Day. In Inviting Disaster: Lessons from the Edge of Technology. Harper Business: New York, 117-128
-
-Brooks, F.P. Jr. (1987). No silver bullet: Essence and accidents of software engineering. Computer, 20(4), 10-19

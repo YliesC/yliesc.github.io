@@ -67,7 +67,7 @@ Avec l’arrivée des outils nécessaires dans un temps record, les chances de s
 
 L’arrivée des secours sur les lieux d’un arrêt cardiaque peuvent parfois mettre jusqu’à 10 minutes alors que l’on sait que la mort cérébrale intervient entre 4 et 6 minutes. Le Medidrone permettrait donc d’apporter le matériel médical nécessaire aux premiers secours en environ 1 à 2 minutes, soit bien avant l’arrivée des secours. Notre projet répond donc à un besoin d’urgence absolu tout en étant garant de la qualité des appareils utilisés.
 
-#### Que feront vos utilisateurs avec le projet ?
+#### Que feront nos utilisateurs avec le projet ?
 
 Lorsque les infrastructures de secours reçoivent un appel, celui-ci passe par un centre de traitement où des agents posent les questions essentielles pour déterminer la situation (lieu de l’accident, état du malade, personne compétente déjà sur les lieux etc.). Cette étape sert également de filtrage en cas d’appel erroné ou d’appel non-sérieux. Une fois que le centre de traitement valide l’intervention, il envoi immédiatement un Medidrone sur place pour accompagner le passant et lui permettre d’apporter les premiers soins avant l’arrivée des secours. En parallèle, les secours prennent eux aussi le chemin vers le lieu de l’intervention. Entre l’appel et l’arrivée des secours, la personne présente sur les lieux garde un lien constant à la fois visuel et auditif via l’application. Entre l’arrivée du drone et celle des secours, le passant ayant maintenant en sa possession le défibrillateur, le travail des secours en ligne est de l’aider et l’aiguiller afin qu’il prodigue au mieux les premiers soins : indications sur le placement des patchs, l’allumage du défibrillateur, la fréquence de défibrillation, comment réaliser au mieux le bouche à bouche etc. Les secours seront en lien permanent avec le drone grâce au tableau de bord (application web) qui leur permettra d'intéragir avec ce dernier si besoin est. Le drone étant autonome, il déterminera lui-même son plan de vol en fonction des coordonnées GPS émises par l'appelant. A partir du moment où les secours arrivent sur place, le passant se retire pour laisser les professionnels agir au mieux. Les secouristes arriveront sur les lieux en ayant déja toutes les informations sur la situation car ils auront suivi l’échange entre le passant et le centre de secours.
 
@@ -84,17 +84,19 @@ Selon nos utilisateurs, il y a deux façons d'interagir avec le projet : - pour 
 L'utilisateur principal (le passant) devra ouvrir son application/accéder au widget pour pouvoir passer un appel. Par un simple clic, il est directement mis en lien avec le centre de traitement des services de secours. Ainsi, les secours savent déjà que le passant appelle depuis l'application et est donc en présence d'un arrêt cardiaque. Les secours ayant pris connaissance de la situation, un Medidrone est automatiquement envoyé aux coordonnées GPS de l’appareil éméttant. Le passant n'a plus qu'à attendre son arrivée et suivre les indications données par son interlocuteur (détacher le défibrillateur, poser les patchs sur le corps de la victime, etc). 
 
 **Options tableau de bord** 
+
 - Localisation GPS du Medidrone
-  - Coordonnées GPS
-  - Altitude 
-  - Distance Medidrone / Centre de secours
+    - Coordonnées GPS
+    - Altitude 
+    - Distance Medidrone / Centre de secours
 - Accès aux informations techniques
-  - Informations autonomie
-  - Etat des composants du drone : controleur de vol, moteurs, etc. (visualisation 3D ?)
-  - Etats connexions sans fils
+    - Informations autonomie
+    - Etat des composants du drone : controleur de vol, moteurs, etc. (visualisation 3D ?)
+    - Etats connexions sans fils
 - Accès VoiceCall / VisioCall 
 
 **Options application mobile**
+
 - Appel d'urgence (fonction principale)
 - Localisation des centres de secours les plus proches
 - Localisation du Medidrone qui m'est destiné (après prise de contact)
@@ -114,34 +116,33 @@ La technologie utilisé par l’application web reste à déterminer (pas de con
 #### Quels moyens humains ?
 
 Entre 6 et 7 personnes :
+
 - Développeurs mobiles (iOS, Android).
 - Développeurs web spécialistes back-end, front-end.
 - Développeurs système embarqué.
 - **PLUS: Culture générale sur les drones et leurs avancées techniques actuelles.**
 
-#### De quels moyens matériels auriez-vous besoin ?
+#### De quels moyens matériels aurions-nous besoin ?
 
 - Défibrilateur (~1200€)
 - Matériaux drone :
-  - Moteurs brushless  : ~20€/unité  [x8]
-  - Controleur de vitesse :  ~6€/unité [x8]
-  - Batterie : ~7€  [x1]
-  - Controleur de vol Ardupilot (+ module GPS et boussole):  ~155€  [x1]
-  - Carte programmable Arduino : ~ 35€  [x1]
-  - Châssis : ~ 200€  [x1]
-  - Hélices : ~9€/paire [x8]
-  - Amortisseurs: ~9€ [x8]
-
+    - Moteurs brushless  : ~20€/unité  [x8]
+    - Controleur de vitesse :  ~6€/unité [x8]
+    - Batterie : ~7€  [x1]
+    - Controleur de vol Ardupilot (+ module GPS et boussole):  ~155€  [x1]
+    - Carte programmable Arduino : ~ 35€  [x1]
+    - Châssis : ~ 200€  [x1]
+    - Hélices : ~9€/paire [x8]
+    - Amortisseurs: ~9€ [x8]
 - Smartphones afin de développer et tester les différentes interfaces créées
-
 - Serveur(s) pour développement web
 
-#### Quels sont les logiciels dont vous auriez besoin ?
+#### Quels sont les logiciels dont nous aurions besoin ?
 
 - APM Planner 2 (Ardupilot)
 - Mission Planner (Ardupilot)
 
-#### Qu'est ce que vous développez ?
+#### Qu'est ce que l'on développe ?
 
 Nous développerons trois parties :
 
@@ -157,6 +158,6 @@ Pas nécessairement. La seule obligation est de pouvoir faire voler notre Medidr
 
 Le marché mondial est en forte augmentation, de l’ordre de 2,4 milliards de dollars en 2000, 6 milliards en 2007 et environ 10 milliard en 2012. On constate donc une augmentation très importante au fil des ans qui démontre le développement de ce marché. En 2015, le marché mondial des avions pilotés à distance de 130 millions de dollars, soit environ 425 000 appareils vendus. En France, le nombre de personnes décédant chaque année d'un arrêt cardiaque est de 40 000. Selon les chiffres de la société AED MAP, 5,7% des victimes d’un arrêt cardiaque sont sauvées. Ce taux est néanmoins quatre à cinq fois plus élevé dans les pays où les lieux publics sont équipés en défibrillateurs automatisés externes et la population formée aux gestes qui sauvent. Plus l'intervention est effectuée rapidement, plus le patient a des chances de survivre sans séquelles. Concernant notre projet lui-même, nous visons tous les postes de secours relier au numéro d'urgence en vigeur dans le pays (112 pour l'Europe, 911 aux Etats-Unis).
 
-#### Vérifier les aspects légaux : données utilisateurs, droits d'auteurs, contrefaçons… Voyez-vous un potentiel problème ?
+#### Aspects légaux : données utilisateurs, droits d'auteurs, contrefaçons
 
 Notre projet n’existant pas encore réellement, aucun brevet n’a été déposé, aucune marque est aujourd’hui propriétaire d’un tel appareil. La législation française en vigueur tend à s’assouplir encore plus, ce qui va de pair avec notre projet de drone autonome. Le projet ayant une visée internationale, la France n'est qu'une faible part du marché souhaité (Etats-Unis, Europe de l'Est, Asie, etc.)

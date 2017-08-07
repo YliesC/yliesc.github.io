@@ -7,8 +7,8 @@ local/
 output/
 pelican-plugins/
 pelican.pid
-pelicanconf.pyc
-pelicanconf.py
+config.pyc
+config.py
 pip-selfcheck.json
 publishconf.pyc
 publishconf.py
