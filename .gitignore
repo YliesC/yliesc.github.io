@@ -10,8 +10,6 @@ pelican.pid
 config.pyc
 config.py
 pip-selfcheck.json
-publishconf.pyc
-publishconf.py
 share/
 srv.pid
 *.pyc
