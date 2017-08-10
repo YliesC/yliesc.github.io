@@ -199,44 +199,12 @@
 {% if BANNER %}
     <script src="{{ SITEURL }}/{{ THEME_STATIC_DIR }}/js/bodypadding.js"></script>
 {% endif %}
-{% include 'includes/github-js.html' %}
+<!-- {% include 'includes/github-js.html' %}
 {% include 'includes/disqus_script.html' %}
 {% include 'includes/ga.html' %}
-{% include 'includes/piwik.html' %}
+{% include 'includes/piwik.html' %} -->
 
 {% block scripts %}{% endblock %}
-<script type="text/javascript">
-  $(document).ready(function() {
 
-    var btn = $('#duniterProdVersion');
-    var btnPre = $('#duniterTestVersion');
-    var lnkPre = $('#duniterTestVersionLink');
-    var initialButtonText = btn.text();
-
-    // Latest release
-    $.get( "https://api.github.com/repos/duniter/duniter/releases/latest", function( data ) {
-      if (data && data.tag_name) {
-        console.log('Prod_version:', data.tag_name);
-        btn.html(initialButtonText + ' ' + data.tag_name);
-      }
-    });
-
-    // Latest pre-release
-    $.get( "https://api.github.com/repos/duniter/duniter/releases", function( list ) {
-      var data = list[0]
-      for (var i = 1; i < list.length; i++) {
-        var release = list[i];
-        if (release.tag_name > data.tag_name) {
-          data = release;
-        }
-      }
-      if (data && data.tag_name) {
-        console.log('Test_version:', data.tag_name);
-        btnPre.html(initialButtonText + ' ' + data.tag_name);
-        lnkPre.attr('href', lnkPre.attr('href') + data.tag_name);
-      }
-    });
-  });
-</script>
 </body>
 </html>

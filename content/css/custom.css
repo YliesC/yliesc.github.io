@@ -11,6 +11,21 @@ img {
     border: none;
 }
 
+.no-found-text {
+    margin: 50px auto 100px;
+    text-align: center;
+    width: 550px;
+    color: #f15a29;
+    font-weight: 300;
+    font-size: 1.4em;
+}
+
+.not-found-image {
+    height: 320px;
+    margin-bottom: 20px;
+    width: 546px;
+}
+
 p {
   line-height: 1.5;
 }
