@@ -1,3 +1,3 @@
-# Somewhere on Internet website
+# Thegoldenkoala website
 
-Public site available at https://k0ala.ocry.com/blog
+Public site available at https://thegoldenkoala.com
