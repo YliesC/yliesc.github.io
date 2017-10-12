@@ -11,6 +11,25 @@ img {
     border: none;
 }
 
+table {
+    border: 1px solid #ccc;
+    border-collapse: collapse;
+    border-spacing: 0;
+    empty-cells: show;
+    padding: 0;
+}
+
+th, td {
+    border: 1px solid #ccc;
+    margin: 0;
+    padding: 0.3em 0.5em;
+    vertical-align: top;
+}
+
+.centeralign {
+    text-align: center;
+}
+
 .no-found-text {
     margin: 50px auto 100px;
     text-align: center;
