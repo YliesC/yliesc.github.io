@@ -12,12 +12,11 @@ PAGES_SORT_ATTRIBUTE = 'order'
 
 TIMEZONE = 'Europe/Paris'
 
-# ABOUT_ME = '<div id="stb-container-1313" class="stb-container-css stb-black-container stb-collapsible stb-visible stb-image-big stb-ltr stb-border" style="margin: 10px 0px 10px 0px;"><div id="stb-caption-box-1313" class="stb-black-caption_box stb_caption stb-caption-box"><aside class="stb-caption-icon"><img src="http://www.creationmonetaire.info/wp-content/plugins/wp-special-textboxes/themes/stb-metro/earth.png"></aside><div id="stb-tool-1313" class="stb-tool"><img id="stb-toolimg-1313" src="http://www.creationmonetaire.info/wp-content/plugins/wp-special-textboxes/themes/stb-metro/minus.png" title="Hide"></div>J’accepte les Ğ1 !</div><div id="stb-body-box-1313" class="stb-black-body_box stb_body stb-body-box"><div style="margin-bottom: 15px;padding: 2px 2px; background-color: #e7f3fe;border-left: 6px solid #2196F3; font-size: 80%; color: black;">ID : Galuel<br>Ds1z6Wd8hNTexBoo3LVG2oXLZN4dC9ZWxoWwnDbF1NEW</div><center><a href="http://g1.duniter.org/cesium/#/app/wot/Ds1z6Wd8hNTexBoo3LVG2oXLZN4dC9ZWxoWwnDbF1NEW/Galuel"><img src="http://www.creationmonetaire.info/wp-content/uploads/2017/03/duniter_button.png" width="100"></a></center></div></div>'
 FAVICON = 'images/koala-ico.png'
 SITELOGO = 'images/koala-logo.svg'
 THUMBNAIL_DEFAULT = '/images/koala-logo.svg'
 SEARCH_URL = '/blog/search'
-# BANNER = 'images/duniter-logo.png'
+# BANNER = 'images/koala-logo.png'
 # BANNER_SUBTITLE = 'This is my subtitle'
 SITELOGO_SIZE = 38
 
@@ -62,15 +61,15 @@ CUSTOM_CSS = 'css/custom.css'
 # Blogroll
 LINKS = (('Link 1', 'https://example.org'),
          ('Link 2', 'https://example.org'),
-         ('etc', '/page/content', 'etc'),)
+         ('etc', '/page/content'),)
 
 # Social widget
-ACCEPTED_MENUS =  ['contribuer',
-                   'contact',
-                   'wiki',
-                   'a-propos',
-                   'cv',
-                   'mirrors']
+ACCEPTED_MENUS =  ['menu-1',
+                   'menu-2',
+                   'menu-3',
+                   'menu-4',
+                   'menu-5',
+                   'menu-6']
 
 SOCIAL = (('Link 1', 'https://example.org', 'comment'),
           ('Link 2', 'https://example.org', 'comments'),
