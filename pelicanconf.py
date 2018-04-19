@@ -44,7 +44,7 @@ I18N_SUBSITES = {
 
 ARTICLE_URL = '{slug}'
 ARTICLE_SAVE_AS = '{slug}.html'
-PAGE_URL = 'pages/{slug}/'
+PAGE_URL = 'pages/{slug}'
 PAGE_SAVE_AS = 'pages/{slug}.html'
 CATEGORY_URL = 'category/{slug}'
 CATEGORY_SAVE_AS = 'category/{slug}.html'
@@ -59,21 +59,20 @@ CUSTOM_CSS = 'css/custom.css'
 
 
 # Blogroll
-LINKS = (('Link 1', 'https://example.org'),
-         ('Link 2', 'https://example.org'),
-         ('etc', '/page/content'),)
+# LINKS = (('Link 1', 'https://example.org'),
+#          ('Link 2', 'https://example.org'),
+#          ('etc', '/page/content'),)
 
 # Social widget
-ACCEPTED_MENUS =  ['menu-1',
-                   'menu-2',
-                   'menu-3',
-                   'menu-4',
-                   'menu-5',
-                   'menu-6']
+ACCEPTED_MENUS =  ['contribuer',
+                   'a-propos',
+                   'contact',
+                   'wiki',
+                   'pdp']
 
-SOCIAL = (('Link 1', 'https://example.org', 'comment'),
-          ('Link 2', 'https://example.org', 'comments'),
-          ('etc', '/page/content', 'etc'),)
+# SOCIAL = (('Link 1', 'https://example.org', 'comment'),
+#           ('Link 2', 'https://example.org', 'comments'),
+#           ('etc', '/page/content', 'etc'),)
 
 DEFAULT_PAGINATION = 10
 
