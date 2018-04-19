@@ -1,12 +1,12 @@
 The Golden Koala website
 ======================
-Public site available at https://thegoldenkoala.com
+Public site available at https://yliesc.github.io
 
 # Install
 
-1. Clone [the sources](https://github.com/YliesC/website.git)
+1. Clone [the sources](https://github.com/YliesC/yliesc.github.io.git)
 
-        git clone https://github.com/YliesC/website.git
+        git clone https://github.com/YliesC/yliesc.github.io.git
 
 3. Install python dependancies
 
