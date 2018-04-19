@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*- #
 from __future__ import unicode_literals
 
-# AUTHOR = u'Author'
-SITENAME = u'Your website title'
-SITEURL = u'http://localhost:8556'
+AUTHOR = u'YliesC'
+SITENAME = u'The Golden Koala'
+SITEURL = u'http://yliesc.github.io'
 
 PATH = 'content'
 THEME = "pelican-themes/pelican-bootstrap3"
