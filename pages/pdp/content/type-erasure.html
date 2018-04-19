@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="fr" prefix="og: http://ogp.me/ns# fb: https://www.facebook.com/2008/fbml">
+<head>
+    <title>Type Erasure - The Golden Koala</title>
+    <!-- Using the latest rendering mode for IE -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <link href="http://yliesc.github.io/images/koala-ico.png" rel="icon">
+
+<link rel="canonical" href="http://yliesc.github.io/pages/pdp/content/type-erasure/">
+
+        <meta name="author" content="Freedom" />
+        <meta name="description" content="Introduction Le C++ ne permet pas de stocker des objets hétérogènes dans un même conteneur, ce qui peut être nécessaire dans certaines situations. Cette problématique est souvent celle utilisée pour introduire le polymorphisme d&#39;inclusion, cependant la problématique est plus générale et peut exister sans qu&#39;il soit possible d&#39;utiliser directement ce …" />
+
+    <meta property="og:site_name" content="The Golden Koala" />
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="Type Erasure"/>
+    <meta property="og:url" content="http://yliesc.github.io/pages/pdp/content/type-erasure/"/>
+    <meta property="og:description" content="Introduction Le C++ ne permet pas de stocker des objets hétérogènes dans un même conteneur, ce qui peut être nécessaire dans certaines situations. Cette problématique est souvent celle utilisée pour introduire le polymorphisme d&#39;inclusion, cependant la problématique est plus générale et peut exister sans qu&#39;il soit possible d&#39;utiliser directement ce …" />
+
+
+    <!-- Bootstrap -->
+        <link rel="stylesheet" href="http://yliesc.github.io/theme/css/bootstrap.readable.min.css" type="text/css"/>
+    <link href="http://yliesc.github.io/theme/css/font-awesome.min.css" rel="stylesheet">
+
+    <link href="http://yliesc.github.io/theme/css/pygments/default.css" rel="stylesheet">
+    <link href="http://yliesc.github.io/theme/tipuesearch/tipuesearch.css" rel="stylesheet">
+    <link rel="stylesheet" href="http://yliesc.github.io/theme/css/style.css" type="text/css"/>
+        <link href="http://yliesc.github.io/css/custom.css" rel="stylesheet">
+
+        <link href="http://yliesc.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate"
+              title="The Golden Koala ATOM Feed"/>
+
+
+
+
+</head>
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+	<div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="http://yliesc.github.io/" class="navbar-brand">
+<img class="img-responsive pull-left gap-right" src="http://yliesc.github.io/images/koala-logo.svg" width="38"/> <span id="siteName">The Golden Koala</span>            </a>
+        </div>
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+
+            </ul>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+</div> <!-- /.navbar -->
+<!-- Banner -->
+<!-- End Banner -->
+<div class="container">
+    <div class="row">
+        <div class="col-sm-9">
+    <ol class="breadcrumb">
+        <li><a href="http://yliesc.github.io/" title="The Golden Koala">
+            <i class="fa fa-home fa-lg"></i>
+        </a></li>
+        <li class="active">Type Erasure</li>
+    </ol>
+    <section id="content" class="body">
+        <h1 class="entry-title">Type Erasure</h1>
+            <div class="entry-content">
+                    <div class="panel">
+                        <div class="panel-body">
+<footer class="post-info">
+    
+    <span class="published">
+        <span class="label label-default"><i class="fa fa-calendar"></i><time datetime="2015-03-28T00:00:00+01:00"> sam. 28 mars 2015</time></span> | 
+    </span>
+        <span class="label label-default"><i class="fa fa-user-circle"></i> Freedom</span>  | 
+    <span class="label label-default">
+            <i class="fa fa-cc"></i> 
+        
+            CC-BY-SA
+    </span>
+</footer><!-- /.page-info -->                        </div>
+                    </div>
+            <h1 id="introduction">Introduction</h1>
+<p>Le C++ ne permet pas de stocker des objets hétérogènes dans un même conteneur, ce qui peut être nécessaire dans certaines situations.</p>
+<p>Cette problématique est souvent celle utilisée pour introduire le polymorphisme d'inclusion, cependant la problématique est plus générale et peut exister sans qu'il soit possible d'utiliser directement ce polymorphisme.</p>
+<div class="toc">
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#typage">Typage</a><ul>
+<li><a href="#definition">Définition</a></li>
+<li><a href="#relation-dordre">Relation d'ordre</a></li>
+</ul>
+</li>
+<li><a href="#polymorphismes">Polymorphismes</a><ul>
+<li><a href="#plusieurs-polymorphismes">Plusieurs polymorphismes</a></li>
+<li><a href="#polymorphisme-parametrique">Polymorphisme paramétrique</a></li>
+<li><a href="#polymorphisme-dinclusion">Polymorphisme d'inclusion</a></li>
+</ul>
+</li>
+<li><a href="#problematique">Problématique</a><ul>
+<li><a href="#approche-du-probleme">Approche du problème</a></li>
+<li><a href="#premiere-solution">Première solution</a></li>
+<li><a href="#seconde-solution">Seconde solution</a></li>
+</ul>
+</li>
+<li><a href="#implementation">Implémentation</a><ul>
+<li><a href="#adaptateur-wrapper6-generique">Adaptateur (Wrapper)6 générique</a></li>
+<li><a href="#polymorphisme-dinclusion_1">Polymorphisme d'inclusion</a></li>
+<li><a href="#second-adaptateur">Second adaptateur</a></li>
+</ul>
+</li>
+<li><a href="#ameliorations">Améliorations</a><ul>
+<li><a href="#factorisation-de-enable_if">Factorisation de enable_if</a></li>
+<li><a href="#semantique-de-copie">Sémantique de copie</a></li>
+<li><a href="#adaptateurs">Adaptateurs</a></li>
+</ul>
+</li>
+<li><a href="#conclusion">Conclusion</a></li>
+</ul>
+</div>
+<h1 id="typage">Typage</h1>
+<h3 id="definition">Définition</h3>
+<p>Un des objectifs du typage du C++ est d'associer à une zone définie et continue de la mémoire une sémantique, c'est-à-dire ce qu'on peut faire avec cet espace mémoire. On appelle un tel espace <em>un objet</em> et la sémantique <em>le type de l'objet</em>. La sémantique est essentiellement<sup id="fnref:10"><a class="footnote-ref" href="#fn:10" rel="footnote">1</a></sup> déterminée par les fonctions que l'on peut appliquer à un tel objet, un type peut donc se définir par l'ensemble des fonctions qui lui sont associées.</p>
+<p>Notons ici que le type de l'objet ne dépend que de l'objet, il n'est pas à confondre avec le type d'une expression qui va associer une sémantique à une expression et peut être de deux natures <em>statique</em> ou <em>dynamique</em>. Illustrons ceci :</p>
+<div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">B</span> <span class="p">{};</span>
+<span class="k">struct</span> <span class="nl">D</span> <span class="p">:</span> <span class="n">B</span> <span class="p">{};</span>
+
+<span class="n">B</span><span class="o">*</span> <span class="n">p</span> <span class="o">=</span> <span class="k">new</span> <span class="n">D</span><span class="p">();</span>
+</pre></div>
+
+
+<p>Ici l'objet occupe la zone entre les adresses <code>p</code> et <code>p+sizeof(D)</code>, et son type est <code>D</code>, le type statique de l'expression <code>*p</code> est <code>B</code> alors que son type dynamique est <code>D</code>. </p>
+<h3 id="relation-dordre">Relation d'ordre</h3>
+<p>On peut définir un ordre entre les types en fonction des opérations qu'ils supportent. Concrètement :</p>
+<div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">G</span> <span class="p">{};</span>
+<span class="k">struct</span> <span class="n">H</span> <span class="p">{};</span>
+
+<span class="kt">void</span> <span class="nf">foo</span><span class="p">(</span><span class="n">G</span><span class="o">&amp;</span><span class="p">);</span>
+<span class="kt">void</span> <span class="nf">foo</span><span class="p">(</span><span class="n">H</span><span class="o">&amp;</span><span class="p">);</span>
+
+<span class="kt">void</span> <span class="nf">bar</span><span class="p">(</span><span class="n">G</span><span class="o">&amp;</span><span class="p">);</span>
+</pre></div>
+
+
+<p>On peut noter $H &lt; G$, qui signifie que toutes les expressions valables avec une expression de type statique <code>H</code> le seront avec une expression de type statique <code>G</code>. </p>
+<h1 id="polymorphismes">Polymorphismes</h1>
+<h3 id="plusieurs-polymorphismes">Plusieurs polymorphismes</h3>
+<p>On va parler ici de deux polymorphismes du C++, celui paramétrique et celui d'inclusion. Outre les différences syntaxiques<sup id="fnref:20"><a class="footnote-ref" href="#fn:20" rel="footnote">2</a></sup>, ils diffèrent par la résolution de l'appel :  </p>
+<ul>
+<li>Le polymorphisme paramétrique est résolu à la compilation, ce qui permet de profiter du typage et du compilateur pour s'assurer des opérations effectuées ;</li>
+<li>Le polymorphisme d'inclusion est résolu à l’exécution<sup id="fnref:21"><a class="footnote-ref" href="#fn:21" rel="footnote">3</a></sup>, on perd l'avantage du typage, mais cela peut être nécessaire lorsque le type d'un objet sera déterminé à l’exécution, c'est-à-dire lorsque l'on a déjà perdu l'avantage du typage.</li>
+</ul>
+<p>Concrètement, le polymorphisme intervient dans cette situation :</p>
+<div class="highlight"><pre><span></span><span class="n">foo</span><span class="p">(</span><span class="n">expr</span><span class="p">);</span>
+</pre></div>
+
+
+<p>Le polymorphisme paramétrique va conserver le type statique de <code>expr</code> lors de la réalisation des opérations de <code>foo</code>, dans le cas du polymorphisme d'inclusion<sup id="fnref:22"><a class="footnote-ref" href="#fn:22" rel="footnote">4</a></sup> ce sera le type dynamique de <code>expr</code> qui sera utilisé.</p>
+<h3 id="polymorphisme-parametrique">Polymorphisme paramétrique</h3>
+<p>La syntaxe typique du polymorphisme paramétrique est :</p>
+<div class="highlight"><pre><span></span><span class="k">template</span><span class="o">&lt;</span><span class="k">class</span> <span class="nc">T</span><span class="o">&gt;</span>
+<span class="kt">void</span> <span class="n">foo</span><span class="p">(</span><span class="n">T</span><span class="o">&amp;</span> <span class="n">t</span><span class="p">)</span>
+<span class="p">{</span> <span class="cm">/*stuff on t*/</span> <span class="p">}</span>
+</pre></div>
+
+
+<p>L'ensemble des fonctions qui vont être appelées sur <code>t</code> définissent un type virtuel <code>C</code> et chaque argument template <code>T</code> valide respecte $C&lt;T$. Ce type <code>C</code> représente un concept qui doit être respecté lors de l'appel.</p>
+<h3 id="polymorphisme-dinclusion">Polymorphisme d'inclusion</h3>
+<p>Dans le cas du polymorphisme d'inclusion, la syntaxe est :</p>
+<div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">B</span> <span class="p">{</span>
+  <span class="k">virtual</span> <span class="kt">void</span> <span class="n">foo</span><span class="p">()</span>
+  <span class="p">{</span> <span class="cm">/*stuff*/</span> <span class="p">}</span>
+
+  <span class="k">virtual</span> <span class="o">~</span><span class="n">B</span><span class="p">()</span> <span class="p">{}</span>
+<span class="p">};</span>
+
+<span class="k">struct</span> <span class="nl">D</span> <span class="p">:</span> <span class="n">B</span> <span class="p">{</span>
+  <span class="kt">void</span> <span class="n">foo</span><span class="p">()</span>
+  <span class="p">{</span> <span class="cm">/*other stuff*/</span> <span class="p">}</span>
+<span class="p">};</span>
+</pre></div>
+
+
+<p>On a directement la relation $B&lt;D$, c'est le point commun entre les deux polymorphismes : chaque classe fille propose l'interface de la classe mère comme chaque argument template respecte un concept<sup id="fnref:23"><a class="footnote-ref" href="#fn:23" rel="footnote">5</a></sup>.</p>
+<h1 id="problematique">Problématique</h1>
+<h3 id="approche-du-probleme">Approche du problème</h3>
+<p>La problématique intervient lorsque l'on ne peut plus conserver le type de l'objet grâce au polymorphisme paramétrique, il s'agit typiquement des situations où le type de l'objet créé est déterminé à l’exécution, par exemple :</p>
+<div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">G</span> <span class="p">{</span>
+  <span class="kt">void</span> <span class="n">foo</span><span class="p">()</span>
+  <span class="p">{</span> <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;G&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span> <span class="p">}</span>
+<span class="p">};</span>
+<span class="k">struct</span> <span class="n">H</span> <span class="p">{</span>
+  <span class="kt">void</span> <span class="n">foo</span><span class="p">()</span>
+  <span class="p">{</span> <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;H&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span> <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="cm">/*?*/</span><span class="o">&gt;</span> <span class="n">vec</span><span class="p">;</span>
+<span class="kt">int</span> <span class="n">i</span><span class="p">;</span> <span class="n">std</span><span class="o">::</span><span class="n">cin</span> <span class="o">&gt;&gt;</span> <span class="n">i</span><span class="p">;</span>
+<span class="k">switch</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">case</span> <span class="mi">1</span> <span class="o">:</span>
+    <span class="n">vec</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">G</span><span class="p">());</span>
+    <span class="k">break</span><span class="p">;</span>
+  <span class="k">case</span> <span class="mi">2</span> <span class="o">:</span>
+    <span class="n">vec</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">H</span><span class="p">());</span>
+    <span class="k">break</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="n">vec</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">foo</span><span class="p">();</span>
+</pre></div>
+
+
+<p><code>G</code> et <code>H</code> représentent deux types distincts, que mettre à la place de <code>/*?*/</code> ?</p>
+<p>Les opérations que l'on effectue sur <code>vec[0]</code>, ici l'appel à la fonction membre <code>foo</code>, définissent à nouveau un type <code>C</code> qui respecte $C&lt;G$ et $C&lt;H$, cependant on ne peut pas profiter du polymorphisme paramétrique, le C++ nous demande sur quel type travaille le conteneur <code>std::vector</code>.</p>
+<h3 id="premiere-solution">Première solution</h3>
+<p>Il va donc s'agir de rendre réel ce type virtuel <code>C</code>, une première solution nous est proposée par le polymorphisme d'inclusion grâce au point commun existant entre les deux polymorphismes mis en évidence dans la partie précédente. Concrètement il s'agit de mettre en place une classe de base et d'adapter la syntaxe pour manipuler des pointeurs<sup id="fnref:30"><a class="footnote-ref" href="#fn:30" rel="footnote">6</a></sup> :</p>
+<div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">C</span> <span class="p">{</span>
+  <span class="k">virtual</span> <span class="kt">void</span> <span class="n">foo</span><span class="p">()</span> <span class="o">=</span><span class="mi">0</span><span class="p">;</span>
+  <span class="k">virtual</span> <span class="o">~</span><span class="n">C</span><span class="p">(){}</span>
+<span class="p">};</span>
+
+<span class="k">struct</span> <span class="nl">G</span> <span class="p">:</span> <span class="n">C</span> <span class="p">{</span>
+  <span class="kt">void</span> <span class="n">foo</span><span class="p">()</span>
+  <span class="p">{</span> <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;G&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span> <span class="p">}</span>
+<span class="p">};</span>
+<span class="k">struct</span> <span class="nl">H</span> <span class="p">:</span> <span class="n">C</span> <span class="p">{</span>
+  <span class="kt">void</span> <span class="n">foo</span><span class="p">()</span>
+  <span class="p">{</span> <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;H&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span> <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">C</span><span class="o">&gt;&gt;</span> <span class="n">vec</span><span class="p">;</span>
+<span class="kt">int</span> <span class="n">i</span><span class="p">;</span> <span class="n">std</span><span class="o">::</span><span class="n">cin</span> <span class="o">&gt;&gt;</span> <span class="n">i</span><span class="p">;</span>
+<span class="k">switch</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">case</span> <span class="mi">1</span> <span class="o">:</span>
+    <span class="n">vec</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">G</span><span class="o">&gt;</span><span class="p">());</span>
+    <span class="k">break</span><span class="p">;</span>
+  <span class="k">case</span> <span class="mi">2</span> <span class="o">:</span>
+    <span class="n">vec</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">H</span><span class="o">&gt;</span><span class="p">());</span>
+    <span class="k">break</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="n">vec</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">foo</span><span class="p">();</span>
+</pre></div>
+
+
+<p>On a ici appliqué un <em>type erasure</em> : on a créé un <em>type plus faible</em> que le type des objets que l'on manipule et <em>convenant à l'utilisation</em> que l'on fait de ces objets.</p>
+<p>Cette première solution est fonctionnelle mais présente un défaut, en effet dans le cas du polymorphisme paramétrique, l'existence du concept est orthogonale à l'existence de types le respectant, alors que dans le cas du polymorphisme d'inclusion, la classe de base est nécessaire pour réaliser les classes dérivées. Ainsi l'utilisation directe du polymorphisme d'inclusion pour la réalisation d'un <em>type erasure</em> a un défaut : elle est intrusive, c'est-à-dire que l'on a introduit des modifications dans des éléments existants, ici <code>G</code> et <code>H</code>. Si l'on a ce besoin et que les types existent déjà, on se retrouve face à un mur : on ne peut pas ajouter une classe de base à des types qui existent déjà.</p>
+<h3 id="seconde-solution">Seconde solution</h3>
+<p>Une seconde solution vient répondre à ce problème, avant d'en présenter une implémentation, donnons un exemple concret présent dans la bibliothèque standard. En C++ il existe plusieurs expressions supportant la syntaxe <code>fun()</code>, par exemple :</p>
+<div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">foo</span><span class="p">()</span>
+<span class="p">{</span> <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;foo&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span> <span class="p">}</span>
+
+<span class="k">struct</span> <span class="n">F</span> <span class="p">{</span> 
+  <span class="kt">void</span> <span class="k">operator</span><span class="p">()()</span> <span class="k">const</span> 
+  <span class="p">{</span> <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;bar&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span> <span class="p">}</span>
+<span class="p">};</span>
+<span class="n">F</span> <span class="n">bar</span><span class="p">;</span>
+
+<span class="k">auto</span> <span class="n">goo</span> <span class="o">=</span> <span class="p">[]()</span>
+<span class="p">{</span> <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;goo&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span> <span class="p">};</span>
+
+<span class="n">foo</span><span class="p">();</span>
+<span class="n">bar</span><span class="p">();</span>
+<span class="n">goo</span><span class="p">();</span>
+</pre></div>
+
+
+<p>Ici les types de <code>foo</code>, <code>bar</code> et <code>goo</code> sont différents, n'ont pas de type de base commun et il nous est impossible d'en rajouter un. Ainsi dans la situation suivante :</p>
+<div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="cm">/*?*/</span><span class="o">&gt;</span> <span class="n">vec</span><span class="p">;</span>
+<span class="kt">int</span> <span class="n">i</span><span class="p">;</span> <span class="n">std</span><span class="o">::</span><span class="n">cin</span> <span class="o">&gt;&gt;</span> <span class="n">i</span><span class="p">;</span>
+<span class="k">switch</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">case</span> <span class="mi">1</span> <span class="o">:</span>
+    <span class="n">vec</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">foo</span><span class="p">);</span>
+    <span class="k">break</span><span class="p">;</span>
+  <span class="k">case</span> <span class="mi">2</span> <span class="o">:</span>
+    <span class="n">vec</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">bar</span><span class="p">);</span>
+    <span class="k">break</span><span class="p">;</span>
+  <span class="k">case</span> <span class="mi">3</span> <span class="o">:</span>
+    <span class="n">vec</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">goo</span><span class="p">);</span>
+    <span class="k">break</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="n">vec</span><span class="p">[</span><span class="mi">0</span><span class="p">]();</span>
+</pre></div>
+
+
+<p>Que mettre à la place de <code>/*?*/</code> ?</p>
+<p>La bibliothèque standard nous propose ici le type <code>std::function&lt;void()&gt;</code>, il est plus faible que les types de <code>foo</code>, <code>bar</code> et <code>goo</code> et convient pour réaliser l'opération <code>vec[0]()</code> : on a un <em>type erasure</em> sans avoir introduit de classe de base commune aux types de nos trois objets.</p>
+<p>De manière concrète, si vous exécutez ce code, il va attendre une entrée<sup id="fnref:31"><a class="footnote-ref" href="#fn:31" rel="footnote">7</a></sup> et selon celle-ci l'expression <code>vec[0]</code> de type <code>std::function&lt;void()&gt;&amp;</code> va correspondre à l'objet <code>foo</code>, <code>bar</code> ou <code>goo</code> : on n'a plus accès aux types de ces objets, par contre le type <code>std::function&lt;void()&gt;</code> nous permet de faire <code>vec[0]()</code> grâce à sa fonction membre <code>operator()</code> en ayant le comportement attendu, c'est-à-dire un appel à <code>foo()</code>, <code>bar()</code> ou <code>goo()</code> selon l'entrée utilisateur saisie.</p>
+<h1 id="implementation">Implémentation</h1>
+<h3 id="adaptateur-wrapper6-generique">Adaptateur (<em>Wrapper</em>)<sup id="fnref2:30"><a class="footnote-ref" href="#fn:30" rel="footnote">6</a></sup> générique</h3>
+<p>Nous allons implémenter une classe qui fait exactement la même chose que <code>std::function&lt;void()&gt;</code>, nommons là <code>function</code>. Dans la partie précédente nous avons une implémentation dans le cas où l'on peut ajouter une classe de base à nos types. Si l'on arrive à créer une classe pour chacun des types <code>foo</code>, <code>bar</code> et <code>goo</code> qui supporte la syntaxe <code>fun()</code>, c'est-à-dire qui a un <code>operator()</code>, et peut contenir respectivement <code>foo</code>, <code>bar</code> ou <code>goo</code>, alors on pourra introduire notre classe de base. Une telle classe correspond à un adaptateur, pour <code>foo</code> il ressemblerait à :</p>
+<div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">foo_class</span> <span class="p">{</span>
+  <span class="k">template</span><span class="o">&lt;</span><span class="k">class</span> <span class="nc">F3</span><span class="p">,</span> <span class="k">class</span> <span class="err">=</span><span class="nc">std</span><span class="o">::</span><span class="n">enable_if_t</span><span class="o">&lt;!</span><span class="n">std</span><span class="o">::</span><span class="n">is_same</span><span class="o">&lt;</span><span class="n">foo_class</span><span class="p">,</span><span class="n">std</span><span class="o">::</span><span class="n">decay_t</span><span class="o">&lt;</span><span class="n">F3</span><span class="o">&gt;&gt;::</span><span class="n">value</span><span class="o">&gt;&gt;</span>
+  <span class="n">foo_class</span><span class="p">(</span><span class="n">F3</span><span class="o">&amp;&amp;</span> <span class="n">fun3</span><span class="p">)</span>
+    <span class="o">:</span> <span class="n">fun2</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">forward</span><span class="o">&lt;</span><span class="n">F3</span><span class="o">&gt;</span><span class="p">(</span><span class="n">fun3</span><span class="p">))</span>
+  <span class="p">{</span> <span class="p">}</span>
+
+  <span class="kt">void</span> <span class="k">operator</span><span class="p">()()</span>
+  <span class="p">{</span> <span class="n">fun2</span><span class="p">();</span> <span class="p">}</span>
+
+<span class="k">private</span><span class="o">:</span>
+  <span class="cm">/*foo_type*/</span> <span class="n">fun2</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+
+
+<p>La syntaxe utilisée pour le constructeur est celle du <em>perfect forwarding</em> selon ce qui est passé au constructeur, un temporaire ou non, l'argument template <code>F3</code> sera <code>/*foo_type*/</code> ou <code>/*foo_type*/&amp;</code><sup id="fnref2:31"><a class="footnote-ref" href="#fn:31" rel="footnote">7</a></sup> où <code>/*foo_type*/</code> est le type de <code>foo</code>. <code>enable_if_t</code> permet de désactiver<sup id="fnref:32"><a class="footnote-ref" href="#fn:32" rel="footnote">8</a></sup> le constructeur si l'argument template <code>F3</code> est déduit à <code>foo_class</code> ou <code>foo_class&amp;</code> ce qui permet d'assurer que ces appels soient pris en charge par les constructeurs par copie et déplacement.</p>
+<p>Les classes pour <code>bar</code> ou <code>goo</code> seront similaires, le C++ a un outil pour factoriser des codes qui se ressemblent : les template de classe. Nommons ce template <code>function_impl</code> :</p>
+<div class="highlight"><pre><span></span><span class="k">template</span><span class="o">&lt;</span><span class="k">class</span> <span class="nc">F2</span><span class="o">&gt;</span>
+<span class="k">struct</span> <span class="n">function_impl</span> <span class="p">{</span>
+  <span class="k">template</span><span class="o">&lt;</span><span class="k">class</span> <span class="nc">F3</span><span class="p">,</span> <span class="k">class</span> <span class="err">=</span><span class="nc">std</span><span class="o">::</span><span class="n">enable_if_t</span><span class="o">&lt;!</span><span class="n">std</span><span class="o">::</span><span class="n">is_same</span><span class="o">&lt;</span><span class="n">function_impl</span><span class="p">,</span><span class="n">std</span><span class="o">::</span><span class="n">decay_t</span><span class="o">&lt;</span><span class="n">F3</span><span class="o">&gt;&gt;::</span><span class="n">value</span><span class="o">&gt;&gt;</span>
+  <span class="n">function_impl</span><span class="p">(</span><span class="n">F3</span><span class="o">&amp;&amp;</span> <span class="n">fun3</span><span class="p">)</span>
+    <span class="o">:</span> <span class="n">fun2</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">forward</span><span class="o">&lt;</span><span class="n">F3</span><span class="o">&gt;</span><span class="p">(</span><span class="n">fun3</span><span class="p">))</span>
+  <span class="p">{</span> <span class="p">}</span>
+
+  <span class="kt">void</span> <span class="k">operator</span><span class="p">()()</span>
+  <span class="p">{</span> <span class="n">fun2</span><span class="p">();</span> <span class="p">}</span>
+
+<span class="k">private</span><span class="o">:</span>
+  <span class="n">F2</span> <span class="n">fun2</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+
+
+<h3 id="polymorphisme-dinclusion_1">Polymorphisme d'inclusion</h3>
+<p>On peut alors introduire une classe de base, nommée <code>function_base</code><sup id="fnref:33"><a class="footnote-ref" href="#fn:33" rel="footnote">9</a></sup>, comme dans notre première implémentation :</p>
+<div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">function_base</span> <span class="p">{</span>
+  <span class="k">virtual</span> <span class="kt">void</span> <span class="k">operator</span><span class="p">()()</span> <span class="o">=</span><span class="mi">0</span><span class="p">;</span>
+
+  <span class="k">virtual</span> <span class="o">~</span><span class="n">function_base</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="k">template</span><span class="o">&lt;</span><span class="k">class</span> <span class="nc">F2</span><span class="o">&gt;</span>
+<span class="k">struct</span> <span class="nl">function_impl</span> <span class="p">:</span> <span class="n">function_base</span> <span class="p">{</span>
+  <span class="k">template</span><span class="o">&lt;</span><span class="k">class</span> <span class="nc">F3</span><span class="p">,</span> <span class="k">class</span> <span class="err">=</span><span class="nc">std</span><span class="o">::</span><span class="n">enable_if_t</span><span class="o">&lt;!</span><span class="n">std</span><span class="o">::</span><span class="n">is_same</span><span class="o">&lt;</span><span class="n">function_impl</span><span class="p">,</span><span class="n">std</span><span class="o">::</span><span class="n">decay_t</span><span class="o">&lt;</span><span class="n">F3</span><span class="o">&gt;&gt;::</span><span class="n">value</span><span class="o">&gt;&gt;</span>
+  <span class="n">function_impl</span><span class="p">(</span><span class="n">F3</span><span class="o">&amp;&amp;</span> <span class="n">fun3</span><span class="p">)</span>
+    <span class="o">:</span> <span class="n">fun2</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">forward</span><span class="o">&lt;</span><span class="n">F3</span><span class="o">&gt;</span><span class="p">(</span><span class="n">fun3</span><span class="p">))</span>
+  <span class="p">{</span> <span class="p">}</span>
+
+  <span class="kt">void</span> <span class="k">operator</span><span class="p">()()</span>
+  <span class="p">{</span> <span class="n">fun2</span><span class="p">();</span> <span class="p">}</span>
+
+<span class="k">private</span><span class="o">:</span>
+  <span class="n">F2</span> <span class="n">fun2</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+
+
+<p>On peut alors utiliser notre système comme dans la première partie :</p>
+<div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">function_base</span><span class="o">&gt;&gt;</span> <span class="n">vec</span><span class="p">;</span>
+<span class="kt">int</span> <span class="n">i</span><span class="p">;</span> <span class="n">std</span><span class="o">::</span><span class="n">cin</span> <span class="o">&gt;&gt;</span> <span class="n">i</span><span class="p">;</span>
+<span class="k">switch</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">case</span> <span class="mi">1</span> <span class="o">:</span>
+    <span class="n">vec</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">function_impl</span><span class="o">&lt;</span><span class="k">decltype</span><span class="p">(</span><span class="o">&amp;</span><span class="n">foo</span><span class="p">)</span><span class="o">&gt;&gt;</span><span class="p">(</span><span class="n">foo</span><span class="p">));</span>
+    <span class="k">break</span><span class="p">;</span>
+  <span class="k">case</span> <span class="mi">2</span> <span class="o">:</span>
+    <span class="n">vec</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">function_impl</span><span class="o">&lt;</span><span class="k">decltype</span><span class="p">(</span><span class="n">bar</span><span class="p">)</span><span class="o">&gt;&gt;</span><span class="p">(</span><span class="n">bar</span><span class="p">));</span>
+    <span class="k">break</span><span class="p">;</span>
+  <span class="k">case</span> <span class="mi">3</span> <span class="o">:</span>
+    <span class="n">vec</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">function_impl</span><span class="o">&lt;</span><span class="k">decltype</span><span class="p">(</span><span class="n">goo</span><span class="p">)</span><span class="o">&gt;&gt;</span><span class="p">(</span><span class="n">goo</span><span class="p">));</span>
+    <span class="k">break</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="p">(</span><span class="o">*</span><span class="n">vec</span><span class="p">[</span><span class="mi">0</span><span class="p">])();</span>
+</pre></div>
+
+
+<h3 id="second-adaptateur">Second adaptateur</h3>
+<p>C'est fonctionnel, mais on n'est pas encore à ce que propose <code>std::function&lt;void()&gt;</code> : utilisation moins flexible à cause du besoin de déréférencer et excès de verbosité lors de l'insertion. Pour améliorer les choses l'on va réaliser un adaptateur sur ce <code>std::unique_ptr</code> et profiter d'un constructeur template pour éviter la répétition avec le <code>decltype</code> :</p>
+<div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">function</span> <span class="p">{</span>
+  <span class="k">template</span><span class="o">&lt;</span><span class="k">class</span> <span class="nc">F1</span><span class="p">,</span> <span class="k">class</span> <span class="err">=</span><span class="nc">std</span><span class="o">::</span><span class="n">enable_if_t</span><span class="o">&lt;!</span><span class="n">std</span><span class="o">::</span><span class="n">is_same</span><span class="o">&lt;</span><span class="n">function</span><span class="p">,</span><span class="n">std</span><span class="o">::</span><span class="n">decay_t</span><span class="o">&lt;</span><span class="n">F1</span><span class="o">&gt;&gt;::</span><span class="n">value</span><span class="o">&gt;&gt;</span>
+  <span class="n">function</span><span class="p">(</span><span class="n">F1</span><span class="o">&amp;&amp;</span> <span class="n">fun1</span><span class="p">)</span>
+    <span class="o">:</span> <span class="n">func</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">function_impl</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">decay_t</span><span class="o">&lt;</span><span class="n">F1</span><span class="o">&gt;&gt;&gt;</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">forward</span><span class="o">&lt;</span><span class="n">F1</span><span class="o">&gt;</span><span class="p">(</span><span class="n">fun1</span><span class="p">)))</span>
+  <span class="p">{</span> <span class="p">}</span>
+
+  <span class="kt">void</span> <span class="k">operator</span><span class="p">()()</span> <span class="k">const</span>
+  <span class="p">{</span> <span class="p">(</span><span class="o">*</span><span class="n">func</span><span class="p">)();</span> <span class="p">}</span>
+
+<span class="k">private</span><span class="o">:</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">function_base</span><span class="o">&gt;</span> <span class="n">func</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+
+
+<p>On a cette fois quelque chose de fonctionnel proche de ce que propose <code>std::function&lt;void()&gt;</code> :</p>
+<div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">function</span><span class="o">&gt;</span> <span class="n">vec</span><span class="p">;</span>
+<span class="kt">int</span> <span class="n">i</span><span class="p">;</span> <span class="n">std</span><span class="o">::</span><span class="n">cin</span> <span class="o">&gt;&gt;</span> <span class="n">i</span><span class="p">;</span>
+<span class="k">switch</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">case</span> <span class="mi">1</span> <span class="o">:</span>
+    <span class="n">vec</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">foo</span><span class="p">);</span>
+    <span class="k">break</span><span class="p">;</span>
+  <span class="k">case</span> <span class="mi">2</span> <span class="o">:</span>
+    <span class="n">vec</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">bar</span><span class="p">);</span>
+    <span class="k">break</span><span class="p">;</span>
+  <span class="k">case</span> <span class="mi">3</span> <span class="o">:</span>
+    <span class="n">vec</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">goo</span><span class="p">);</span>
+    <span class="k">break</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="n">vec</span><span class="p">[</span><span class="mi">0</span><span class="p">]();</span>
+</pre></div>
+
+
+<h1 id="ameliorations">Améliorations</h1>
+<h3 id="factorisation-de-enable_if">Factorisation de <code>enable_if</code></h3>
+<p>On peut encore améliorer notre implémentation, le premier point est de factoriser les deux lignes suivantes :</p>
+<div class="highlight"><pre><span></span><span class="k">class</span> <span class="err">=</span><span class="nc">std</span><span class="o">::</span><span class="n">enable_if_t</span><span class="o">&lt;!</span><span class="n">std</span><span class="o">::</span><span class="n">is_same</span><span class="o">&lt;</span><span class="n">function_impl</span><span class="p">,</span><span class="n">std</span><span class="o">::</span><span class="n">decay_t</span><span class="o">&lt;</span><span class="n">F3</span><span class="o">&gt;&gt;::</span><span class="n">value</span><span class="o">&gt;</span>
+<span class="k">class</span> <span class="err">=</span><span class="nc">std</span><span class="o">::</span><span class="n">enable_if_t</span><span class="o">&lt;!</span><span class="n">std</span><span class="o">::</span><span class="n">is_same</span><span class="o">&lt;</span><span class="n">function</span><span class="p">,</span><span class="n">std</span><span class="o">::</span><span class="n">decay_t</span><span class="o">&lt;</span><span class="n">F1</span><span class="o">&gt;&gt;::</span><span class="n">value</span><span class="o">&gt;&gt;</span>
+</pre></div>
+
+
+<p>On va réaliser un nouvel alias, nommé <code>dispatch_ctor</code> :</p>
+<div class="highlight"><pre><span></span><span class="k">template</span><span class="o">&lt;</span><span class="k">class</span> <span class="nc">C</span><span class="p">,</span> <span class="k">class</span> <span class="nc">T</span><span class="o">&gt;</span>
+<span class="k">using</span> <span class="n">dispatch_ctor</span> <span class="o">=</span><span class="n">std</span><span class="o">::</span><span class="n">enable_if_t</span><span class="o">&lt;!</span><span class="n">std</span><span class="o">::</span><span class="n">is_same</span><span class="o">&lt;</span><span class="n">C</span><span class="p">,</span><span class="n">std</span><span class="o">::</span><span class="n">decay_t</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;&gt;::</span><span class="n">value</span><span class="o">&gt;</span><span class="p">;</span>
+</pre></div>
+
+
+<p>Ce qui conduit à réécrire notre implémentation sous la forme :</p>
+<div class="highlight"><pre><span></span><span class="k">template</span><span class="o">&lt;</span><span class="k">class</span> <span class="nc">F2</span><span class="o">&gt;</span>
+<span class="k">struct</span> <span class="nl">function_impl</span> <span class="p">:</span> <span class="n">function_base</span> <span class="p">{</span>
+  <span class="k">template</span><span class="o">&lt;</span><span class="k">class</span> <span class="nc">F3</span><span class="p">,</span> <span class="k">class</span> <span class="err">=</span><span class="nc">dispatch_ctor</span><span class="o">&lt;</span><span class="n">function_impl</span><span class="p">,</span><span class="n">F3</span><span class="o">&gt;&gt;</span>
+  <span class="n">function_impl</span><span class="p">(</span><span class="n">F3</span><span class="o">&amp;&amp;</span> <span class="n">fun3</span><span class="p">)</span>
+    <span class="o">:</span> <span class="n">fun2</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">forward</span><span class="o">&lt;</span><span class="n">F3</span><span class="o">&gt;</span><span class="p">(</span><span class="n">fun3</span><span class="p">))</span>
+  <span class="p">{</span> <span class="p">}</span>
+
+  <span class="kt">void</span> <span class="k">operator</span><span class="p">()()</span>
+  <span class="p">{</span> <span class="n">fun2</span><span class="p">();</span> <span class="p">}</span>
+
+<span class="k">private</span><span class="o">:</span>
+  <span class="n">F2</span> <span class="n">fun2</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="k">struct</span> <span class="n">function</span> <span class="p">{</span>
+  <span class="k">template</span><span class="o">&lt;</span><span class="k">class</span> <span class="nc">F1</span><span class="p">,</span> <span class="k">class</span> <span class="err">=</span><span class="nc">dispatch_ctor</span><span class="o">&lt;</span><span class="n">function</span><span class="p">,</span><span class="n">F1</span><span class="o">&gt;&gt;</span>
+  <span class="n">function</span><span class="p">(</span><span class="n">F1</span><span class="o">&amp;&amp;</span> <span class="n">fun1</span><span class="p">)</span>
+    <span class="o">:</span> <span class="n">func</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">function_impl</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">decay_t</span><span class="o">&lt;</span><span class="n">F1</span><span class="o">&gt;&gt;&gt;</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">forward</span><span class="o">&lt;</span><span class="n">F1</span><span class="o">&gt;</span><span class="p">(</span><span class="n">fun1</span><span class="p">)))</span>
+  <span class="p">{</span> <span class="p">}</span>
+
+  <span class="kt">void</span> <span class="k">operator</span><span class="p">()()</span> <span class="k">const</span>
+  <span class="p">{</span> <span class="p">(</span><span class="o">*</span><span class="n">func</span><span class="p">)();</span> <span class="p">}</span>
+
+<span class="k">private</span><span class="o">:</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">function_base</span><span class="o">&gt;</span> <span class="n">func</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+
+
+<h3 id="semantique-de-copie">Sémantique de copie</h3>
+<p>En l'état <code>function</code> n'est pas copiable, or lorsque l'on est certain que les types que l'on veut affaiblir sont copiables, il est pertinent de vouloir que le <em>type erasure</em> le soit aussi. Pour permettre la copie, il faut disposer d'une fonction <code>clone</code> dans le premier adaptateur qui va effectuer la copie<sup id="fnref:50"><a class="footnote-ref" href="#fn:50" rel="footnote">10</a></sup> :</p>
+<div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">function_base</span> <span class="p">{</span>
+  <span class="k">virtual</span> <span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">function_base</span><span class="o">&gt;</span> <span class="n">clone</span><span class="p">()</span> <span class="k">const</span> <span class="o">=</span><span class="mi">0</span><span class="p">;</span>
+
+  <span class="k">virtual</span> <span class="kt">void</span> <span class="nf">operator</span><span class="p">()()</span> <span class="o">=</span><span class="mi">0</span><span class="p">;</span>
+
+  <span class="k">virtual</span> <span class="o">~</span><span class="n">function_base</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="k">template</span><span class="o">&lt;</span><span class="k">class</span> <span class="nc">F2</span><span class="o">&gt;</span>
+<span class="k">struct</span> <span class="nl">function_impl</span> <span class="p">:</span> <span class="n">function_base</span> <span class="p">{</span>
+  <span class="k">template</span><span class="o">&lt;</span><span class="k">class</span> <span class="nc">F3</span><span class="p">,</span> <span class="k">class</span> <span class="err">=</span><span class="nc">dispatch_ctor</span><span class="o">&lt;</span><span class="n">function_impl</span><span class="p">,</span><span class="n">F3</span><span class="o">&gt;&gt;</span>
+  <span class="n">function_impl</span><span class="p">(</span><span class="n">F3</span><span class="o">&amp;&amp;</span> <span class="n">fun3</span><span class="p">)</span>
+    <span class="o">:</span> <span class="n">fun2</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">forward</span><span class="o">&lt;</span><span class="n">F3</span><span class="o">&gt;</span><span class="p">(</span><span class="n">fun3</span><span class="p">))</span>
+  <span class="p">{</span> <span class="p">}</span>
+
+  <span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">function_base</span><span class="o">&gt;</span> <span class="n">clone</span><span class="p">()</span> <span class="k">const</span>
+  <span class="p">{</span> <span class="k">return</span> <span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">function_impl</span><span class="o">&gt;</span><span class="p">(</span><span class="n">fun2</span><span class="p">);</span> <span class="p">}</span>
+
+  <span class="kt">void</span> <span class="k">operator</span><span class="p">()()</span>
+  <span class="p">{</span> <span class="n">fun2</span><span class="p">();</span> <span class="p">}</span>
+
+<span class="k">private</span><span class="o">:</span>
+  <span class="n">F2</span> <span class="n">fun2</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="k">struct</span> <span class="n">function</span> <span class="p">{</span>
+  <span class="k">template</span><span class="o">&lt;</span><span class="k">class</span> <span class="nc">F1</span><span class="p">,</span> <span class="k">class</span> <span class="err">=</span><span class="nc">dispatch_ctor</span><span class="o">&lt;</span><span class="n">function</span><span class="p">,</span><span class="n">F1</span><span class="o">&gt;&gt;</span>
+  <span class="n">function</span><span class="p">(</span><span class="n">F1</span><span class="o">&amp;&amp;</span> <span class="n">fun1</span><span class="p">)</span>
+    <span class="o">:</span> <span class="n">func</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">function_impl</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">decay_t</span><span class="o">&lt;</span><span class="n">F1</span><span class="o">&gt;&gt;&gt;</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">forward</span><span class="o">&lt;</span><span class="n">F1</span><span class="o">&gt;</span><span class="p">(</span><span class="n">fun1</span><span class="p">)))</span>
+  <span class="p">{</span> <span class="p">}</span>
+
+  <span class="n">function</span><span class="p">(</span><span class="n">function</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">rhs</span><span class="p">)</span>
+    <span class="o">:</span> <span class="n">func</span><span class="p">(</span><span class="n">rhs</span><span class="p">.</span><span class="n">func</span><span class="o">-&gt;</span><span class="n">clone</span><span class="p">())</span>
+  <span class="p">{</span> <span class="p">}</span>
+  <span class="n">function</span><span class="o">&amp;</span> <span class="k">operator</span><span class="o">=</span><span class="p">(</span><span class="n">function</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">rhs</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">func</span><span class="o">=</span><span class="n">rhs</span><span class="p">.</span><span class="n">func</span><span class="o">-&gt;</span><span class="n">clone</span><span class="p">();</span>
+    <span class="k">return</span> <span class="o">*</span><span class="k">this</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="n">function</span><span class="p">(</span><span class="n">function</span><span class="o">&amp;&amp;</span><span class="p">)</span> <span class="o">=</span><span class="k">default</span><span class="p">;</span>
+  <span class="n">function</span><span class="o">&amp;</span> <span class="k">operator</span><span class="o">=</span><span class="p">(</span><span class="n">function</span><span class="o">&amp;&amp;</span><span class="p">)</span> <span class="o">=</span><span class="k">default</span><span class="p">;</span>
+
+  <span class="kt">void</span> <span class="nf">operator</span><span class="p">()()</span> <span class="k">const</span>
+  <span class="p">{</span> <span class="p">(</span><span class="o">*</span><span class="n">func</span><span class="p">)();</span> <span class="p">}</span>
+
+<span class="k">private</span><span class="o">:</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">function_base</span><span class="o">&gt;</span> <span class="n">func</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+
+
+<h3 id="adaptateurs">Adaptateurs</h3>
+<p>L'utilisation que l'on a fait jusqu'ici de ce pattern est assez naïve, on adapte peu de chose puisque l'interface que l'on propose est la même que celle du type adapté. Pour s'en apercevoir, il suffit de remarquer que d'un côté la nomenclature utilisée aux lignes <em>4</em>, <em>19</em> et <em>44</em> n'est pas primordiale tant qu'elle est cohérente sur ces trois lignes, et que seul celle à la ligne <em>43</em> a de l'importance et définit l'interface.</p>
+<p>Par exemple on pourrait avoir une fonction libre à la place d'une fonction membre :</p>
+<div class="highlight"><pre><span></span><span class="k">friend</span> <span class="kt">void</span> <span class="nf">apply</span><span class="p">(</span><span class="n">function</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">lhs</span><span class="p">)</span>
+<span class="p">{</span> <span class="p">(</span><span class="o">*</span><span class="n">lhs</span><span class="p">.</span><span class="n">func</span><span class="p">)();</span> <span class="p">}</span>
+</pre></div>
+
+
+<p>Qui s'utiliserait ainsi : <code>apply(vec[0]);</code><sup id="fnref:51"><a class="footnote-ref" href="#fn:51" rel="footnote">11</a></sup>.</p>
+<p>De l'autre côté de l'adaptateur il y a le comportement, à nouveau dans notre situation il se limite à la ligne <em>20</em> mais il pourrait être aussi complexe qu'on le veut et pourrait varier selon le type. En effet la spécialisation template permet de changer l'implémentation de l'adaptateur selon le type, cependant cette spécialisation est intrusive, il faut donc la réserver aux types que l'on connait lors de la création de notre <em>type erasure</em>, typiquement les types fondamentaux<sup id="fnref:52"><a class="footnote-ref" href="#fn:52" rel="footnote">12</a></sup></p>
+<p>Par exemple <code>std::function&lt;void(A&amp;)&gt;</code> permet de stocker un pointeur de fonction membre de <code>A</code> ne prenant pas de paramètre et ne retournant rien, disons une fonction nommé <code>hoo</code>. La syntaxe <code>(&amp;hoo)(a)</code>, où <code>A a</code>, n'est pas supportée, mais le comportement que l'on pourrait attendre est celui de <code>(a.*(&amp;A::hoo))();</code>. En spécialisant l'adaptateur qui correspond à notre <code>function_impl</code> pour le type <code>void (A::*)()</code> on peut avoir une utilisation de cette syntaxe dans ce cas particulier. Ce qui permet de faire :</p>
+<div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="kt">void</span><span class="p">(</span><span class="n">A</span><span class="o">&amp;</span><span class="p">)</span><span class="o">&gt;</span> <span class="n">f</span><span class="p">(</span><span class="o">&amp;</span><span class="n">A</span><span class="o">::</span><span class="n">hoo</span><span class="p">);</span>
+<span class="n">A</span> <span class="n">a</span><span class="p">;</span>
+<span class="n">f</span><span class="p">(</span><span class="n">a</span><span class="p">);</span>
+</pre></div>
+
+
+<h1 id="conclusion">Conclusion</h1>
+<p>Vous avez maintenant tout les éléments pour répondre aux divers problématiques qui demandent d'avoir des collections hétérogènes.</p>
+<p>N'oubliez cependant pas de consulter les documentations des bibliothèques que vous utilisez pour vérifier que le <em>type erasure</em> dont vous avez besoin n'existe pas déjà.</p>
+<p>Merci à <em>lmghs</em>, <em>saroupille</em> et <em>Maëlan</em> pour leurs conseils.</p>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:10">
+<p>Pas uniquement, l'organisation des données au sein de la zone mémoire et le nom du type en font aussi partie.&#160;<a class="footnote-backref" href="#fnref:10" rev="footnote" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:20">
+<p>Importantes pour écrire du code, mais n'influencent pas fondamentalement le choix entre l'un et l'autre.&#160;<a class="footnote-backref" href="#fnref:20" rev="footnote" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+<li id="fn:21">
+<p>Le C++ ne fera cette résolution qu'en fonction d'un objet, le langage ne dispose pas de multi-méthode (il existe des techniques pour effectuer du multi-dispatch en C++, mais ce n'est pas notre sujet).&#160;<a class="footnote-backref" href="#fnref:21" rev="footnote" title="Jump back to footnote 3 in the text">&#8617;</a></p>
+</li>
+<li id="fn:22">
+<p>La syntaxe d'appel est alors <code>expr.foo()</code>.&#160;<a class="footnote-backref" href="#fnref:22" rev="footnote" title="Jump back to footnote 4 in the text">&#8617;</a></p>
+</li>
+<li id="fn:23">
+<p>A l'heure actuelle le C++ ne propose aucun outil pour exprimer concrètement un concept, c'est cependant en projet pour une future version du langage.&#160;<a class="footnote-backref" href="#fnref:23" rev="footnote" title="Jump back to footnote 5 in the text">&#8617;</a></p>
+</li>
+<li id="fn:30">
+<p>Il s'agit d'un patron de conception (<em>design pattern</em>).&#160;<a class="footnote-backref" href="#fnref:30" rev="footnote" title="Jump back to footnote 6 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:30" rev="footnote" title="Jump back to footnote 6 in the text">&#8617;</a></p>
+</li>
+<li id="fn:31">
+<p>Ou une version <code>const</code> et/ou <code>volatile</code> de ces types.&#160;<a class="footnote-backref" href="#fnref:31" rev="footnote" title="Jump back to footnote 7 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:31" rev="footnote" title="Jump back to footnote 7 in the text">&#8617;</a></p>
+</li>
+<li id="fn:32">
+<p><code>enable_if_t</code> est un alias sur <code>enable_if&lt;B&gt;::type</code> qui n'existe pas si la condition <code>B</code> est fausse et dans ce cas le constructeur n'existe pas non plus.&#160;<a class="footnote-backref" href="#fnref:32" rev="footnote" title="Jump back to footnote 8 in the text">&#8617;</a></p>
+</li>
+<li id="fn:33">
+<p>Je ne la nomme pas <code>function</code> par anticipation sur la suite.&#160;<a class="footnote-backref" href="#fnref:33" rev="footnote" title="Jump back to footnote 9 in the text">&#8617;</a></p>
+</li>
+<li id="fn:50">
+<p>Il s'agit de la construction idiomatique lorsque l'on veut copier des éléments d'une hiérarchie polymorphe.&#160;<a class="footnote-backref" href="#fnref:50" rev="footnote" title="Jump back to footnote 10 in the text">&#8617;</a></p>
+</li>
+<li id="fn:51">
+<p>Ce qui n'a aucun intérêt dans cette situation, mais peut en avoir d'en d'autre.&#160;<a class="footnote-backref" href="#fnref:51" rev="footnote" title="Jump back to footnote 11 in the text">&#8617;</a></p>
+</li>
+<li id="fn:52">
+<p>Dans les autres situations, l'utilisateur devra mettre en place son propre adaptateur.&#160;<a class="footnote-backref" href="#fnref:52" rev="footnote" title="Jump back to footnote 12 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+        </div>
+    </section>
+        </div>
+        <div class="col-sm-3" id="sidebar">
+            <aside>
+
+<section class="well well-sm">
+    <ul class="list-group list-group-flush">
+
+        <!-- Search bar in low width mode -->
+        <li id="searchSideBar" class="list-group-item"><span>
+                <form class="navbar-search" action="/blog/search">
+                  <input type="text" class="search-query" placeholder="Rechercher" name="q" id="tipue_search_input" required>
+                </form></span>
+        </li>
+
+        <li class="list-group-item"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Social</span></h4>
+              <ul class="list-group" id="social">
+                    <li class="list-group-item"><a href="https://example.org">
+                        <i class="fa fa-comment fa-lg"></i>
+                       Link 1</a>
+                    </li>
+                    <li class="list-group-item"><a href="https://example.org">
+                        <i class="fa fa-comments fa-lg"></i>
+                       Link 2</a>
+                    </li>
+                    <li class="list-group-item"><a href="/page/content">
+                        <i class="fa fa-etc fa-lg"></i>
+                       etc</a>
+                    </li>
+              </ul>
+            </li>
+
+
+            <li class="list-group-item"><a href="http://yliesc.github.io/"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Categories</span></h4></a>
+                <ul class="list-group" id="categories">
+                </ul>
+            </li>
+
+
+
+    <li class="list-group-item"><h4><i class="fa fa-link fa-lg"></i><span class="icon-label">External Links</span></h4>
+      <ul class="list-group" id="links">
+        <li class="list-group-item">
+            <a href="https://example.org" target="_blank">
+                Link 1
+            </a>
+        </li>
+        <li class="list-group-item">
+            <a href="https://example.org" target="_blank">
+                Link 2
+            </a>
+        </li>
+        <li class="list-group-item">
+            <a href="/page/content" target="_blank">
+                etc
+            </a>
+        </li>
+      </ul>
+    </li>
+
+        <li class="list-group-item" id="github">
+            <ul class="list-group">
+                <li class="list-group-item"><h5>Vous voyez une erreur ?</h5></li>
+                <li class="list-group-item">
+                    <a class="btn btn-info github" target="_blank" href="https://github.com/YliesC/website/edit/master/content/pages/pdp/content/type-erasure.md">
+                        <i class="fa fa-random"></i> Modifiez la page sur GitHub
+                    </a>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</section>            </aside>
+        </div>
+    </div>
+</div>
+<footer>
+   <div class="container">
+      <hr>
+      <div class="row">
+         <div class="col-xs-10">&copy;  
+            &middot; Powered by <a href="https://github.com/getpelican/pelican-themes/tree/master/pelican-bootstrap3" target="_blank">pelican-bootstrap3</a>,
+            <a href="http://docs.getpelican.com/" target="_blank">Pelican</a>,
+<a href="http://getbootstrap.com" target="_blank">Bootstrap</a>                <p><small>  <a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr"><img alt="Creative Commons License" style="border-width:0" src="//i.creativecommons.org/l/by-sa/4.0/80x15.png" /></a>
+    Content
+  licensed under a <a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">Creative Commons Attribution-ShareAlike 4.0 International License</a>, except where indicated otherwise.
+</small></p>
+         </div>
+         <div class="col-xs-2"><p class="pull-right"><i class="fa fa-arrow-up"></i> <a href="#">Back to top</a></p></div>
+      </div>
+   </div>
+</footer>
+<script src="http://yliesc.github.io/theme/js/jquery.min.js"></script>
+
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="http://yliesc.github.io/theme/js/bootstrap.min.js"></script>
+
+<!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
+<script src="http://yliesc.github.io/theme/js/respond.min.js"></script>
+
+<!--  -->
+
+
+</body>
+</html>

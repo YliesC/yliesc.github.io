@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="fr" prefix="og: http://ogp.me/ns# fb: https://www.facebook.com/2008/fbml">
+<head>
+    <title>Le préprocesseur - The Golden Koala</title>
+    <!-- Using the latest rendering mode for IE -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <link href="http://yliesc.github.io/images/koala-ico.png" rel="icon">
+
+<link rel="canonical" href="http://yliesc.github.io/pages/pdp/content/le-preprocesseur/">
+
+        <meta name="author" content="Pouet forever" />
+        <meta name="description" content="Ce tutoriel a été rédigé par Pouet_forever pour le feu « Site du zéro ». Bonjour à tous, Lors de votre apprentissage du C, vous n&#39;avez sans doute eu qu&#39;un petit aperçu de ce qu&#39;est le préprocesseur, mais il y a encore beaucoup de choses à apprendre ! Toutefois, ce que je vais …" />
+
+    <meta property="og:site_name" content="The Golden Koala" />
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="Le préprocesseur"/>
+    <meta property="og:url" content="http://yliesc.github.io/pages/pdp/content/le-preprocesseur/"/>
+    <meta property="og:description" content="Ce tutoriel a été rédigé par Pouet_forever pour le feu « Site du zéro ». Bonjour à tous, Lors de votre apprentissage du C, vous n&#39;avez sans doute eu qu&#39;un petit aperçu de ce qu&#39;est le préprocesseur, mais il y a encore beaucoup de choses à apprendre ! Toutefois, ce que je vais …" />
+
+
+    <!-- Bootstrap -->
+        <link rel="stylesheet" href="http://yliesc.github.io/theme/css/bootstrap.readable.min.css" type="text/css"/>
+    <link href="http://yliesc.github.io/theme/css/font-awesome.min.css" rel="stylesheet">
+
+    <link href="http://yliesc.github.io/theme/css/pygments/default.css" rel="stylesheet">
+    <link href="http://yliesc.github.io/theme/tipuesearch/tipuesearch.css" rel="stylesheet">
+    <link rel="stylesheet" href="http://yliesc.github.io/theme/css/style.css" type="text/css"/>
+        <link href="http://yliesc.github.io/css/custom.css" rel="stylesheet">
+
+        <link href="http://yliesc.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate"
+              title="The Golden Koala ATOM Feed"/>
+
+
+
+
+</head>
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+	<div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="http://yliesc.github.io/" class="navbar-brand">
+<img class="img-responsive pull-left gap-right" src="http://yliesc.github.io/images/koala-logo.svg" width="38"/> <span id="siteName">The Golden Koala</span>            </a>
+        </div>
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+
+            </ul>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+</div> <!-- /.navbar -->
+<!-- Banner -->
+<!-- End Banner -->
+<div class="container">
+    <div class="row">
+        <div class="col-sm-9">
+    <ol class="breadcrumb">
+        <li><a href="http://yliesc.github.io/" title="The Golden Koala">
+            <i class="fa fa-home fa-lg"></i>
+        </a></li>
+        <li class="active">Le préprocesseur</li>
+    </ol>
+    <section id="content" class="body">
+        <h1 class="entry-title">Le préprocesseur</h1>
+            <div class="entry-content">
+                    <div class="panel">
+                        <div class="panel-body">
+<footer class="post-info">
+    
+    <span class="published">
+        <span class="label label-default"><i class="fa fa-calendar"></i><time datetime="2014-09-27T00:00:00+02:00"> sam. 27 septembre 2014</time></span> | 
+    </span>
+        <span class="label label-default"><i class="fa fa-user-circle"></i> Pouet forever</span>  | 
+    <span class="label label-default">
+            <i class="fa fa-cc"></i> 
+        
+            CC-BY-NC-SA
+    </span>
+</footer><!-- /.page-info -->                        </div>
+                    </div>
+            <blockquote>
+<p>Ce tutoriel a été rédigé par <a href="http://fr.openclassrooms.com/membres/pouetforever-52886">Pouet_forever</a> pour le feu « Site du zéro ».  </p>
+</blockquote>
+<p>Bonjour à tous,</p>
+<p>Lors de votre apprentissage du C, vous n'avez sans doute eu qu'un petit aperçu de ce qu'est le préprocesseur, mais il y a encore beaucoup de choses à apprendre !
+Toutefois, ce que je vais vous montrer n'est pas indispensable, mais c'est toujours mieux de savoir ce que c'est quand on en rencontre.
+Vous allez voir que pour créer des macros il faut réfléchir un peu avant de faire n'importe quoi, parce que pour débugger ce n'est pas aussi facile qu'avec des fonctions.</p>
+<p>Pour bien comprendre ce tutoriel il faut avoir compris et être un minimum à l'aise avec le préprocesseur.</p>
+<p>Je ne reparlerai pas des <code>#include</code>, <code>#ifdef</code>, <code>#else</code>, <code>#elif</code> et <code>#endif</code>.</p>
+<div class="toc">
+<ul>
+<li><a href="#define-defined-undef">#define, defined, #undef</a><ul>
+<li><a href="#35define">#define</a></li>
+<li><a href="#les-macros-sur-plusieurs-lignes">Les macros sur plusieurs lignes</a></li>
+<li><a href="#defined">defined</a></li>
+<li><a href="#35undef">#undef</a></li>
+</ul>
+</li>
+<li><a href="#le-et-le">Le # et le</a><ul>
+<li><a href="#loperateur">L'opérateur #</a></li>
+<li><a href="#loperateur_1">L'opérateur ##</a></li>
+<li><a href="#utilisation-des-operateurs-35-et-3535-dans-la-meme-expression">Utilisation des opérateurs # et ## dans la même expression.</a></li>
+<li><a href="#petit-exercice">Petit exercice</a></li>
+</ul>
+</li>
+<li><a href="#line-error-pragma">#line, #error, #pragma</a><ul>
+<li><a href="#35line">#line</a></li>
+<li><a href="#35error">#error</a></li>
+<li><a href="#35pragma">#pragma</a></li>
+</ul>
+</li>
+<li><a href="#les-macros-qui-en-appellent-dautres-et-les-macros-a-nombre-variable-darguments">Les macros qui en appellent d'autres et les macros à nombre variable d'arguments</a><ul>
+<li><a href="#une-macro-qui-en-appelle-une-autre">Une macro qui en appelle une autre</a></li>
+<li><a href="#les-macros-a-nombre-variable-darguments">Les macros à nombre variable d'arguments</a></li>
+</ul>
+</li>
+<li><a href="#les-x-macros">Les X-macros</a><ul>
+<li><a href="#exercice">Exercice</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<h1 id="define-defined-undef">#define, defined, #undef</h1>
+<h4 id="35define">#define</h4>
+<p>Je ne vais pas trop m'étaler sur cette directive car vous l'avez probablement déjà appréhendée.
+Pour résumer, cette dernière sert à définir un nom ou une macro.</p>
+<p>La macro suivante définit un nom sans aucun paramètre :</p>
+<div class="highlight"><pre><span></span><span class="cp">#define DEBUG</span>
+</pre></div>
+
+
+<p>La macro suivante définit un nom et associe une valeur à ce nom :</p>
+<div class="highlight"><pre><span></span><span class="cp">#define NOIR 0x00000000</span>
+</pre></div>
+
+
+<p>Une macro peut être redéfinie autre part dans le programme à la seule condition que celle-ci soit exactement pareille, seul quelques espaces peuvent être rajoutés. Exemple :</p>
+<div class="highlight"><pre><span></span><span class="cm">/* Incorrect */</span>
+<span class="cp">#define N 1</span>
+<span class="cp">#define N 2</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="cm">/* Correct */</span>
+<span class="cp">#define N 1</span>
+<span class="cp">#define N 1</span>
+</pre></div>
+
+
+<p>La macro suivante contient 1 paramètre et retourne la valeur absolue de ce paramètre :</p>
+<div class="highlight"><pre><span></span><span class="cp">#define MY_ABS(x) (((x) &lt; 0) ? -(x) : (x))</span>
+</pre></div>
+
+
+<p>Notez que les parenthèses sont très importantes dans les macros dues à la priorité des opérateurs. Certaines peuvent être omises, d'autres non. Pour être sûr de ne pas avoir de mauvaise surprise je vous conseille d'abuser des parenthèses pour ne laisser aucune ambiguïté possible !</p>
+<p>Il faut faire très attention aux effets de bords. Une macro appelée normalement ne pose pas de problèmes, mais on aurait aussi pu appeler notre macro comme ça <code>MY_ABS(a++)</code>. Cette expression évalue 2 fois <code>(a++)</code>, ce qui est gênant. Mettre des parenthèses limite déjà certains effets de bords, mais c'est à l'utilisateur de faire attention à ce qu'il fait !</p>
+<p>Vous pouvez créer des macros qui portent le même nom qu'une fonction déjà existante. Cependant, il faut bien différencier l'appel de la fonction de celle de la macro, sinon c'est uniquement la macro qui est prise en compte et pas la fonction. Pour utiliser la macro il faut l'appeler comme on le ferait normalement, par contre pour la fonction il faut entourer le nom de parenthèses. Certains puristes diront qu'il faut aussi déclarer votre fonction avec des parenthèses pour ne pas interférer avec les macros.</p>
+<div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp"></span>
+
+<span class="cp">#define puts(s) printf(&quot;Macro : %s\n&quot;, (s))</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kt">char</span> <span class="n">s</span><span class="p">[]</span> <span class="o">=</span> <span class="s">&quot;Salut :-)&quot;</span><span class="p">;</span>
+
+  <span class="n">puts</span><span class="p">(</span><span class="n">s</span><span class="p">);</span>   <span class="cm">/* Macro */</span>
+  <span class="p">(</span><span class="n">puts</span><span class="p">)(</span><span class="n">s</span><span class="p">);</span> <span class="cm">/* Fonction */</span>
+  <span class="k">return</span> <span class="n">EXIT_SUCCESS</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<h4 id="les-macros-sur-plusieurs-lignes">Les macros sur plusieurs lignes</h4>
+<p>Les macros peuvent être définies sur plusieurs lignes, pour ça il faut terminer la ligne par un antislash (<code>\</code>) et avoir un retour à la ligne juste après. Un antislash non suivit d'un retour la la ligne termine la macro et tout ce qui suit n'est pas compris dedans.<br />
+Il est important de noter qu'aucune macro ne peut contenir de directives commençant par <code>#</code> (y compris la directive nulle). Dès que le préprocesseur rencontre un antislash suivit d'un retour à la ligne il supprime ces 2 là pour en faire une seule ligne. Voilà pourquoi l'utilisation d'autres directives à l'intérieur d'une macro est incorrect.<br />
+On peut parfois retrouver cette utilisation pour les chaînes de caractères. Une chaîne de caractère longue peut être « coupée » par l'antislash + retour à la ligne et être terminée sur la ligne d'après.<br />
+Voilà un exemple de ce qu'il faut pas faire :</p>
+<div class="highlight"><pre><span></span><span class="cp">#define MAJEUR(age)  \</span>
+<span class="cp">#if (age &gt;= 18)      \</span>
+<span class="cp">...</span>
+</pre></div>
+
+
+<p>Un petit exemple pour montrer comment agit le préprocesseur :</p>
+<div class="highlight"><pre><span></span><span class="cp">#define M() 3 + \</span>
+<span class="cp">            2 + 1;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kt">char</span> <span class="n">s</span><span class="p">[]</span> <span class="o">=</span> <span class="s">&quot;Bonjour a tous ! Vous etes bien sur PdP\</span>
+<span class="s">  mais comme cette chaine est trop longue je la met sur plusieurs\</span>
+<span class="s">  lignes. Evitez tout de meme d&#39;utiliser ca, c&#39;est pas tres propre !&quot;</span><span class="p">;</span>
+  <span class="n">M</span><span class="p">()</span>
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kt">char</span> <span class="n">s</span><span class="p">[]</span> <span class="o">=</span> <span class="s">&quot;Bonjour a tous ! Vous etes bien sur PdP  mais comme cette chaine est trop longue je la met sur plusieurs  lignes. Evitez tout de meme d&#39;utiliser ca, c&#39;est pas tres propre !&quot;</span><span class="p">;</span>
+
+
+  <span class="mi">3</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Il faut faire attention tout de même aux macros faites sur plusieurs lignes. Le piège étant de mettre une suite d'instruction et d'appeler cette macro dans un <code>if</code> sans accolades, par exemple. Un exemple vaut mieux qu'un long discours :</p>
+<div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp"></span>
+
+<span class="cp">#define M(a)                    \</span>
+<span class="cp">  if ((a) &lt; 0)                  \</span>
+<span class="cp">    printf(&quot;Inferieur a 0\n&quot;);  \</span>
+<span class="cp">  if ((a) &gt; 0)                  \</span>
+<span class="cp">    printf(&quot;Superieur a 0\n&quot;);  \</span>
+<span class="cp">  if ((a) == 0)                 \</span>
+<span class="cp">    printf(&quot;Egal a 0&quot;);</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
+
+  <span class="k">if</span> <span class="p">(</span><span class="n">a</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">M</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+  <span class="k">else</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;Autre instruction&quot;</span><span class="p">);</span>
+
+  <span class="k">return</span> <span class="n">EXIT_SUCCESS</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Ce code bidon et anodin n'affichera pas « Autre instruction » mais « Superieur a 0 Autre instruction ».
+Pour palier ce problème, une astuce assez courante est d'utiliser la boucle <code>do { ... } while(0);</code> qui permet de regrouper les instructions et éventuellement, d'obliger le programmeur à mettre un point virgule après l'appel de la macro. Pour que le code du dessus soit correct, on aurait dû écrire :</p>
+<div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp"></span>
+
+<span class="cp">#define M(a)                      \</span>
+<span class="cp">  do {                            \</span>
+<span class="cp">    if ((a) &lt; 0)                  \</span>
+<span class="cp">      printf(&quot;Inferieur a 0\n&quot;);  \</span>
+<span class="cp">    if ((a) &gt; 0)                  \</span>
+<span class="cp">      printf(&quot;Superieur a 0\n&quot;);  \</span>
+<span class="cp">    if ((a) == 0)                 \</span>
+<span class="cp">      printf(&quot;Egal a 0&quot;);         \</span>
+<span class="cp">  } while (0)</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
+
+  <span class="k">if</span> <span class="p">(</span><span class="n">a</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">M</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+  <span class="k">else</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;Autre instruction&quot;</span><span class="p">);</span>
+
+  <span class="k">return</span> <span class="n">EXIT_SUCCESS</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>On peut aussi n'utiliser que les accolades, mais l'utilisation de la boucle sert à bien montrer au programmeur qu'il s'agit d'un bloc d'instructions.</p>
+<h4 id="defined">defined</h4>
+<p>L'opérateur <code>defined</code> agit au même titre que <code>#ifdef</code> : il vérifie si la macro existe ; il est remplacé par <code>1</code> si elle existe, par <code>0</code> le cas échéant. Avec <code>#if</code> ou <code>#ifdef</code> on ne peut tester qu'un seul paramètre à la fois, avec l'utilisation de <code>defined</code> on va pouvoir en tester plusieurs.<br />
+L'utilisation se fait avec ou sans parenthèses.</p>
+<p>Exemple pour l'implémentation sur différents systèmes d'exploitation :</p>
+<div class="highlight"><pre><span></span><span class="cp">#if defined __APPLE__ || defined linux</span>
+<span class="cp"># include &lt;unistd.h&gt;</span>
+<span class="cp">#elif defined ( WIN32 ) || defined ( WIN64 )</span>
+<span class="cp"># include &lt;windows.h&gt;</span>
+<span class="cp">#endif</span>
+</pre></div>
+
+
+<p>Vous trouverez une liste des différentes constantes définies en fonction de l'implémentation <a href="http://predef.sourceforge.net/preos.html">en allant sur ce lien</a>.</p>
+<h4 id="35undef">#undef</h4>
+<p>Le #undef fait exactement l'inverse de ce que fait <code>#define</code>.<br />
+Il supprime ce qui a été défini auparavant !<br />
+Utilisation très simple :</p>
+<div class="highlight"><pre><span></span><span class="cp">#undef X</span>
+</pre></div>
+
+
+<p>Où X est le nom à supprimer.</p>
+<blockquote>
+<p>Notez que, au lieu de placer des <code>#define</code> un peu partout pour faire des tests (par exemple le <code>#ifdef DEBUG</code> qu'on retrouve souvent), il est possible de définir une macro à l'aide de l'option <code>-D</code> de votre compilateur (ou <code>/D</code> pour <em>Visual C++</em>). Avec l'exemple du <code>DEBUG</code> cité précédemment, on obtient par exemple <code>gcc -DDEBUG main.c</code> qui aura pour effet d'ajouter la ligne <code>#define DEBUG</code> au début de chaque fichier compilé.</p>
+<p>Si vous êtes sous Unixoïdes (GNU/Linux, *BSD, Solaris, Mac OS, etc), l'option <code>-E</code> de vote compilateur vous permet d'obtenir votre fichier après son traitement par le préprocesseur.</p>
+</blockquote>
+<h1 id="le-et-le">Le # et le</h1>
+<h4 id="loperateur">L'opérateur #</h4>
+<p>Vous avez déjà dû le rencontrer plus d'une fois celui-là dans les déclarations telles que <code>#define</code>, <code>#if</code>, <code>#else</code> etc.
+Maintenant je vais vous montrer une autre manière de l'utiliser. :p</p>
+<p>On va commencer par la plus simple : la directive nulle !
+C'est tout simplement le <code>#</code> sans rien derrière (éventuellement des espaces/tabulations ou commentaires).
+On s'en sert généralement pour « lier » différentes directives. Ce que j'entends par « lier » c'est en quelque sorte faire un « bloc » de directives.
+Un exemple vaut mieux qu'un long discours :</p>
+<div class="highlight"><pre><span></span><span class="cp">#if defined ( __APPLE__ )</span>
+<span class="cp">#   </span><span class="cm">/* Si on est sur du matériel APPLE on inclut      */</span><span class="cp"></span>
+<span class="cp">#   </span><span class="cm">/* &lt;unistd.h&gt; et tout le reste pour les sockets   */</span><span class="cp"></span>
+<span class="cp"># include &lt;unistd.h&gt;</span>
+<span class="cp"># include &lt;sys/socket.h&gt;</span>
+<span class="cp"># include &lt;sys/types.h&gt;</span>
+<span class="cp"># include &lt;arpa/inet.h&gt;</span>
+<span class="cp">#elif defined ( linux )</span>
+<span class="cp">#   </span><span class="cm">/* Si on est sur Linux on inclut ... la même chose */</span><span class="cp"></span>
+<span class="cp"># include &lt;unistd.h&gt;</span>
+<span class="cp"># include &lt;sys/socket.h&gt;</span>
+<span class="cp"># include &lt;sys/types.h&gt;</span>
+<span class="cp"># include &lt;arpa/inet.h&gt;</span>
+<span class="cp">#else</span>
+<span class="cp">#   </span><span class="cm">/* Sinon on est sous Windows */</span><span class="cp"></span>
+<span class="cp"># include &lt;windows.h&gt;</span>
+<span class="cp"># include &lt;winsock2.h&gt;</span>
+<span class="cp">#endif</span>
+</pre></div>
+
+
+<blockquote>
+<p><strong>Il ne peut en aucun cas être placé dans une macro</strong>.</p>
+</blockquote>
+<p>Maintenant le plus intéressant !<br />
+L'opérateur <code>#</code> suivi d'un nom remplace automatiquement ce nom en chaîne de caractères.<br />
+Petit exemple :</p>
+<div class="highlight"><pre><span></span><span class="cp">#define AFFICHE_INT(x) printf( #x &quot; = %d\n&quot;, (x) );</span>
+</pre></div>
+
+
+<p>Comme vous pouvez le remarquer j'ai placé <code>#x</code> au début du <code>printf</code>, ce qui aura pour effet de transformer l'argument <code>x</code> en chaîne de caractère. Les espaces contenus entre le <code>#</code> et le paramètre sont ignorés (<code>#a</code> est équivalent à <code># a</code>).
+Un petit exemple pour illustrer tout ça :</p>
+<div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp"></span>
+
+<span class="cp">#define AFFICHE_INT(x) printf( #x &quot; = %d\n&quot;, (x) );</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">6</span><span class="p">;</span>
+  <span class="n">AFFICHE_INT</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+  <span class="n">AFFICHE_INT</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+  <span class="n">AFFICHE_INT</span><span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="p">)</span>
+  <span class="k">return</span> <span class="n">EXIT_SUCCESS</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp"></span>
+
+
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">6</span><span class="p">;</span>
+  <span class="n">printf</span><span class="p">(</span> <span class="s">&quot;a&quot;</span> <span class="s">&quot; = %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">a</span> <span class="p">);</span>
+  <span class="n">printf</span><span class="p">(</span> <span class="s">&quot;b&quot;</span> <span class="s">&quot; = %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">b</span> <span class="p">);</span>
+  <span class="n">printf</span><span class="p">(</span> <span class="s">&quot;a + b&quot;</span> <span class="s">&quot; = %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span> <span class="p">);</span>
+  <span class="k">return</span> <span class="n">EXIT_SUCCESS</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Ce qui nous donne en sortie :</p>
+<div class="highlight"><pre><span></span>a = 5
+b = 6
+a + b = 11
+</pre></div>
+
+
+<h4 id="loperateur_1">L'opérateur ##</h4>
+<p>L'opérateur <code>##</code> concatène l'argument de gauche avec celui de droite tout en restant « macro ». Les espaces contenus entre les différents arguments sont ignorés (<code>A ## B</code> est égal à <code>A##B</code>).<br />
+Comme la résultante reste un argument « macro », il faut que celle-ci soit définie auparavant pour être utilisée à bon escient. Si elle n'est pas définie au moment de l'appel, le compilateur nous indiquera une erreur.<br />
+Exemple :</p>
+<div class="highlight"><pre><span></span><span class="cp">#define AFFICHE_INT(x, y) printf( #x #y &quot; = %d\n&quot;, x##y );</span>
+</pre></div>
+
+
+<p>Dans ce cas-là si on appelle notre macro comme ça : <code>AFFICHE_INT(a, b)</code>, elle sera remplacée par : <code>printf( "a" "b" " = %d ", ab );</code>.
+Il faut donc que l'argument ab soit défini avant l'appel de la macro. Notez que j'ai mis « avant l'appel » et pas « avant la déclaration », ce qui signifie que <code>AFFICHE_INT</code> peut être défini sans que ab ne soit connu. ab peut être soit défini par le préprocesseur (<code>#define</code>) ou alors comme une simple variable.</p>
+<div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp"></span>
+
+<span class="cp">#define AFFICHE_INT(x, y) printf( #x #y &quot; = %d\n&quot;, x##y );</span>
+
+<span class="cp">#define ab 5</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">6</span><span class="p">;</span>
+  <span class="kt">int</span> <span class="n">ba</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+  <span class="n">AFFICHE_INT</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>   <span class="cm">/* Affiche `ab&#39; défini par le préprocesseur */</span>
+  <span class="n">AFFICHE_INT</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>   <span class="cm">/* Affiche la variable `ba&#39;                 */</span>
+  <span class="k">return</span> <span class="n">EXIT_SUCCESS</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Ce code nous affichera :</p>
+<div class="highlight"><pre><span></span>ab = 5
+ba = 10
+</pre></div>
+
+
+<h4 id="utilisation-des-operateurs-35-et-3535-dans-la-meme-expression">Utilisation des opérateurs # et ## dans la même expression.</h4>
+<p>Si vous avez fait des tests en essayant d'utiliser à la fois <code>#</code> et <code>##</code> vous aurez remarqué que le compilateur apprécie modérément.
+De ce fait, pour pouvoir utiliser ces 2 opérateurs en même temps, il va falloir faire plusieurs macros afin de la créer.</p>
+<p>Un exemple pour montrer comment concaténer 2 chaînes de caractères :</p>
+<div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp"></span>
+
+<span class="cp">#define CREER_CHAINE(chaine)              #chaine</span>
+<span class="cp">#define TMP(chaine)                       CREER_CHAINE(chaine)</span>
+<span class="cp">#define CONCAT_CHAINE(chaine1, chaine2)   TMP(chaine1 ## chaine2)</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s">&quot;%s&quot;</span><span class="p">,</span> <span class="n">CONCAT_CHAINE</span><span class="p">(</span><span class="n">Hello</span><span class="err">\</span><span class="n">n</span><span class="p">,</span> <span class="n">Ca</span> <span class="n">va</span> <span class="o">?</span><span class="p">));</span>
+  <span class="k">return</span> <span class="n">EXIT_SUCCESS</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Comme je vous l'ai dit pour pouvoir utiliser les 2 opérateurs, il faut faire plusieurs macros. C'est en fait pour « isoler » chaque paramètre afin que la macro qui contient un <code>#</code> ou <code>##</code> ne « voit » pas le <code>#</code> ou <code>##</code> de l'autre.</p>
+<h4 id="petit-exercice">Petit exercice</h4>
+<p>Écrivez une macro <code>PRINT</code> qui prend 2 paramètres. Le premier est le type de l'élément à afficher et le second est l'expression à afficher.
+Le « prototype » est celui-là : <code>#define PRINT(type, expr)</code>.<br />
+Exemple d'utilisation :</p>
+<div class="highlight"><pre><span></span><span class="n">PRINT</span><span class="p">(</span><span class="kt">int</span><span class="p">,</span> <span class="mi">1</span><span class="o">+</span><span class="mi">3</span><span class="p">);</span>
+<span class="n">PRINT</span><span class="p">(</span><span class="kt">double</span><span class="p">,</span> <span class="mf">4.0</span> <span class="o">*</span> <span class="n">atan</span><span class="p">(</span><span class="mf">1.0</span><span class="p">));</span>
+<span class="n">PRINT</span><span class="p">(</span><span class="kt">char</span><span class="p">,</span> <span class="sc">&#39;c&#39;</span><span class="p">);</span>
+</pre></div>
+
+
+<p>Dois nous retourner :</p>
+<div class="highlight"><pre><span></span>1+3 = 4
+4.0 * atan(1.0) = 3.141593
+&#39;c&#39; = c
+</pre></div>
+
+
+<p>Indice :</p>
+<p>Il faut définir, à partir du type, le formateur approprié. On peut définir une macro du type : <code>#define PRINT_(type) PRINT_##type</code>.
+Il faut ensuite définir les différents types qui seront utilisés (<code>PRINT_int</code>, <code>PRINT_double</code>, <code>PRINT_char</code>) et leur associer le formateur adéquat.</p>
+<p>Correction :</p>
+<p>Á partir de l'indice on peut arriver à ce résultat-là :</p>
+<div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;math.h&gt;</span><span class="cp"></span>
+
+<span class="cp">#define PRINT_(type)  PRINT_##type</span>
+<span class="cp">#define PRINT_int     &quot;%d&quot;</span>
+<span class="cp">#define PRINT_double  &quot;%f&quot;</span>
+<span class="cp">#define PRINT_char    &quot;%c&quot;</span>
+
+<span class="cp">#define PRINT(type, expr) printf(#expr &quot; = &quot; PRINT_(type) &quot;\n&quot;, expr)</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
+  <span class="n">PRINT</span><span class="p">(</span><span class="kt">int</span><span class="p">,</span> <span class="mi">1</span><span class="o">+</span><span class="mi">3</span><span class="p">);</span>
+  <span class="n">PRINT</span><span class="p">(</span><span class="kt">double</span><span class="p">,</span> <span class="mf">4.0</span> <span class="o">*</span> <span class="n">atan</span><span class="p">(</span><span class="mf">1.0</span><span class="p">));</span>
+  <span class="n">PRINT</span><span class="p">(</span><span class="kt">char</span><span class="p">,</span> <span class="sc">&#39;c&#39;</span><span class="p">);</span>
+  <span class="k">return</span> <span class="n">EXIT_SUCCESS</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<h1 id="line-error-pragma">#line, #error, #pragma</h1>
+<h4 id="35line">#line</h4>
+<p>Cette directive est assez intéressante. Elle permet de définir le numéro de ligne en cours, ainsi que le nom de fichier.<br />
+Vous pouvez définir le numéro de ligne en cours en spécifiant tout simplement le numéro de ligne souhaité.<br />
+Par exemple si votre fichier s'appelle main.c et vous voulez le redéfinir en test.c vous pouvez. :D</p>
+<p>Son utilisation est la suivante :</p>
+<div class="highlight"><pre><span></span><span class="cp">#line ligne [&quot;nom du fichier&quot;]</span>
+</pre></div>
+
+
+<p>Notez que renommer le fichier est facultatif.</p>
+<blockquote>
+<p><strong>Cette directive ne renomme pas le fichier, elle ne fait qu'interpréter le fichier en tant que</strong>.</p>
+</blockquote>
+<div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp"></span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;Ligne : %5d</span><span class="se">\t</span><span class="s">Fichier : %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">__LINE__</span><span class="p">,</span> <span class="n">__FILE__</span><span class="p">);</span>
+<span class="cp">#line 300</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;Ligne : %5d</span><span class="se">\t</span><span class="s">Fichier : %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">__LINE__</span><span class="p">,</span> <span class="n">__FILE__</span><span class="p">);</span>
+<span class="cp">#line 55 &quot;test.c&quot;</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;Ligne : %5d</span><span class="se">\t</span><span class="s">Fichier : %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">__LINE__</span><span class="p">,</span> <span class="n">__FILE__</span><span class="p">);</span>
+    <span class="k">return</span> <span class="n">EXIT_SUCCESS</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>La sortie donne :</p>
+<div class="highlight"><pre><span></span>Ligne :    45        Fichier : main.c
+Ligne :   300        Fichier : main.c
+Ligne :    55        Fichier : test.c
+</pre></div>
+
+
+<h4 id="35error">#error</h4>
+<p>Cette directive sert tout simplement à mettre une erreur.<br />
+Attention, il faut la mettre avec des <code>#if</code> ou <code>#ifdef</code> sinon ça ne compilera tout simplement pas (bah oui ça met une erreur :D).<br />
+Mon interprétation préférée est celle-là :</p>
+<div class="highlight"><pre><span></span><span class="cp">#ifdef __cplusplus</span>
+<span class="cp">#error Compilez en C ...</span>
+<span class="cp">#endif</span>
+</pre></div>
+
+
+<p>Si vous avez une erreur quand vous compilez ce code c'est que vous compilez en C++ et pas en C. :D</p>
+<h4 id="35pragma">#pragma</h4>
+<p>La directive <code>#pragma</code> est spécifique à chaque compilateur. Elle indique au compilateur de prendre en compte certains paramètres.<br />
+Toute directive <code>#pragma</code> qui n'est pas reconnue est tout simplement ignorée.</p>
+<p>Un exemple de directive : <code>#pragma pack(1)</code> .
+Cette directive permet de forcer l'alignement mémoire tous les octets. C'est-à-dire que par défaut quand on crée une structure comme ça :</p>
+<div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">non_alignee_s</span> <span class="p">{</span>
+  <span class="kt">char</span> <span class="n">a</span><span class="p">;</span>
+  <span class="kt">int</span> <span class="n">b</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+
+
+<p>Si vous faites un sizeof de cette structure il apparaîtra qu'elle occupe 8 octets en mémoire ! (considérant qu'un <code>int</code> fait 4 octets).<br />
+Avec la directive décrite plus haut vous aurez 5.<br />
+Les valeurs de cette directive sont : 1, 2, 4.</p>
+<blockquote>
+<p><strong>Comme dit plus haut chaque directive est propre à son compilateur. De ce fait la directive <code>#pragma pack(1)</code> ne fonctionnera peut-être pas chez vous</strong>.</p>
+</blockquote>
+<p>Un exemple de non-portabilité : sous GCC on peut utiliser la directive <code>#pragma unused( ma_variable )</code> pour ne pas avoir de <em>warning</em> sur la variable non utilisée spécifiée.<br />
+Sous Xcode (Mac et GCC) on peut utiliser la directive <code>#pragma mark XXX</code> qui sert à structurer l'arborescence de son code pour une recherche plus facile et plus rapide (très utile !).<br />
+Sous Visual C++ on peut linker les bibliothèques avec la directive <code>#pragma comment( lib, "emapi" )</code>.</p>
+<p>Pour plus d'infos vous pouvez aller ici <a href="http://gcc.gnu.org/onlinedocs/gcc/Pragmas.html">pragmas pour GCC</a>, et là <a href="http://msdn.microsoft.com/en-us/library/d9x1s805%28VS.71%29.aspx">pragmas pour Visual C++</a>.</p>
+<h1 id="les-macros-qui-en-appellent-dautres-et-les-macros-a-nombre-variable-darguments">Les macros qui en appellent d'autres et les macros à nombre variable d'arguments</h1>
+<h4 id="une-macro-qui-en-appelle-une-autre">Une macro qui en appelle une autre</h4>
+<p>Une macro peut en appeler une autre, ça vous le savez. Mais une macro peut prendre en paramètre le nom d'une autre pour l'appeler.
+Par exemple, j'ai une macro <code>MIN</code>, une autre <code>MAX</code> et une dernière <code>EVALUE</code>. Cette dernière prend 3 paramètres : le nom de la macro à appeler et deux variables.<br />
+Voilà comment ce groupe se compose :</p>
+<div class="highlight"><pre><span></span><span class="cp">#define MIN(x, y) (((x) &lt; (y)) ? (x) : (y))</span>
+<span class="cp">#define MAX(x, y) (((x) &gt; (y)) ? (x) : (y))</span>
+
+<span class="cm">/* Je préfère mettre l&#39;underscore &#39;_&#39; plutôt que `macro&#39;, mais vous faîtes comme vous voulez.</span>
+<span class="cm"> * Par la suite je mettrai _ . */</span>
+<span class="cp">#define EVALUE(macro, x, y) macro(x, y)</span>
+</pre></div>
+
+
+<p>Si je veux calculer le minimum de 2 nombres, il suffit que j'appelle ma macro <code>EVALUE</code> comme ça : <code>EVALUE(MIN, 5, 3)</code>.</p>
+<h4 id="les-macros-a-nombre-variable-darguments">Les macros à nombre variable d'arguments</h4>
+<p>Tout comme une fonction, une macro peut recevoir un nombre variable d'argument. Oui, mais la macro « finale » doit avoir une nombre fini d'arguments.</p>
+<p>La différence entre une fonction et une macro, c'est que la fonction est évaluée à l'exécution et la macro à la compilation. De ce fait, il faut que celle-ci soit entièrement connue à la compilation.<br />
+Pour qu'une macro prenne un nombre variable d'arguments, il faut tout simplement utiliser les trois petits points : ... (comme une fonction). Aucun intérêt, parce que la macro n'est pas entièrement connue...<br />
+Vous vous souvenez qu'une macro peut en appeler une autre ?<br />
+<em>Hé</em> bien nous allons nous servir de ça ! Pour passer les arguments « variables » il va falloir utiliser la macro <code>__VA_ARGS__</code>.</p>
+<p>Prenons notre exemple de <code>EVALUE</code> plus haut. Pour l'instant elle prend 3 arguments. Nous allons la modifier pour qu'elle prenne un nombre d'arguments variable. Ainsi on va faire une macro générique pour appeler plusieurs macros.<br />
+Donc maintenant, sans toucher ni à <code>MIN</code>, ni à <code>MAX</code>, on obtient ça :</p>
+<div class="highlight"><pre><span></span><span class="cp">#define MIN(x, y) (((x) &lt; (y)) ? (x) : (y))</span>
+<span class="cp">#define MAX(x, y) (((x) &gt; (y)) ? (x) : (y))</span>
+
+<span class="cm">/* Souvenez-vous, j&#39;utilise &#39;_&#39; mais vous pouvez utiliser `macro&#39; ou ce que vous voulez.</span>
+<span class="cm"> * Du moment que ça reste un nom valide. */</span>
+<span class="cp">#define EVALUE(_, ...) _(__VA_ARGS__)</span>
+</pre></div>
+
+
+<blockquote>
+<p>Si vous utilisez Visual: la macro <code>__VA_ARGS__</code> n'a été introduite qu'à partir de la version 2005, de ce fait, si vous avez une version antérieure, ça ne fonctionnera pas.</p>
+</blockquote>
+<h1 id="les-x-macros">Les X-macros</h1>
+<p>Nous arrivons à la partie la plus intéressante (mais aussi la plus compliquée) : les X-macros !</p>
+<blockquote>
+<p><em>Que sont les X-macros ?</em></p>
+</blockquote>
+<p>Rassurez-vous ça n'a rien à voir avec des trucs cochons. :p<br />
+Ça permet, dans le cas le plus simple, de faire simplement correspondre différentes valeurs entre elles (énumérations, structures, tableaux).<br />
+Je prends l'exemple d'un marchand de voitures. Chaque voiture a une marque, un modèle, un prix, une couleur (et tout ce qui vous passe par la tête :D).<br />
+Première émission de votre programme vous rentrez tout à la main (bon pas de problème c'est la première émission).<br />
+Deuxième émission de votre programme vous devez rajouter plusieurs voitures, en modifier certaines et en supprimer. Oui mais voilà pour chercher les valeurs à modifier et à supprimer ce n'est pas forcement tâche facile.<br />
+C'est là qu'interviennent les X-macros ! Grâce à ces macros particulières on verra que la tâche va être grandement simplifiée.</p>
+<p>Prenons notre exemple de voiture.<br />
+En temps normal nous aurions fait 4 tableaux de chaînes de caractères. Je vais faire aussi une énumération pour permettre une recherche facile de notre voiture.<br />
+(les valeurs ont été prises au hasard, ne venez pas me dire que le prix n'est pas bon etc, ce n'est qu'un exemple).</p>
+<div class="highlight"><pre><span></span><span class="k">enum</span> <span class="n">index_e</span> <span class="p">{</span>
+  <span class="n">Renault_Clio</span><span class="p">,</span>
+  <span class="n">Peugeot_207</span><span class="p">,</span>
+  <span class="n">Citroen_C4</span><span class="p">,</span>
+  <span class="n">NOMBRE_VOITURES</span>
+<span class="p">};</span>
+
+<span class="kt">char</span> <span class="k">const</span> <span class="o">*</span> <span class="k">const</span> <span class="n">marque_a</span> <span class="p">[]</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="s">&quot;Renault&quot;</span><span class="p">,</span> <span class="s">&quot;Peugeot&quot;</span><span class="p">,</span> <span class="s">&quot;Citroen&quot;</span>
+<span class="p">};</span>
+
+<span class="kt">char</span> <span class="k">const</span> <span class="o">*</span> <span class="k">const</span> <span class="n">modele_a</span> <span class="p">[]</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="s">&quot;Clio&quot;</span><span class="p">,</span> <span class="s">&quot;207&quot;</span><span class="p">,</span> <span class="s">&quot;C4&quot;</span>
+<span class="p">};</span>
+
+<span class="kt">int</span> <span class="k">const</span> <span class="n">prix_a</span> <span class="p">[]</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="mi">10000</span><span class="p">,</span> <span class="mi">12000</span><span class="p">,</span> <span class="mi">15000</span>
+<span class="p">};</span>
+
+<span class="kt">char</span> <span class="k">const</span> <span class="o">*</span> <span class="k">const</span> <span class="n">couleur_a</span> <span class="p">[]</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="s">&quot;blanc&quot;</span><span class="p">,</span> <span class="s">&quot;rouge&quot;</span><span class="p">,</span> <span class="s">&quot;bleu&quot;</span>
+<span class="p">};</span>
+</pre></div>
+
+
+<p>Ce code est pratique. Si on cherche une voiture en particulier il suffit de prendre la valeur de l'énumération comme indice de chaque tableau :</p>
+<div class="highlight"><pre><span></span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%s %s %d %s&quot;</span><span class="p">,</span> <span class="n">marque_a</span><span class="p">[</span><span class="n">Citroen_C4</span><span class="p">],</span> <span class="n">modele_a</span><span class="p">[</span><span class="n">Citroen_C4</span><span class="p">],</span> <span class="n">prix_a</span><span class="p">[</span><span class="n">Citroen_C4</span><span class="p">],</span> <span class="n">couleur_a</span><span class="p">[</span><span class="n">Citroen_C4</span><span class="p">]);</span>
+</pre></div>
+
+
+<p>Mais voilà, dès qu'on doit modifier, rajouter ou supprimer des modèles ça se révèle très peu pratique.<br />
+Nous allons donc faire une X-macro qui va se charger de créer tout ça toute seule. C'est une macro qui fait appel à toute une série de macros qui portent le même nom. J'ai choisi ici de la nommer <code>X_VOITURE</code>. Elle appellera 3 « sous-macros » (normal on a 3 voitures :D) nommées <code>X</code> et contenant les éléments de nos voitures.</p>
+<p>Voilà comment elle est constituée :</p>
+<div class="highlight"><pre><span></span><span class="cp">#define X_VOITURE                 \</span>
+<span class="cp">  X(Renault, Clio, 10000, blanc)  \</span>
+<span class="cp">  X(Peugeot, 207, 12000, rouge)   \</span>
+<span class="cp">  X(Citroen, C4, 15000, bleu)</span>
+</pre></div>
+
+
+<p>C'est à partir de maintenant que toute la magie des X-macros se fait.<br />
+Le principe est tout bête : afin de définir l'action de <code>X_VOITURE</code>, il faut tout d'abord définir <code>X</code>. Une fois <code>X_VOITURE</code> appelée il suffit d'utiliser la directive <code>#undef X</code> et de continuer. On redéfinit <code>X</code>, on appelle <code>X_VOITURE</code> et on la supprime. On recommence le processus partout où vous voulez utiliser votre X-macro.<br />
+Grâce à ça, pour rajouter, modifier ou supprimer des informations sur nos voitures nous n'avons pas de problèmes ! Tout est répertorié au même endroit, il suffit de trouver la ligne concernée et de la modifier/supprimer ou d'en rajouter une.<br />
+Si vous avez compris le principe vous ne devriez pas avoir de mal à implémenter ça !</p>
+<div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp"></span>
+
+<span class="cp">#define X_VOITURE                 \</span>
+<span class="cp">  X(Renault, Clio, 10000, blanc)  \</span>
+<span class="cp">  X(Peugeot, 207, 12000, rouge)   \</span>
+<span class="cp">  X(Citroen, C4, 15000, bleu)</span>
+
+<span class="cm">/* Définit une macro qui concatène la marque, un underscore et le modèle. */</span>
+<span class="cp">#define X(marque, modele, prix, couleur) marque ## _ ## modele ,</span>
+<span class="k">enum</span> <span class="n">index_e</span> <span class="p">{</span>
+  <span class="cm">/* On appelle X_VOITURE qui appellera notre macro définie juste avant */</span>
+  <span class="n">X_VOITURE</span>
+  <span class="n">NOMBRE_VOITURES</span>
+<span class="p">};</span>
+<span class="cm">/* On supprime notre macro X */</span>
+<span class="cp">#undef X</span>
+
+<span class="cm">/* On définit de nouveau une macro X qui créera cette fois une</span>
+<span class="cm"> * chaîne de caractère de la marque. */</span>
+<span class="cp">#define X(marque, modele, prix, couleur) # marque ,</span>
+<span class="kt">char</span> <span class="k">const</span> <span class="o">*</span> <span class="k">const</span> <span class="n">marque_a</span> <span class="p">[]</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="n">X_VOITURE</span>
+<span class="p">};</span>
+<span class="cp">#undef X</span>
+
+<span class="cm">/* On définit notre macro pour créer le modèle. */</span>
+<span class="cp">#define X(marque, modele, prix, couleur) # modele ,</span>
+<span class="kt">char</span> <span class="k">const</span> <span class="o">*</span> <span class="k">const</span> <span class="n">modele_a</span> <span class="p">[]</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="n">X_VOITURE</span>
+<span class="p">};</span>
+<span class="cp">#undef X</span>
+
+<span class="cm">/* On définit notre macro pour créer le prix. */</span>
+<span class="cp">#define X(marque, modele, prix, couleur) prix ,</span>
+<span class="kt">int</span> <span class="k">const</span> <span class="n">prix_a</span> <span class="p">[]</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="n">X_VOITURE</span>
+<span class="p">};</span>
+<span class="cp">#undef X</span>
+
+<span class="cm">/* On définit notre macro pour créer la couleur. */</span>
+<span class="cp">#define X(marque, modele, prix, couleur) # couleur ,</span>
+<span class="kt">char</span> <span class="k">const</span> <span class="o">*</span> <span class="k">const</span> <span class="n">couleur_a</span> <span class="p">[]</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="n">X_VOITURE</span>
+<span class="p">};</span>
+<span class="cp">#undef X</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
+  <span class="cm">/* Liste toutes les voitures répertoriées.</span>
+<span class="cm">   * Le &#39;-&#39; juste après le % sert à justifier le texte à gauche. */</span>
+  <span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">NOMBRE_VOITURES</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;Marque: %-8s - Modele: %-5s - Prix: %-6d - Couleur: %-6s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
+           <span class="n">marque_a</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">modele_a</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">prix_a</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">couleur_a</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+  <span class="k">return</span> <span class="n">EXIT_SUCCESS</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>C'est à partir de maintenant qu'on voit bien l'utilité d'utiliser un tel truc !<br />
+Maintenant si vous voulez modifier votre liste vous n'avez aucun mal, et tout le code sera modifié en conséquence. ;)</p>
+<div class="highlight"><pre><span></span><span class="cp">#define X_VOITURE                 \</span>
+<span class="cp">  X(Renault, Clio, 10000, blanc)  \</span>
+<span class="cp">  X(Renault, Laguna, 15000, vert) \</span>
+<span class="cp">  X(Peugeot, 207, 12000, rouge)   \</span>
+<span class="cp">  X(Peugeot, 1007, 13000, noir)   \</span>
+<span class="cp">  X(Citroen, C4, 15000, bleu)</span>
+</pre></div>
+
+
+<p>Une autre alternative est de créer un fichier qui contiendra les appels aux macros et ensuite on inclut tout simplement notre fichier. L'extension du fichier n'a pas d'importance, mais on choisira en général <code>.def</code>.<br />
+Fichier contenant les appels :</p>
+<div class="highlight"><pre><span></span><span class="n">X</span><span class="p">(</span><span class="n">Renault</span><span class="p">,</span> <span class="n">Clio</span><span class="p">,</span> <span class="mi">10000</span><span class="p">,</span> <span class="n">blanc</span><span class="p">)</span>
+<span class="n">X</span><span class="p">(</span><span class="n">Renault</span><span class="p">,</span> <span class="n">Laguna</span><span class="p">,</span> <span class="mi">15000</span><span class="p">,</span> <span class="n">vert</span><span class="p">)</span>
+<span class="n">X</span><span class="p">(</span><span class="n">Peugeot</span><span class="p">,</span> <span class="mi">207</span><span class="p">,</span> <span class="mi">12000</span><span class="p">,</span> <span class="n">rouge</span><span class="p">)</span>
+<span class="n">X</span><span class="p">(</span><span class="n">Peugeot</span><span class="p">,</span> <span class="mi">1007</span><span class="p">,</span> <span class="mi">13000</span><span class="p">,</span> <span class="n">noir</span><span class="p">)</span>
+<span class="n">X</span><span class="p">(</span><span class="n">Citroen</span><span class="p">,</span> <span class="n">C4</span><span class="p">,</span> <span class="mi">15000</span><span class="p">,</span> <span class="n">bleu</span><span class="p">)</span>
+</pre></div>
+
+
+<p>Et le fichier contenant les inclusions :</p>
+<div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp"></span>
+
+<span class="cp">#define X(marque, modele, prix, couleur) marque ## _ ## modele ,</span>
+<span class="k">enum</span> <span class="n">index_e</span> <span class="p">{</span>
+<span class="cp"># include &quot;Mes_Voitures.def&quot;</span>
+  <span class="n">NOMBRE_VOITURES</span>
+<span class="p">};</span>
+<span class="cp">#undef X</span>
+
+<span class="cp">#define X(marque, modele, prix, couleur) # marque ,</span>
+<span class="kt">char</span> <span class="k">const</span> <span class="o">*</span> <span class="k">const</span> <span class="n">marque_a</span> <span class="p">[]</span> <span class="o">=</span> <span class="p">{</span>
+<span class="cp"># include &quot;Mes_Voitures.def&quot;</span>
+<span class="p">};</span>
+<span class="cp">#undef X</span>
+
+<span class="cp">#define X(marque, modele, prix, couleur) # modele ,</span>
+<span class="kt">char</span> <span class="k">const</span> <span class="o">*</span> <span class="k">const</span> <span class="n">modele_a</span> <span class="p">[]</span> <span class="o">=</span> <span class="p">{</span>
+<span class="cp"># include &quot;Mes_Voitures.def&quot;</span>
+<span class="p">};</span>
+<span class="cp">#undef X</span>
+
+<span class="cp">#define X(marque, modele, prix, couleur) prix ,</span>
+<span class="kt">int</span> <span class="k">const</span> <span class="n">prix_a</span> <span class="p">[]</span> <span class="o">=</span> <span class="p">{</span>
+<span class="cp"># include &quot;Mes_Voitures.def&quot;</span>
+<span class="p">};</span>
+<span class="cp">#undef X</span>
+
+<span class="cp">#define X(marque, modele, prix, couleur) # couleur ,</span>
+<span class="kt">char</span> <span class="k">const</span> <span class="o">*</span> <span class="k">const</span> <span class="n">couleur_a</span> <span class="p">[]</span> <span class="o">=</span> <span class="p">{</span>
+<span class="cp"># include &quot;Mes_Voitures.def&quot;</span>
+<span class="p">};</span>
+<span class="cp">#undef X</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
+  <span class="cm">/* Liste toutes les voitures répertoriées.</span>
+<span class="cm">   * Le &#39;-&#39; juste après le % sert à justifier le texte à gauche. */</span>
+  <span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">NOMBRE_VOITURES</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;Marque: %-8s - Modele: %-7s - Prix: %-6d - Couleur: %-6s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
+           <span class="n">marque_a</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">modele_a</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">prix_a</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">couleur_a</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+  <span class="k">return</span> <span class="n">EXIT_SUCCESS</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Si vous avez compris le principe des X-macros, ainsi que celui des macros à nombre variable d'arguments, vous allez pouvoir combiner les macros et les X-macros entre elles.</p>
+<h4 id="exercice">Exercice</h4>
+<p>Vous devez créer, à l'aide des macros et X-macros, une structure contenant 2 nombres de type <code>int</code> nommés <code>x</code> et <code>y</code> ainsi que 3 autres de type <code>double</code> nommés <code>pythagore</code>, <code>sinx</code>, <code>siny</code>.<br />
+Vous devez définir une macro qui initialisera tous les champs de la structure à <code>0</code>, et une autre qui servira à afficher tous les champs de la structure.</p>
+<p>Solution :</p>
+<div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp"></span>
+
+<span class="cp">#define X_DEF_STRUCT(type, variable, rien)  type variable;</span>
+
+<span class="cp">#define X_PRINT_FORMAT_(type)   X_PRINT_FORMAT_##type</span>
+<span class="cp">#define X_PRINT_FORMAT_double   &quot;%f&quot;</span>
+<span class="cp">#define X_PRINT_FORMAT_int      &quot;%d&quot;</span>
+
+<span class="cp">#define X_PRINT(type, variable, struct_nombres)           \</span>
+<span class="cp">  printf(&quot;%-7s %-10s : &quot; X_PRINT_FORMAT_(type) &quot;\n&quot;,      \</span>
+<span class="cp">          #type, #variable, struct_nombres-&gt;variable);</span>
+
+<span class="cp">#define X_INIT(type, variable, struct_nombres)  \</span>
+<span class="cp">  struct_nombres-&gt;variable = 0;</span>
+
+<span class="cp">#define DEC_NBVAR(_, ...)             \</span>
+<span class="cp">  _(int, x, __VA_ARGS__)              \</span>
+<span class="cp">  _(int, y, __VA_ARGS__)              \</span>
+<span class="cp">  _(double, pythagore, __VA_ARGS__)   \</span>
+<span class="cp">  _(double, sinx, __VA_ARGS__)        \</span>
+<span class="cp">  _(double, siny, __VA_ARGS__)</span>
+
+<span class="k">struct</span> <span class="n">nombres</span> <span class="p">{</span>
+  <span class="n">DEC_NBVAR</span><span class="p">(</span><span class="n">X_DEF_STRUCT</span><span class="p">,</span> <span class="p">)</span>
+<span class="p">};</span>
+
+<span class="kt">void</span> <span class="nf">initStruct</span><span class="p">(</span><span class="k">struct</span> <span class="n">nombres</span> <span class="o">*</span><span class="n">s</span><span class="p">)</span> <span class="p">{</span>
+  <span class="n">DEC_NBVAR</span><span class="p">(</span><span class="n">X_INIT</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">printStruct</span><span class="p">(</span><span class="k">struct</span> <span class="n">nombres</span> <span class="o">*</span><span class="n">s</span><span class="p">)</span> <span class="p">{</span>
+  <span class="n">DEC_NBVAR</span><span class="p">(</span><span class="n">X_PRINT</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">struct</span> <span class="n">nombres</span> <span class="n">s</span><span class="p">;</span>
+  <span class="n">initStruct</span><span class="p">(</span><span class="o">&amp;</span><span class="n">s</span><span class="p">);</span>
+  <span class="n">printStruct</span><span class="p">(</span><span class="o">&amp;</span><span class="n">s</span><span class="p">);</span>
+  <span class="n">puts</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">);</span>
+  <span class="k">return</span> <span class="n">EXIT_SUCCESS</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Voilà, vous en savez un peu plus sur le préprocesseur.<br />
+Cependant en ce qui concerne les X-macros il faut éviter de les utiliser (voire pas du tout), ou si vous les utilisez il faut le faire avec précaution ! C'est source d'erreurs, et des erreurs difficiles à débugger.<br />
+Faites attention à ne pas abuser des macros non plus, si elles sont mal utilisées, ça peut faire du code très difficile à lire. Exemple (merci <a href="http://fr.openclassrooms.com/membres/spacefox-29861">SpaceFox</a>) :</p>
+<div class="highlight"><pre><span></span><span class="cp">#define x =</span>
+<span class="cp">#define double(a,b) int</span>
+<span class="cp">#define char k[&#39;a&#39;]</span>
+<span class="cp">#define union static struct</span>
+</pre></div>
+
+
+<p>J'espère que ça ne vous a pas paru trop compliqué.</p>
+<p>A bientôt ! ;)</p>
+        </div>
+    </section>
+        </div>
+        <div class="col-sm-3" id="sidebar">
+            <aside>
+
+<section class="well well-sm">
+    <ul class="list-group list-group-flush">
+
+        <!-- Search bar in low width mode -->
+        <li id="searchSideBar" class="list-group-item"><span>
+                <form class="navbar-search" action="/blog/search">
+                  <input type="text" class="search-query" placeholder="Rechercher" name="q" id="tipue_search_input" required>
+                </form></span>
+        </li>
+
+        <li class="list-group-item"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Social</span></h4>
+              <ul class="list-group" id="social">
+                    <li class="list-group-item"><a href="https://example.org">
+                        <i class="fa fa-comment fa-lg"></i>
+                       Link 1</a>
+                    </li>
+                    <li class="list-group-item"><a href="https://example.org">
+                        <i class="fa fa-comments fa-lg"></i>
+                       Link 2</a>
+                    </li>
+                    <li class="list-group-item"><a href="/page/content">
+                        <i class="fa fa-etc fa-lg"></i>
+                       etc</a>
+                    </li>
+              </ul>
+            </li>
+
+
+            <li class="list-group-item"><a href="http://yliesc.github.io/"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Categories</span></h4></a>
+                <ul class="list-group" id="categories">
+                </ul>
+            </li>
+
+
+
+    <li class="list-group-item"><h4><i class="fa fa-link fa-lg"></i><span class="icon-label">External Links</span></h4>
+      <ul class="list-group" id="links">
+        <li class="list-group-item">
+            <a href="https://example.org" target="_blank">
+                Link 1
+            </a>
+        </li>
+        <li class="list-group-item">
+            <a href="https://example.org" target="_blank">
+                Link 2
+            </a>
+        </li>
+        <li class="list-group-item">
+            <a href="/page/content" target="_blank">
+                etc
+            </a>
+        </li>
+      </ul>
+    </li>
+
+        <li class="list-group-item" id="github">
+            <ul class="list-group">
+                <li class="list-group-item"><h5>Vous voyez une erreur ?</h5></li>
+                <li class="list-group-item">
+                    <a class="btn btn-info github" target="_blank" href="https://github.com/YliesC/website/edit/master/content/pages/pdp/content/le-preprocesseur.md">
+                        <i class="fa fa-random"></i> Modifiez la page sur GitHub
+                    </a>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</section>            </aside>
+        </div>
+    </div>
+</div>
+<footer>
+   <div class="container">
+      <hr>
+      <div class="row">
+         <div class="col-xs-10">&copy;  
+            &middot; Powered by <a href="https://github.com/getpelican/pelican-themes/tree/master/pelican-bootstrap3" target="_blank">pelican-bootstrap3</a>,
+            <a href="http://docs.getpelican.com/" target="_blank">Pelican</a>,
+<a href="http://getbootstrap.com" target="_blank">Bootstrap</a>                <p><small>  <a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr"><img alt="Creative Commons License" style="border-width:0" src="//i.creativecommons.org/l/by-sa/4.0/80x15.png" /></a>
+    Content
+  licensed under a <a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">Creative Commons Attribution-ShareAlike 4.0 International License</a>, except where indicated otherwise.
+</small></p>
+         </div>
+         <div class="col-xs-2"><p class="pull-right"><i class="fa fa-arrow-up"></i> <a href="#">Back to top</a></p></div>
+      </div>
+   </div>
+</footer>
+<script src="http://yliesc.github.io/theme/js/jquery.min.js"></script>
+
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="http://yliesc.github.io/theme/js/bootstrap.min.js"></script>
+
+<!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
+<script src="http://yliesc.github.io/theme/js/respond.min.js"></script>
+
+<!--  -->
+
+
+</body>
+</html>

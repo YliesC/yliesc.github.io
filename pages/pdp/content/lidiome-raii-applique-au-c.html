@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="fr" prefix="og: http://ogp.me/ns# fb: https://www.facebook.com/2008/fbml">
+<head>
+    <title>L’idiome RAII appliqué au C++ - The Golden Koala</title>
+    <!-- Using the latest rendering mode for IE -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <link href="http://yliesc.github.io/images/koala-ico.png" rel="icon">
+
+<link rel="canonical" href="http://yliesc.github.io/pages/pdp/content/lidiome-raii-applique-au-c/">
+
+        <meta name="author" content="informaticienzero" />
+        <meta name="description" content="La gestion des ressources est un problème récurrent en informatique. En effet, on ne dispose que de ressources limitées (RAM, disques durs, nombre de calculs par seconde, etc). Et aujourd&#39;hui, il faut admettre qu&#39;on charge de plus en plus de ressources qui prennent de la place. Il faut donc les …" />
+
+    <meta property="og:site_name" content="The Golden Koala" />
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="L’idiome RAII appliqué au C++"/>
+    <meta property="og:url" content="http://yliesc.github.io/pages/pdp/content/lidiome-raii-applique-au-c/"/>
+    <meta property="og:description" content="La gestion des ressources est un problème récurrent en informatique. En effet, on ne dispose que de ressources limitées (RAM, disques durs, nombre de calculs par seconde, etc). Et aujourd&#39;hui, il faut admettre qu&#39;on charge de plus en plus de ressources qui prennent de la place. Il faut donc les …" />
+
+
+    <!-- Bootstrap -->
+        <link rel="stylesheet" href="http://yliesc.github.io/theme/css/bootstrap.readable.min.css" type="text/css"/>
+    <link href="http://yliesc.github.io/theme/css/font-awesome.min.css" rel="stylesheet">
+
+    <link href="http://yliesc.github.io/theme/css/pygments/default.css" rel="stylesheet">
+    <link href="http://yliesc.github.io/theme/tipuesearch/tipuesearch.css" rel="stylesheet">
+    <link rel="stylesheet" href="http://yliesc.github.io/theme/css/style.css" type="text/css"/>
+        <link href="http://yliesc.github.io/css/custom.css" rel="stylesheet">
+
+        <link href="http://yliesc.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate"
+              title="The Golden Koala ATOM Feed"/>
+
+
+
+
+</head>
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+	<div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="http://yliesc.github.io/" class="navbar-brand">
+<img class="img-responsive pull-left gap-right" src="http://yliesc.github.io/images/koala-logo.svg" width="38"/> <span id="siteName">The Golden Koala</span>            </a>
+        </div>
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+
+            </ul>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+</div> <!-- /.navbar -->
+<!-- Banner -->
+<!-- End Banner -->
+<div class="container">
+    <div class="row">
+        <div class="col-sm-9">
+    <ol class="breadcrumb">
+        <li><a href="http://yliesc.github.io/" title="The Golden Koala">
+            <i class="fa fa-home fa-lg"></i>
+        </a></li>
+        <li class="active">L’idiome RAII appliqué au C++</li>
+    </ol>
+    <section id="content" class="body">
+        <h1 class="entry-title">L’idiome RAII appliqué au C++</h1>
+            <div class="entry-content">
+                    <div class="panel">
+                        <div class="panel-body">
+<footer class="post-info">
+    
+    <span class="published">
+        <span class="label label-default"><i class="fa fa-calendar"></i><time datetime="2015-06-08T00:00:00+02:00"> lun. 08 juin 2015</time></span> | 
+    </span>
+        <span class="label label-default"><i class="fa fa-user-circle"></i> informaticienzero, MicroJoe, lmghs</span>  | 
+    <span class="label label-default">
+            <i class="fa fa-cc"></i> 
+        
+            CC-BY-NC-SA
+    </span>
+</footer><!-- /.page-info -->                        </div>
+                    </div>
+            <p>La gestion des ressources est un problème récurrent en informatique. En effet, on ne dispose que de ressources limitées (RAM, disques durs, nombre de calculs par seconde, etc). Et aujourd'hui, il faut admettre qu'on charge de plus en plus de ressources qui prennent de la place. Il faut donc les gérer efficacement. Certains langages, comme le C, oblige l'utilisateur à allouer et libérer de la mémoire pour les ressources et il faut dire que c'est contraignant.</p>
+<p>Le C++, de par l'approche historique qui en est malheureusement faite dans beaucoup d'ouvrages, est utilisé par certains développeurs comme le C, en gérant les ressources de manière manuelle. Pourtant, il existe un idiome très simple et efficace que nous allons découvrir dans cet article. Alors oubliez vos <code>new</code> et <code>delete</code> et découvrez ce que C++ vous offre.</p>
+<div class="toc">
+<ul>
+<li><a href="#gestion-manuelle-de-la-memoire">Gestion manuelle de la mémoire</a></li>
+<li><a href="#lidiome-raii-a-la-rescousse">L’idiome RAII à la rescousse</a><ul>
+<li><a href="#gestion-des-erreurs">Gestion des erreurs</a><ul>
+<li><a href="#erreur-lors-de-lacquisition">Erreur lors de l'acquisition</a></li>
+<li><a href="#erreur-lors-de-la-destruction">Erreur lors de la destruction</a></li>
+</ul>
+</li>
+<li><a href="#un-mot-sur-le-dispose-pattern">Un mot sur le dispose pattern</a></li>
+</ul>
+</li>
+<li><a href="#exemples-dapplication-avec-la-bibliotheque-standard">Exemples d’application avec la bibliothèque standard</a><ul>
+<li><a href="#cas-particulier-des-pointeurs">Cas particulier des pointeurs</a></li>
+</ul>
+</li>
+<li><a href="#bonnes-pratiques">Bonnes pratiques</a><ul>
+<li><a href="#la-const-correctness">La const-correctness</a></li>
+</ul>
+</li>
+<li><a href="#et-dans-les-autres-langages">Et dans les autres langages ?</a><ul>
+<li><a href="#avec-c">Avec C</a></li>
+<li><a href="#avec-d">Avec D</a></li>
+<li><a href="#avec-rust">Avec Rust</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<h1 id="gestion-manuelle-de-la-memoire">Gestion manuelle de la mémoire</h1>
+<p>Bien souvent, dès qu'on manipule des ressources externes, du type image à charger et afficher, connexion à une base de données ou à un serveur ou autres, il est inévitable de devoir réserver de la mémoire de façon dynamique. Pour ceux qui ont fait du C, vous pensez sans doute <strong>aux pointeurs</strong> et vous avez bien raison. Prenons donc un bête exemple : on se connecte à une base de données, on récupère un nombre fixé de noms de trains, on ouvre un fichier, on le verrouille, on travaille ensuite dessus avant de tout refermer comme il se doit.</p>
+<div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">get_infos_from_db</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">SGBD</span> <span class="o">*</span> <span class="n">sgbd</span> <span class="o">=</span> <span class="n">SGBD_Init</span><span class="p">(</span><span class="s">&quot;trains.db&quot;</span><span class="p">);</span>
+    <span class="k">const</span> <span class="kt">int</span> <span class="n">nb_trains</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+
+    <span class="kt">char</span><span class="o">**</span> <span class="n">trains_name</span> <span class="o">=</span> <span class="n">malloc</span><span class="p">(</span><span class="n">nb_trains</span> <span class="o">*</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">char</span><span class="o">*</span><span class="p">));</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">nb_trains</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="kt">char</span> <span class="n">buffer</span><span class="p">[</span><span class="mi">256</span><span class="p">];</span>
+
+        <span class="n">trains_name</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">malloc</span><span class="p">(</span><span class="mi">42</span> <span class="o">*</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">char</span><span class="p">));</span>
+        <span class="n">sprintf</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="s">&quot;SELECT name FROM trains WHERE id = %d&quot;</span><span class="p">,</span> <span class="n">i</span><span class="p">);</span>
+        <span class="n">strcpy</span><span class="p">(</span><span class="n">trains_name</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">do_request</span><span class="p">(</span><span class="n">sgbd</span><span class="p">,</span> <span class="n">buffer</span><span class="p">));</span>
+    <span class="p">}</span>
+
+    <span class="n">File</span> <span class="o">*</span> <span class="n">file</span> <span class="o">=</span> <span class="n">fopen</span><span class="p">(</span><span class="s">&quot;saved.txt&quot;</span><span class="p">);</span>
+    <span class="n">Lock</span> <span class="o">*</span> <span class="n">lock</span> <span class="o">=</span> <span class="n">lock_acquire</span><span class="p">();</span>
+
+    <span class="n">do_some_stuff</span><span class="p">(</span><span class="n">trains_name</span><span class="p">,</span> <span class="n">file</span><span class="p">,</span> <span class="n">lock</span><span class="p">);</span>
+
+    <span class="n">lock_release</span><span class="p">(</span><span class="n">lock</span><span class="p">);</span>
+    <span class="n">fclose</span><span class="p">(</span><span class="n">file</span><span class="p">),</span> <span class="n">file</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">nb_trains</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">free</span><span class="p">(</span><span class="n">trains_name</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span> <span class="n">trains_name</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="n">free</span><span class="p">(</span><span class="n">trains_name</span><span class="p">),</span> <span class="n">trains_name</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+
+    <span class="n">SGBD_release</span><span class="p">(</span><span class="n">sgbd</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Pourtant, ce code est juste une horreur à éviter. Pourquoi ? Parce qu'aucune vérification n'est faite. Si une seule opération échoue, on est bon pour un segfault. Alors, sécurisons ce code.</p>
+<div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">darray_delete</span><span class="p">(</span><span class="kt">void</span> <span class="o">**</span> <span class="n">self</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="n">n</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">self</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="kt">unsigned</span> <span class="n">i</span><span class="p">;</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">free</span><span class="p">(</span><span class="n">self</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+        <span class="p">}</span>
+        <span class="n">free</span><span class="p">(</span><span class="n">self</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="o">**</span> <span class="nf">darray_create</span><span class="p">(</span><span class="kt">unsigned</span> <span class="n">n</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="n">m</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">size</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">void</span> <span class="o">**</span> <span class="n">self</span><span class="p">;</span>
+    <span class="kt">unsigned</span> <span class="n">i</span><span class="p">;</span>
+
+    <span class="n">assert</span><span class="p">(</span><span class="n">n</span> <span class="o">!=</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">m</span> <span class="o">!=</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">size</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">);</span>
+    <span class="n">assert</span><span class="p">(</span><span class="n">SIZE_MAX</span> <span class="o">/</span> <span class="k">sizeof</span> <span class="o">*</span> <span class="n">self</span> <span class="o">&gt;=</span> <span class="n">n</span><span class="p">);</span>
+    <span class="n">assert</span><span class="p">(</span><span class="n">SIZE_MAX</span> <span class="o">/</span> <span class="n">m</span> <span class="o">&gt;=</span> <span class="n">size</span><span class="p">);</span>
+
+    <span class="n">self</span> <span class="o">=</span> <span class="n">malloc</span><span class="p">(</span><span class="n">n</span> <span class="o">*</span> <span class="k">sizeof</span> <span class="o">*</span> <span class="n">self</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">self</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">goto</span> <span class="n">alloc_array_fail</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">self</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">malloc</span><span class="p">(</span><span class="n">m</span> <span class="o">*</span> <span class="n">size</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">self</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">goto</span> <span class="n">alloc_element_fail</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">self</span><span class="p">;</span>
+
+<span class="nl">alloc_element_fail</span><span class="p">:</span>
+    <span class="n">darray_delete</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">i</span><span class="p">);</span>
+<span class="nl">alloc_array_fail</span><span class="p">:</span>
+    <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="cp">#define NTRAINS 2</span>
+<span class="cp">#define TRAIN_MAX 42</span>
+<span class="cp">#define BUFFER_MAX 256</span>
+
+<span class="kt">void</span> <span class="nf">get_infos_from_db</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">SGBD</span> <span class="o">*</span> <span class="n">sgbd</span><span class="p">;</span>
+    <span class="kt">void</span> <span class="o">**</span> <span class="n">trains_name</span><span class="p">;</span>
+    <span class="kt">FILE</span> <span class="o">*</span> <span class="n">file</span><span class="p">;</span>
+    <span class="n">Lock</span> <span class="o">*</span> <span class="n">lock</span><span class="p">;</span>
+    <span class="kt">unsigned</span> <span class="n">i</span><span class="p">;</span>
+
+    <span class="n">sgbd</span> <span class="o">=</span> <span class="n">SGBD_Init</span><span class="p">(</span><span class="s">&quot;trains.db&quot;</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">sgbd</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">write_error_log</span><span class="p">(</span><span class="n">SGBD_FAIL</span><span class="p">);</span>
+        <span class="k">goto</span> <span class="n">sgbd_fail</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="n">trains_name</span> <span class="o">=</span> <span class="n">darray_create</span><span class="p">(</span><span class="n">NTRAINS</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">TRAIN_MAX</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">trains_name</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">write_error_log</span><span class="p">(</span><span class="n">TRAIN_CREATE_FAIL</span><span class="p">);</span>
+        <span class="k">goto</span> <span class="n">darray_create_fail</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">NTRAINS</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="kt">char</span> <span class="n">buffer</span><span class="p">[</span><span class="n">BUFFER_MAX</span><span class="p">];</span>
+        <span class="kt">int</span> <span class="n">n</span><span class="p">;</span>
+
+        <span class="n">n</span> <span class="o">=</span> <span class="n">spnrintf</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="k">sizeof</span> <span class="n">buffer</span><span class="p">,</span> <span class="s">&quot;SELECT name FROM trains WHERE id = %d&quot;</span><span class="p">,</span> <span class="n">i</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">n</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="o">||</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="k">sizeof</span> <span class="n">buffer</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">write_error_log</span><span class="p">(</span><span class="n">SNPRINTF_FAIL</span><span class="p">);</span>
+                <span class="k">goto</span> <span class="n">snprintf_fail</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="n">strcpy</span><span class="p">(</span><span class="n">trains_name</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">do_request</span><span class="p">(</span><span class="n">sgbd</span><span class="p">,</span> <span class="n">buffer</span><span class="p">));</span>
+    <span class="p">}</span>
+
+    <span class="n">file</span> <span class="o">=</span> <span class="n">fopen</span><span class="p">(</span><span class="s">&quot;saved.txt&quot;</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">file</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">write_error_log</span><span class="p">(</span><span class="n">FILE_FAIL</span><span class="p">);</span>
+        <span class="k">goto</span> <span class="n">fopen_fail</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="n">lock</span> <span class="o">=</span> <span class="n">lock_acquire</span><span class="p">();</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">lock</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">write_error_log</span><span class="p">(</span><span class="n">LOCK_FAIL</span><span class="p">);</span>
+        <span class="k">goto</span> <span class="n">lock_acquire_fail</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="cm">/*</span>
+<span class="cm">     * Stuff</span>
+<span class="cm">     */</span>
+
+    <span class="n">lock_release</span><span class="p">(</span><span class="n">lock</span><span class="p">);</span>
+
+    <span class="nl">lock_acquire_fail</span><span class="p">:</span>
+        <span class="n">fclose</span><span class="p">(</span><span class="n">file</span><span class="p">);</span>
+
+    <span class="nl">fopen_fail</span><span class="p">:</span>
+    <span class="nl">snprintf_fail</span><span class="p">:</span>
+        <span class="n">darray_delete</span><span class="p">(</span><span class="n">trains_name</span><span class="p">,</span> <span class="n">NTRAINS</span><span class="p">);</span>
+
+    <span class="nl">darray_create_fail</span><span class="p">:</span>
+        <span class="n">SGBD_release</span><span class="p">(</span><span class="n">sgbd</span><span class="p">);</span>
+
+    <span class="nl">sgbd_fail</span><span class="p">:</span>
+        <span class="p">;</span>
+<span class="p">}</span>
+
+<span class="cp">#undef NTRAINS</span>
+<span class="cp">#undef TRAIN_MAX</span>
+<span class="cp">#undef BUFFER_MAX</span>
+</pre></div>
+
+
+<p>Quelle plaie à écrire ! Non seulement c'est long, mais en plus, c'est plus complexe à comprendre, on peut avoir oublié certains cas, bref, un cauchemar. Et encore, on aurait pu avoir à initialiser plus de ressources encore. </p>
+<p>Peut-être certains d'entre vous pensent que <code>goto</code> c'est un héritage du C dépassé et qu'en C++ on devrait plutôt utiliser les exceptions. Soit, essayons.</p>
+<div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">get_infos_from_db</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">const</span> <span class="kt">int</span> <span class="n">nb_trains</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+    <span class="n">SGBD</span> <span class="o">*</span> <span class="n">sgbd</span><span class="p">;</span>
+
+    <span class="k">try</span>
+    <span class="p">{</span>
+        <span class="n">sgbd</span> <span class="o">=</span> <span class="n">SGBD_Init</span><span class="p">(</span><span class="s">&quot;trains.db&quot;</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">catch</span> <span class="p">(</span><span class="n">sgbd_exception</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">e</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">write_error_log</span><span class="p">(</span><span class="n">e</span><span class="p">);</span>
+        <span class="k">throw</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="kt">char</span><span class="o">**</span> <span class="n">trains_name</span><span class="p">;</span>
+    <span class="k">try</span>
+    <span class="p">{</span>
+        <span class="n">trains_name</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">char</span><span class="o">*</span><span class="p">[</span><span class="n">nb_trains</span><span class="p">];</span>
+    <span class="p">}</span>
+    <span class="k">catch</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">bad_alloc</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">e</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">SGBD_release</span><span class="p">(</span><span class="n">sgbd</span><span class="p">);</span>
+        <span class="n">write_error_log</span><span class="p">(</span><span class="n">e</span><span class="p">);</span>
+        <span class="k">throw</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="kt">int</span> <span class="n">last_good_alloc_index</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">nb_trains</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="kt">char</span> <span class="n">buffer</span><span class="p">[</span><span class="mi">256</span><span class="p">];</span>
+
+        <span class="k">try</span>
+        <span class="p">{</span>
+            <span class="n">trains_name</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">char</span><span class="p">[</span><span class="mi">42</span><span class="p">];</span>
+        <span class="p">}</span>
+        <span class="k">catch</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">bad_alloc</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">e</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">last_good_alloc_index</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="k">delete</span><span class="p">[]</span> <span class="n">trains_name</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">trains_name</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+            <span class="p">}</span>
+
+            <span class="k">delete</span><span class="p">[]</span> <span class="n">trains_name</span><span class="p">,</span> <span class="n">trains_name</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+            <span class="n">SGBD_release</span><span class="p">(</span><span class="n">sgbd</span><span class="p">);</span>
+            <span class="n">write_error_log</span><span class="p">(</span><span class="n">e</span><span class="p">);</span>
+            <span class="k">throw</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="n">last_good_alloc_index</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
+
+        <span class="n">sprintf</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="s">&quot;SELECT name FROM trains WHERE id = %d&quot;</span><span class="p">,</span> <span class="n">i</span><span class="p">);</span>
+        <span class="n">strcpy</span><span class="p">(</span><span class="n">trains_name</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">do_request</span><span class="p">(</span><span class="n">sgbd</span><span class="p">,</span> <span class="n">buffer</span><span class="p">));</span>
+    <span class="p">}</span>
+
+    <span class="n">File</span> <span class="o">*</span> <span class="n">file</span><span class="p">;</span>
+    <span class="k">try</span>
+    <span class="p">{</span>
+        <span class="n">file</span> <span class="o">=</span> <span class="n">fopen</span><span class="p">(</span><span class="s">&quot;saved.txt&quot;</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">catch</span> <span class="p">(</span><span class="n">file_exception</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">e</span><span class="p">)</span> 
+    <span class="p">{</span>
+        <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">nb_trains</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">delete</span><span class="p">[]</span> <span class="n">trains_name</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">trains_name</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="k">delete</span><span class="p">[]</span> <span class="n">trains_name</span><span class="p">,</span> <span class="n">trains_name</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+        <span class="n">SGBD_release</span><span class="p">(</span><span class="n">sgbd</span><span class="p">);</span>
+        <span class="n">write_error_log</span><span class="p">(</span><span class="n">e</span><span class="p">);</span>
+        <span class="k">throw</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="n">Lock</span> <span class="o">*</span> <span class="n">lock</span><span class="p">;</span>
+    <span class="k">try</span>
+    <span class="p">{</span>
+        <span class="n">lock</span> <span class="o">=</span> <span class="n">lock_acquire</span><span class="p">();</span>
+    <span class="p">}</span>
+    <span class="k">catch</span> <span class="p">(</span><span class="n">lock_exception</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">e</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">fclose</span><span class="p">(</span><span class="n">file</span><span class="p">),</span> <span class="n">file</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+
+        <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">nb_trains</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">delete</span><span class="p">[]</span> <span class="n">trains_name</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">trains_name</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="k">delete</span><span class="p">[]</span> <span class="n">trains_name</span><span class="p">,</span> <span class="n">trains_name</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+        <span class="n">SGBD_release</span><span class="p">(</span><span class="n">sgbd</span><span class="p">);</span>
+        <span class="n">write_error_log</span><span class="p">(</span><span class="n">e</span><span class="p">);</span>
+        <span class="k">throw</span><span class="p">;</span>
+    <span class="p">}</span>
+
+
+    <span class="n">do_some_stuff</span><span class="p">(</span><span class="n">trains_name</span><span class="p">,</span> <span class="n">file</span><span class="p">,</span> <span class="n">lock</span><span class="p">);</span>
+
+    <span class="n">lock_release</span><span class="p">(</span><span class="n">lock</span><span class="p">);</span>
+    <span class="n">fclose</span><span class="p">(</span><span class="n">file</span><span class="p">),</span> <span class="n">file</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">nb_trains</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">free</span><span class="p">(</span><span class="n">trains_name</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span> <span class="n">trains_name</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="n">free</span><span class="p">(</span><span class="n">trains_name</span><span class="p">),</span> <span class="n">trains_name</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+
+    <span class="n">SGBD_release</span><span class="p">(</span><span class="n">sgbd</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Finalement, ce code ne nous apporte aucun avantage par rapport au précédent : toujours aussi gros, toujours aussi illisible, et nous ne sommes même pas sûr de couvrir tous les chemins possibles : un oubli est possible, une fonction apparemment inoffensive peut lancer une exception, bref, toujours un cauchemar à maintenir.</p>
+<p>Que retenir jusque là : que la détection d'erreurs par retour de fonctions et <code>goto</code> ou les exceptions nécessitent d'ajouter des <code>if</code> ou des <code>try catch</code> toutes les deux lignes. En fait, dans ces cas de figure, chaque ligne où l'on acquiert une ressource qui n'est pas suivie d'un <code>if</code> ou entourée d'un <code>try catch</code> est suspecte et peut potentiellement faire échouer l'exécution.</p>
+<p>Le cœur du problème tient en une phrase : le développeur doit écrire du code spécifique pour la libération de la mémoire et la gestion des erreurs. Pour améliorer la situation, il faut obligatoirement libérer le développeur de cette tâche, qu'elle soit automatique. Hors, contrairement au C# ou au Java qui disposent d'un mécanisme de libération de la mémoire transparent et automatique appelé <strong>garbage collector</strong>, il n'est rien de tel en C++. Sommes-nous donc condamner à devoir écrire des codes aussi lourds ? Non, car une solution existe déjà.</p>
+<h1 id="lidiome-raii-a-la-rescousse">L’idiome RAII à la rescousse</h1>
+<p>Le C++ propose un idiome particulier appelé <strong>RAII</strong>, pour « <em>Resource Acquisition Is Initialization</em> », ce que l'on peut traduire par « <em>acquisition de ressources lors de l'initialisation</em> » en français. Comment fonctionne t-il ? Chaque ressource sera manipulée par une variable locale qui va l'acquérir à la construction et la libérer à la destruction. Ainsi, l'utilisateur n'aura même plus à se soucier d'appeler les fonctions <em>free</em>, <em>unlock</em> et autres <em>delete</em> pour que la libération des ressources ait bien lieu.</p>
+<p>Pour appliquer cet idiome en C++, nous allons utiliser les classes et en particulier le couple constructeur(s) / destructeur. On peut parler de <strong>capsules RAII</strong>.</p>
+<ul>
+<li><strong>Toutes les ressources seront acquises dans le constructeur</strong> ; si des ressources sont impossibles à acquérir, on lève une exception. Ainsi, il n'y a pas de risque de créer un objet incomplet (« <em>Ill formed</em> » en anglais) donc pas de risque de fuite de mémoire : la norme garantit en effet que si un constructeur lève une exception, toute la mémoire déjà allouée est libérée.</li>
+<li><strong>Toutes les ressources seront libérées dans le destructeur</strong>. Celui-ci étant appelé automatiquement dès que l'objet est détruit, on y écrira tous les mécanismes de libération de la ressources acquise dans le constructeur.</li>
+</ul>
+<p>(<em>Quand je dis « toutes les ressources seront acquises dans le constructeur », en fait, il faut une seule acquisition de ressource par capsule RAII, sinon on retombe sur le besoin de <code>try - catch</code> qu'on cherche à éviter.</em>)</p>
+<p>Voyons sans plus tarder comment appliquer ce principe à notre code précédent. Commençons tout d'abord par encapsuler nos ressources dans des classes, en prennant par exemple le SGBD.</p>
+<div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Sgbd_Capsule</span>
+<span class="p">{</span>
+    <span class="k">public</span><span class="o">:</span>
+        <span class="n">Sgbd_Capsule</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span> <span class="n">db</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="cm">/*</span>
+<span class="cm">                Appels de méthodes, initialisations d&#39;attributs, etc</span>
+<span class="cm">            */</span>
+
+            <span class="k">this</span><span class="o">-&gt;</span><span class="n">m_sgbd</span> <span class="o">=</span> <span class="n">SGBD_Init</span><span class="p">(</span><span class="n">db</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="o">~</span><span class="n">Sgbd_Capsule</span><span class="p">()</span>
+        <span class="p">{</span>
+            <span class="cm">/*</span>
+<span class="cm">                On libère les ressources allouées</span>
+<span class="cm">            */</span>
+
+            <span class="n">SGBD_release</span><span class="p">(</span><span class="k">this</span><span class="o">-&gt;</span><span class="n">m_sgbd</span><span class="p">);</span>
+        <span class="p">}</span>
+
+    <span class="k">private</span><span class="o">:</span>
+        <span class="n">SGBD</span> <span class="o">*</span> <span class="n">m_sgbd</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+
+
+<p>Maintenant, nous pouvons écrire du code aussi simple que celui ci-dessous (et nous verrons que nous pouvons faire encore plus simple dans la section suivante). </p>
+<div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">foo</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">Sgbd_Capsule</span> <span class="n">sgbd</span><span class="p">(</span><span class="s">&quot;trains.db&quot;</span><span class="p">);</span>
+
+    <span class="cm">/*</span>
+<span class="cm">        Des opérations diverses sur le SGBD.</span>
+<span class="cm">    */</span>
+
+    <span class="k">return</span> <span class="mi">42</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Les ressources sont libérées <strong>à la sortie du bloc dans lequel nous les avons acquises</strong>, c'est à dire ici en sortant de la fonction. Voiyez par vous mêmes l'exemple suivant.</p>
+<div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Test</span>
+<span class="p">{</span>
+    <span class="k">public</span><span class="o">:</span>
+        <span class="n">Test</span><span class="p">(</span><span class="kt">int</span> <span class="n">number</span><span class="p">)</span>
+        <span class="o">:</span> <span class="n">m_number</span><span class="p">(</span><span class="n">number</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Acquisition de la ressource n°&quot;</span> <span class="o">&lt;&lt;</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">m_number</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="o">~</span><span class="n">Test</span><span class="p">()</span>
+        <span class="p">{</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Libération de la ressource n°&quot;</span> <span class="o">&lt;&lt;</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">m_number</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+        <span class="p">}</span>
+
+    <span class="k">private</span><span class="o">:</span>
+        <span class="kt">int</span> <span class="n">m_number</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">Test</span> <span class="n">a</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+    <span class="p">{</span>
+        <span class="n">Test</span> <span class="n">b</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+        <span class="p">{</span>
+            <span class="n">Test</span> <span class="n">c</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span>
+            <span class="n">Test</span> <span class="n">d</span><span class="p">(</span><span class="mi">4</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="n">Test</span> <span class="n">e</span><span class="p">(</span><span class="mi">5</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>Acquisition de la ressource n°1
+Acquisition de la ressource n°2
+Acquisition de la ressource n°3
+Acquisition de la ressource n°4
+Libération de la ressource n°4
+Libération de la ressource n°3
+Acquisition de la ressource n°5
+Libération de la ressource n°5
+Libération de la ressource n°2
+Libération de la ressource n°1
+</pre></div>
+
+
+<h3 id="gestion-des-erreurs">Gestion des erreurs</h3>
+<p>Il reste néanmoins un problème que nous ne gerons pas encore : que fait-on si une erreur survient lors de l'acquisition ou de la libération des ressources ? Examinons chacun des cas. </p>
+<h4 id="erreur-lors-de-lacquisition">Erreur lors de l'acquisition</h4>
+<p>Si on ne peut acquérir une ressource, alors l'objet ne peut être construit. Le mieux est donc de lancer une exception. La norme garantie que si une exception est lancée dans le constructeur, alors toutes les ressources acquises avant le lancer de l'exception sont libérées. Le seul cas où la mémoire n'est pas libérée est si le constructeur alloue lui-même de la mémoire (à l'aide d'un <code>new</code> par exemple). Nous verrons néanmoins dans la section suivante comment éviter ce problème.</p>
+<div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Sgbd_Capsule</span>
+<span class="p">{</span>
+    <span class="k">public</span><span class="o">:</span>
+        <span class="n">Sgbd_Capsule</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span> <span class="n">db</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="cm">/*</span>
+<span class="cm">                Appels de méthodes, initialisations d&#39;attributs, etc</span>
+<span class="cm">            */</span>
+
+            <span class="k">this</span><span class="o">-&gt;</span><span class="n">m_sgbd</span> <span class="o">=</span> <span class="n">SGBD_Init</span><span class="p">(</span><span class="n">db</span><span class="p">);</span>
+            <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="o">-&gt;</span><span class="n">m_sgbd</span> <span class="o">==</span> <span class="k">nullptr</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="k">throw</span> <span class="n">sgbd_exception</span><span class="p">(</span><span class="s">&quot;Le SGBD ne peut être initialisé&quot;</span><span class="p">);</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+
+        <span class="o">~</span><span class="n">Sgbd_Capsule</span><span class="p">()</span>
+        <span class="p">{</span>
+            <span class="cm">/*</span>
+<span class="cm">                On libère les ressources allouées</span>
+<span class="cm">            */</span>
+
+            <span class="n">SGBD_release</span><span class="p">(</span><span class="k">this</span><span class="o">-&gt;</span><span class="n">m_sgbd</span><span class="p">);</span>
+        <span class="p">}</span>
+
+    <span class="k">private</span><span class="o">:</span>
+        <span class="n">SGBD</span> <span class="o">*</span> <span class="n">m_sgbd</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+
+
+<p>Enfin, un conseil important que je répète : si on a plusieurs ressources à acquérir dans un même constructeur, il vaut mieux que chaque ressource soit encapsulée dans sa propre capsule RAII ; ainsi, chaque ressource sera libérée par son propre destructeur et on s'évite bien des soucis.</p>
+<h4 id="erreur-lors-de-la-destruction">Erreur lors de la destruction</h4>
+<p>Ces cas là sont problématiques. En effet, il est impossible de lancer une exception. Pourquoi ? Nous savons que le destructeur d'un objet sera appellé si une exception est lancée dans le code ; hors, si le destructeur lance lui aussi une exception, nous nous retrouvons avec deux exceptions sur les bras, ce qui provoque un appel à la fonction <code>terminate()</code> et donc l'arrêt brutal du programme. De même, n'appelez jamais de fonctions dans le destructeur qui sont susceptibles de lancer des exceptions.</p>
+<p>On peut néanmoins utiliser un système de logs pour informer l'utilisateur qu'une erreur dans la libération des ressources est arrivée. Quand à savoir si l'on continue l'exécution ou s'il vaut mieux tout arrêter, c'est à vous de voir en fonction des situations.</p>
+<h3 id="un-mot-sur-le-dispose-pattern">Un mot sur le <a href="http://en.wikipedia.org/wiki/Dispose_pattern">dispose pattern</a></h3>
+<p>Peut-être venez-vous d'un langage où il existe un mot-clef <code>finally</code>, utilisé à la suite d'un <code>try - catch</code> et exécuté peu importe si une exception a été attrapé ou non ; ou bien existe t'il des constructions similaires du type <code>using</code> (C#), <code>with</code> (Python) ou encore <em><code>try</code>-with-ressources</em> (Java 7+). Dans tous les cas, le but est le même : empêcher des fuites de mémoire en libérant des ressources précédemment allouées. C'est ce qu'on appelle le <a href="http://en.wikipedia.org/wiki/Dispose_pattern">dispose pattern</a>.</p>
+<p>Pourtant, C++ ne fournit pas de mot-clefs ou de constructions similaires à celles de Java ou C# pour la simple et bonne raison que RAII nous permet de faire la même chose de façon plus efficace. Qu'est ce qui me permet de dire ça ? Je laisse le créateur du C++ <a href="http://www.stroustrup.com/bs_faq2.html#finally">répondre</a>.</p>
+<p><strong> Bjarne Stroustrup </strong></p>
+<blockquote>
+<p>In a system, we need a "resource handle" class for each resource. However, we don't have to have an "finally" clause for each acquisition of a resource. In realistic systems, there are far more resource acquisitions than kinds of resources, so the "resource acquisition is initialization" technique leads to less code than use of a "finally" construct. </p>
+</blockquote>
+<p><strong> Traduction libre </strong></p>
+<blockquote>
+<p>Dans un système, il faut une "capsule RAII" pour chaque ressource. Cependant, nous n'avons pas besoin d'une clause "finally" pour chaque acquisition de ressource. Dans des systèmes réalistes, il y a beaucoup plus d'acquisitions de ressources que de ressources, donc le RAII conduit à écrire moins de code que l'utilisation d'une construction avec "finally".</p>
+</blockquote>
+<h1 id="exemples-dapplication-avec-la-bibliotheque-standard">Exemples d’application avec la bibliothèque standard</h1>
+<p>La bibliothèque standard utilise énormément cet idiome, à travers des noms qui vous sont certainement familliers : <code>std::string</code>, <code>std::array</code>, <code>std::vector</code>, <code>std::ifstream</code>, etc. Quand on y réfléchit, a t-on déjà libéré manuellement un <code>std::string</code> ? Non, car c'est fait automatiquement pour nous. Et pour vous montrer à quel point la bibliothèque standard est infiniment supérieure à tout ce qu'on pourait faire manuellement, reprenons notre code de début en utilisant les mécanismes standards.</p>
+<div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">get_infos_from_db</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">const</span> <span class="kt">int</span> <span class="n">nb_trains</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+    <span class="n">Sgbd_Capsule</span> <span class="n">sgbd</span><span class="p">(</span><span class="s">&quot;trains.db&quot;</span><span class="p">);</span>
+
+    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span> <span class="n">trains_names</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">nb_trains</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">buffer</span> <span class="o">=</span> <span class="s">&quot;SELECT name FROM trains WHERE id = &quot;</span> <span class="o">+</span> <span class="n">std</span><span class="o">::</span><span class="n">to_string</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+        <span class="n">trains_names</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">do_request</span><span class="p">(</span><span class="n">sgbd</span><span class="p">,</span> <span class="n">buffer</span><span class="p">));</span>
+    <span class="p">}</span>
+
+    <span class="n">std</span><span class="o">::</span><span class="n">ifstream</span> <span class="n">file</span><span class="p">(</span><span class="s">&quot;saved.txt&quot;</span><span class="p">);</span>
+    <span class="n">Lock</span> <span class="o">*</span> <span class="n">lock</span> <span class="o">=</span> <span class="n">lock_acquire</span><span class="p">();</span>
+
+    <span class="n">do_some_stuff</span><span class="p">(</span><span class="n">trains_name</span><span class="p">,</span> <span class="n">file</span><span class="p">,</span> <span class="n">lock</span><span class="p">);</span>
+
+    <span class="n">lock_release</span><span class="p">(</span><span class="n">lock</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>N'est ce pas plus clair à lire et à comprendre ? Premier point à retenir : <strong>toujours utiliser au maximum la bibliothèque standard</strong>. Pourquoi se frustrer à faire un code comme on ferait en C quand on peut profiter de mécanismes éprouvés, performants et sûrs comme ceux proposés par la bibliothèque standard ? Donc faites-y appel le plus possible, ce sera du temps et du confort de gagnés.</p>
+<h3 id="cas-particulier-des-pointeurs">Cas particulier des pointeurs</h3>
+<p>Notre code n'est pas encore tout à fait satisfaisant. En effet, il reste un pointeur. Hors, les pointeurs nus sont source de beaucoup de problèmes en C++. Et si on pouvait ne pas avoir à écrire <code>Sgbd_Capsule</code>, ce serait encore mieux. Heureusement, la bibliothèque standard arrive encore une fois à notre secours en fournissant des <strong>pointeurs intelligents</strong> qui nous libèrent des contraintes de libération que l'on connait si bien en C.</p>
+<p>La norme C++11 nous propose plusieurs types de pointeurs intelligents :</p>
+<ul>
+<li><code>std::auto_ptr</code> : déprécié, à ne plus utiliser ;</li>
+<li><code>std::unique_ptr</code> : comme son nom l'indique, à utiliser quand on ne veut avoir qu'un seul pointeur sur un objet ;</li>
+<li><code>std::shared_ptr</code> : utilise un système de comptage de référence qui permet que plusieurs pointeurs pointent un même objet, ce dernier étant libéré quand le dernier pointeur pointant dessus est détruit ;</li>
+<li><code>std::weak_ptr</code> : si l'on y prend pas garde, les <code>std::shared_ptr</code> peuvent entrainer un problème de références circulaires (lisez donc <a href="http://loic-joly.developpez.com/tutoriels/cpp/smart-pointers/#LIII-A-4">cet article de Developpez</a> qui illustre ce problème). Il sert également dans le cas d'une ressource avec plusieurs observateurs non propriétaire. Je vous invite à lire <a href="https://guillaumebelz.wordpress.com/2014/09/04/references-unique_ptr-shared_ptr-et-weak_ptr/">cet article</a> pour des explications plus approfondies sur lequel choisir.</li>
+</ul>
+<p>Nous avons également deux templates bien pratiques :</p>
+<ul>
+<li><code>std::make_shared&lt;T&gt;</code> : construit un objet T et le met dans un <code>std::shared_ptr</code> (disponible avec C++11) ; </li>
+<li><code>std::make_unique&lt;T&gt;</code> : construit un objet T et le met dans un <code>std::unique_ptr</code> (disponible avec C++14, voir <a href="http://stackoverflow.com/questions/12580432/why-does-c11-have-make-shared-but-not-make-unique">ici</a> pour une implémentation en C++11). </li>
+</ul>
+<p>Ces templates sont à utiliser le plus possible car ils permettent d'écrire un code <em>exception-safe</em>. Lisez <a href="http://herbsutter.com/2013/05/29/gotw-89-solution-smart-pointers/">l'article</a> de Herb Sutter à ce propos.</p>
+<p>Et en plus, le mieux du mieux, on peut définir des <em>deleters</em>, c'est à dire définir comment le pointeur va libérer sa ressource. Il suffit simplement de créer une classe sur ce modèle que l'on passera ensuite en argument à notre pointeur intelligent. </p>
+<div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Deleter</span>
+<span class="p">{</span>
+    <span class="k">public</span><span class="o">:</span>
+        <span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
+        <span class="kt">void</span> <span class="k">operator</span><span class="p">()(</span><span class="n">T</span> <span class="o">*</span> <span class="n">ptr</span><span class="p">)</span> <span class="k">const</span>
+        <span class="p">{</span>
+            <span class="cm">/* Opérations diverses pour libérer la ressource */</span>
+        <span class="p">}</span>
+<span class="p">};</span>
+</pre></div>
+
+
+<p>Et comme un exemple vaut mille explications, utilisons ce principe avec notre SGBD et notre mécanisme de verrouillage qui se pretent bien au jeu. Mais comme rien n'est parfait, les fonctions <code>std::make_shared&lt;T&gt;</code> et <code>std::make_unique&lt;T&gt;</code> ne prennent pas de deleter en argument. Il nous faut passer par la construction classique.</p>
+<div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">SGBD_deleter</span>
+<span class="p">{</span>
+    <span class="k">public</span><span class="o">:</span>
+        <span class="kt">void</span> <span class="k">operator</span><span class="p">()(</span><span class="n">SGBD</span> <span class="o">*</span> <span class="n">sgbd</span><span class="p">)</span> <span class="k">const</span>
+        <span class="p">{</span>
+            <span class="n">SGBD_release</span><span class="p">(</span><span class="n">sgbd</span><span class="p">);</span>
+        <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">Lock_deleter</span>
+<span class="p">{</span>
+    <span class="k">public</span><span class="o">:</span>
+        <span class="kt">void</span> <span class="k">operator</span><span class="p">()(</span><span class="n">Lock</span> <span class="o">*</span> <span class="n">lock</span><span class="p">)</span> <span class="k">const</span>
+        <span class="p">{</span>
+            <span class="n">lock_release</span><span class="p">(</span><span class="n">lock</span><span class="p">);</span>
+        <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="kt">void</span> <span class="nf">get_infos_from_db</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">const</span> <span class="kt">int</span> <span class="n">nb_trains</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">SGBD</span><span class="p">,</span> <span class="n">SGBD_deleter</span><span class="o">&gt;</span> <span class="n">sgdb</span> <span class="p">{</span><span class="n">SGBD_Init</span><span class="p">(</span><span class="s">&quot;train.db&quot;</span><span class="p">),</span> <span class="n">SGBD_deleter</span><span class="p">()};</span>
+
+    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span> <span class="n">trains_names</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">nb_trains</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">buffer</span> <span class="o">=</span> <span class="s">&quot;SELECT name FROM trains WHERE id = &quot;</span> <span class="o">+</span> <span class="n">std</span><span class="o">::</span><span class="n">to_string</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+        <span class="n">trains_names</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">do_request</span><span class="p">(</span><span class="n">sgbd</span><span class="p">,</span> <span class="n">buffer</span><span class="p">));</span>
+    <span class="p">}</span>
+
+    <span class="n">std</span><span class="o">::</span><span class="n">ifstream</span> <span class="n">file</span><span class="p">(</span><span class="s">&quot;saved.txt&quot;</span><span class="p">);</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">Lock</span><span class="p">,</span> <span class="n">Lock_deleter</span><span class="o">&gt;</span> <span class="n">lock</span> <span class="p">{</span><span class="n">lock_acquire</span><span class="p">(),</span> <span class="n">Lock_deleter</span><span class="p">()};</span>
+
+    <span class="n">do_some_stuff</span><span class="p">(</span><span class="n">trains_name</span><span class="p">,</span> <span class="n">file</span><span class="p">,</span> <span class="n">lock</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Les pointeurs intelligents nous permettent également d'éviter le problème du constructeur qui alloue lui-même de la mémoire que nous avons vu dans la section précédente. En effet, les pointeurs intelligents seront bien libérés même si l'on rencontre une exception. Donc utilisez-les dès que vous pouvez, quite à réécrire une version fonctionelle des pointeurs intelligents ou utiliser Boost si vous ne pouvez pas compiler en C++11 / C++14.</p>
+<p>Deuxième point à retenir : chaque fois qu'il est nécessaire d'utiliser des pointeurs, <strong>utilisez des pointeurs intelligents</strong>. Les cas où vous devrez obligatoirement utiliser des pointeurs nus sont très rares, alors utilisez la solution la plus confortable.</p>
+<h1 id="bonnes-pratiques">Bonnes pratiques</h1>
+<p>L'idéal, quand on gère des ressources, est de les <strong>libérer dès que possible</strong>. Non seulement cela est obligatoire dans certains cas (afin de ne pas faire attendre un processus trop longtemps pour ouvrir un fichier par exemple), mais en plus cela permet de soulager le système. Comment traduire cette bonne pratique en utilisant l’idiome RAII ? Et bien il faut que l’on détruise nos objets s’occupant des ressources le plus vite possible, ce qui est possible en utilisant des blocs d'instructions.</p>
+<div class="highlight"><pre><span></span><span class="kt">int</span> <span class="n">value</span><span class="p">;</span>
+
+<span class="p">{</span> <span class="c1">// Début du bloc d’instructions</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">ifstream</span> <span class="n">f</span><span class="p">(</span><span class="s">&quot;test.txt&quot;</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">f</span><span class="p">.</span><span class="n">is_open</span><span class="p">())</span> <span class="p">{</span>
+        <span class="n">f</span> <span class="o">&gt;&gt;</span> <span class="n">value</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span> <span class="c1">// Fin du bloc d’instruction : appel du destructeur du fichier</span>
+
+<span class="n">value</span> <span class="o">=</span> <span class="n">value</span> <span class="o">*</span> <span class="mi">4</span><span class="p">;</span>
+</pre></div>
+
+
+<p>Il s’agit d’une pratique courante que vous pourrez voir dans certains codes. Et bien entendu, le corolaire : <strong>ne déclarer vos objets que quand vous en avez besoin</strong> et pas avant. Alors oubliez les réflexes du C89 qui consistent à déclarer toutes les variables au début d'un bloc et ne le faite que pour un usage immédiat (sauf exception). </p>
+<h3 id="la-const-correctness">La const-correctness</h3>
+<p>Ce n'est pas une bonne pratique spécifique au RAII, mais dès qu'une ressource est censée être constante, alors il faut impérativement utiliser le mot-clef <code>const</code>. Cela donne des garanties à l'utilisateur et, couplé avec des références, permet un passage en argument plus rapide.</p>
+<div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">bar</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">data</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="c1">// Ici, on est certain que data ne sera pas modifiée.</span>
+    <span class="c1">// On utilise le passage par référence pour éviter une recopie inutile.</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>D'ailleurs, petite astuce (merci <a href="http://herbsutter.com/2013/04/05/complex-initialization-for-a-const-variable/">Herb Sutter</a>), si l'on veut déclarer un objet constant alors que ses paramètres dépendent de conditions, on peut y arriver grâce aux lambdas.</p>
+<div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp"></span>
+
+<span class="k">class</span> <span class="nc">Test</span>
+<span class="p">{</span>
+    <span class="k">public</span><span class="o">:</span>
+        <span class="n">Test</span><span class="p">(</span><span class="kt">int</span> <span class="n">number</span><span class="p">)</span>
+        <span class="o">:</span> <span class="n">m_number</span><span class="p">(</span><span class="n">number</span><span class="p">)</span>
+        <span class="p">{</span>
+        <span class="p">}</span>
+
+        <span class="kt">int</span> <span class="n">number</span><span class="p">()</span> <span class="k">const</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">m_number</span><span class="p">;</span>
+        <span class="p">}</span>
+
+    <span class="k">private</span><span class="o">:</span>
+        <span class="kt">int</span> <span class="n">m_number</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">const</span> <span class="n">Test</span> <span class="n">a</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+
+    <span class="k">const</span> <span class="n">Test</span> <span class="n">f</span> <span class="o">=</span> <span class="p">[</span><span class="o">&amp;</span><span class="p">]</span>
+    <span class="p">{</span>
+        <span class="n">Test</span> <span class="n">f</span> <span class="o">=</span> <span class="n">Test</span><span class="p">(</span><span class="mi">6</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">a</span><span class="p">.</span><span class="n">number</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="n">Test</span><span class="p">(</span><span class="mi">42</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">f</span><span class="p">;</span>
+    <span class="p">}();</span>
+
+    <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Valeur de f : &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">f</span><span class="p">.</span><span class="n">number</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>Valeur de f : 42
+</pre></div>
+
+
+<h1 id="et-dans-les-autres-langages">Et dans les autres langages ?</h1>
+<p>Bien que le C++ ait été le précurseur et le plus grand utilisateur de l'idiome RAII, aujourd'hui il n'est plus le seul. D'autres langages permettent, par des moyens assez similaires, d'utiliser une sorte de RAII.</p>
+<h3 id="avec-c">Avec C</h3>
+<p>Bien que cette possibilité soit offerte par une extension de GCC et donc non-standard, elle mérite le détour et peut être intéressante pour ceux dont les applications ne seront compilées que par GCC. Il s'agit de l'attribut <code>cleanup</code>. Voici un exemple tiré de la <a href="https://en.wikipedia.org/wiki/Resource_Acquisition_Is_Initialization">page</a> Wikipédia consacrée au RAII.</p>
+<div class="highlight"><pre><span></span><span class="k">static</span> <span class="kr">inline</span> <span class="kt">void</span> <span class="nf">fclosep</span><span class="p">(</span><span class="kt">FILE</span> <span class="o">**</span> <span class="n">fp</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">*</span><span class="n">fp</span><span class="p">)</span>
+        <span class="n">fclose</span><span class="p">(</span><span class="o">*</span><span class="n">fp</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="cp">#define _cleanup_fclose_ __attribute__((cleanup(fclosep)))</span>
+
+<span class="kt">void</span> <span class="nf">example_usage</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">_cleanup_fclose_</span> <span class="kt">FILE</span> <span class="o">*</span> <span class="n">logfile</span> <span class="o">=</span> <span class="n">fopen</span><span class="p">(</span><span class="s">&quot;logfile.txt&quot;</span><span class="p">,</span> <span class="s">&quot;w+&quot;</span><span class="p">);</span>
+    <span class="n">fputs</span><span class="p">(</span><span class="s">&quot;hello logfile !&quot;</span><span class="p">,</span> <span class="n">logfile</span><span class="p">);</span>
+
+    <span class="cm">/* logfile est correctement fermé sans appel explicite à fclose */</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<h3 id="avec-d">Avec D</h3>
+<p>Le D fournit trois méthodes pour permettre la libération des ressources, dont une identique à celle utilisée en C++ : le couple constructeur / destructeur d'une classe. Les exemples suivants sont tirés du <a href="http://dlang.org/exception-safe.html">site officiel</a>.</p>
+<div class="highlight"><pre><span></span><span class="k">class</span> <span class="n">Lock</span>
+<span class="p">{</span>
+    <span class="n">Mutex</span> <span class="n">m</span><span class="p">;</span>
+
+    <span class="k">this</span><span class="p">(</span><span class="n">Mutex</span> <span class="n">m</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="n">m</span> <span class="p">=</span> <span class="n">m</span><span class="p">;</span>
+        <span class="n">lock</span><span class="p">(</span><span class="n">m</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="p">~</span><span class="k">this</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="n">unlock</span><span class="p">(</span><span class="n">m</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="n">abc</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">Mutex</span> <span class="n">m</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Mutex</span><span class="p">;</span>
+    <span class="k">auto</span> <span class="n">l</span> <span class="p">=</span> <span class="n">scoped</span><span class="p">!</span><span class="n">Lock</span><span class="p">(</span><span class="k">new</span> <span class="n">Lock</span><span class="p">(</span><span class="n">m</span><span class="p">));</span>
+    <span class="n">foo</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>La seconde façon se rapproche de celle de Java avec un <code>try - finally</code>.</p>
+<div class="highlight"><pre><span></span><span class="kt">void</span> <span class="n">abc</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">Mutex</span> <span class="n">m</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Mutex</span><span class="p">;</span>
+    <span class="n">lock</span><span class="p">(</span><span class="n">m</span><span class="p">);</span>        <span class="c1">// lock the mutex</span>
+    <span class="k">try</span>
+    <span class="p">{</span>
+        <span class="n">foo</span><span class="p">();</span>      <span class="c1">// do processing</span>
+    <span class="p">}</span>
+    <span class="k">finally</span>
+    <span class="p">{</span>
+        <span class="n">unlock</span><span class="p">(</span><span class="n">m</span><span class="p">);</span>  <span class="c1">// unlock the mutex</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Enfin, il existe une troisième méthode, originale par rapport aux deux autres : <code>scope(exit)</code>. Tout le code qui sera placé après cette instruction sera exécuté peu importe si la fonction se termine normalement ou si une exception est lancée. Elle se décline également sous deux autres formes : <code>scope(failure)</code> où le code ne sera exécuté qu'en cas d'exception et <code>scope(success)</code> où le code sera exécuté en cas de déroulement normal. La <a href="http://dlang.org/statement.html#ScopeGuardStatement">documentation</a> complètera mes explications.</p>
+<div class="highlight"><pre><span></span><span class="kt">void</span> <span class="n">abc</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">Mutex</span> <span class="n">m</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Mutex</span><span class="p">;</span>
+
+    <span class="n">lock</span><span class="p">(</span><span class="n">m</span><span class="p">);</span>                <span class="c1">// lock the mutex</span>
+    <span class="k">scope</span><span class="p">(</span><span class="n">exit</span><span class="p">)</span> <span class="n">unlock</span><span class="p">(</span><span class="n">m</span><span class="p">);</span>  <span class="c1">// unlock on leaving the scope</span>
+
+    <span class="n">foo</span><span class="p">();</span>                  <span class="c1">// do processing</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<h3 id="avec-rust">Avec Rust</h3>
+<p>Rust, langage développé par la fondation Mozilla, utilise le RAII de la même manière que C++. Et comme un code est plus parlant, voici celui tiré de <a href="http://rustbyexample.com/raii.html">la page</a> consacrée au RAII avec Rust.</p>
+<div class="highlight"><pre><span></span><span class="k">fn</span> <span class="nf">create_box</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// Allocate an integer in the heap</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">_function_box</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">box</span><span class="w"> </span><span class="mi">3</span><span class="n">i</span><span class="p">;</span><span class="w"></span>
+
+<span class="w">    </span><span class="c1">// `_function_box` gets destroyed here, memory gets freed</span>
+<span class="p">}</span><span class="w"></span>
+
+<span class="k">fn</span> <span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// Allocate an integer in the heap</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">_boxed_int</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">box</span><span class="w"> </span><span class="mi">5</span><span class="n">i</span><span class="p">;</span><span class="w"></span>
+
+<span class="w">    </span><span class="c1">// new (smaller) scope</span>
+<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="c1">// Another heap allocated integer</span>
+<span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="n">_short_lived_box</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">box</span><span class="w"> </span><span class="mi">4</span><span class="n">i</span><span class="p">;</span><span class="w"></span>
+
+<span class="w">        </span><span class="c1">// `_short_lived_box` gets destroyed here, memory gets freed</span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+
+<span class="w">    </span><span class="c1">// Create lots of boxes</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="n">_</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">range</span><span class="p">(</span><span class="mi">0</span><span class="n">u</span><span class="p">,</span><span class="w"> </span><span class="mi">1_000</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="n">create_box</span><span class="p">();</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+
+<span class="w">    </span><span class="c1">// `_boxed_int` gets destroyed here, memory gets freed</span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>$ rustc raii.rs &amp;&amp; valgrind ./raii
+==26873== Memcheck, a memory error detector
+==26873== Copyright (C) 2002-2013, and GNU GPL&#39;d, by Julian Seward et al.
+==26873== Using Valgrind-3.9.0 and LibVEX; rerun with -h for copyright info
+==26873== Command: ./raii
+==26873==
+==26873==
+==26873== HEAP SUMMARY:
+==26873==     in use at exit: 0 bytes in 0 blocks
+==26873==   total heap usage: 1,013 allocs, 1,013 frees, 8,696 bytes allocated
+==26873==
+==26873== All heap blocks were freed -- no leaks are possible
+==26873==
+==26873== For counts of detected and suppressed errors, rerun with: -v
+==26873== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 2 from 2)
+</pre></div>
+
+
+<p>Nous voilà arrivé à la fin de cet article qui, je l'espère, vous en aura appris un peu plus sur C++. Bien entendu, le RAII n'est pas parfait : le pire qui puisse arriver est une erreur dans le destructeur. Mais hormis ces cas critiques, c'est un idiome particulièrement pratique et puissant, alors usez-en et abusez-en !</p>
+        </div>
+    </section>
+        </div>
+        <div class="col-sm-3" id="sidebar">
+            <aside>
+
+<section class="well well-sm">
+    <ul class="list-group list-group-flush">
+
+        <!-- Search bar in low width mode -->
+        <li id="searchSideBar" class="list-group-item"><span>
+                <form class="navbar-search" action="/blog/search">
+                  <input type="text" class="search-query" placeholder="Rechercher" name="q" id="tipue_search_input" required>
+                </form></span>
+        </li>
+
+        <li class="list-group-item"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Social</span></h4>
+              <ul class="list-group" id="social">
+                    <li class="list-group-item"><a href="https://example.org">
+                        <i class="fa fa-comment fa-lg"></i>
+                       Link 1</a>
+                    </li>
+                    <li class="list-group-item"><a href="https://example.org">
+                        <i class="fa fa-comments fa-lg"></i>
+                       Link 2</a>
+                    </li>
+                    <li class="list-group-item"><a href="/page/content">
+                        <i class="fa fa-etc fa-lg"></i>
+                       etc</a>
+                    </li>
+              </ul>
+            </li>
+
+
+            <li class="list-group-item"><a href="http://yliesc.github.io/"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Categories</span></h4></a>
+                <ul class="list-group" id="categories">
+                </ul>
+            </li>
+
+
+
+    <li class="list-group-item"><h4><i class="fa fa-link fa-lg"></i><span class="icon-label">External Links</span></h4>
+      <ul class="list-group" id="links">
+        <li class="list-group-item">
+            <a href="https://example.org" target="_blank">
+                Link 1
+            </a>
+        </li>
+        <li class="list-group-item">
+            <a href="https://example.org" target="_blank">
+                Link 2
+            </a>
+        </li>
+        <li class="list-group-item">
+            <a href="/page/content" target="_blank">
+                etc
+            </a>
+        </li>
+      </ul>
+    </li>
+
+        <li class="list-group-item" id="github">
+            <ul class="list-group">
+                <li class="list-group-item"><h5>Vous voyez une erreur ?</h5></li>
+                <li class="list-group-item">
+                    <a class="btn btn-info github" target="_blank" href="https://github.com/YliesC/website/edit/master/content/pages/pdp/content/lidiome-raii-applique-au-c.md">
+                        <i class="fa fa-random"></i> Modifiez la page sur GitHub
+                    </a>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</section>            </aside>
+        </div>
+    </div>
+</div>
+<footer>
+   <div class="container">
+      <hr>
+      <div class="row">
+         <div class="col-xs-10">&copy;  
+            &middot; Powered by <a href="https://github.com/getpelican/pelican-themes/tree/master/pelican-bootstrap3" target="_blank">pelican-bootstrap3</a>,
+            <a href="http://docs.getpelican.com/" target="_blank">Pelican</a>,
+<a href="http://getbootstrap.com" target="_blank">Bootstrap</a>                <p><small>  <a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr"><img alt="Creative Commons License" style="border-width:0" src="//i.creativecommons.org/l/by-sa/4.0/80x15.png" /></a>
+    Content
+  licensed under a <a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">Creative Commons Attribution-ShareAlike 4.0 International License</a>, except where indicated otherwise.
+</small></p>
+         </div>
+         <div class="col-xs-2"><p class="pull-right"><i class="fa fa-arrow-up"></i> <a href="#">Back to top</a></p></div>
+      </div>
+   </div>
+</footer>
+<script src="http://yliesc.github.io/theme/js/jquery.min.js"></script>
+
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="http://yliesc.github.io/theme/js/bootstrap.min.js"></script>
+
+<!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
+<script src="http://yliesc.github.io/theme/js/respond.min.js"></script>
+
+<!--  -->
+
+
+</body>
+</html>

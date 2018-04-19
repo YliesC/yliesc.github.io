@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="fr" prefix="og: http://ogp.me/ns# fb: https://www.facebook.com/2008/fbml">
+<head>
+    <title>Trouver et supprimer les goulots d'étranglement en Erlang - The Golden Koala</title>
+    <!-- Using the latest rendering mode for IE -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <link href="http://yliesc.github.io/images/koala-ico.png" rel="icon">
+
+<link rel="canonical" href="http://yliesc.github.io/pages/pdp/content/trouver-et-supprimer-les-goulots-detranglement-en-erlang/">
+
+        <meta name="author" content="Black" />
+        <meta name="description" content="Introduction Erlang Modèle à acteur Programmation fonctionnelle Machine virtuelle Two-phase commit Méthodologie de suppression des goulots d&#39;étranglement Itérations Itération 1 : Approche naïve Itération 2 : Extraction de la transaction Itération 3 : Extraction du Compte client Bilan Comparaison des performances Comparaison par itération et nombre de clients/banques Itération 1 : Approche naïve …" />
+
+    <meta property="og:site_name" content="The Golden Koala" />
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="Trouver et supprimer les goulots d&#39;étranglement en Erlang"/>
+    <meta property="og:url" content="http://yliesc.github.io/pages/pdp/content/trouver-et-supprimer-les-goulots-detranglement-en-erlang/"/>
+    <meta property="og:description" content="Introduction Erlang Modèle à acteur Programmation fonctionnelle Machine virtuelle Two-phase commit Méthodologie de suppression des goulots d&#39;étranglement Itérations Itération 1 : Approche naïve Itération 2 : Extraction de la transaction Itération 3 : Extraction du Compte client Bilan Comparaison des performances Comparaison par itération et nombre de clients/banques Itération 1 : Approche naïve …" />
+
+
+    <!-- Bootstrap -->
+        <link rel="stylesheet" href="http://yliesc.github.io/theme/css/bootstrap.readable.min.css" type="text/css"/>
+    <link href="http://yliesc.github.io/theme/css/font-awesome.min.css" rel="stylesheet">
+
+    <link href="http://yliesc.github.io/theme/css/pygments/default.css" rel="stylesheet">
+    <link href="http://yliesc.github.io/theme/tipuesearch/tipuesearch.css" rel="stylesheet">
+    <link rel="stylesheet" href="http://yliesc.github.io/theme/css/style.css" type="text/css"/>
+        <link href="http://yliesc.github.io/css/custom.css" rel="stylesheet">
+
+        <link href="http://yliesc.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate"
+              title="The Golden Koala ATOM Feed"/>
+
+
+
+
+</head>
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+	<div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="http://yliesc.github.io/" class="navbar-brand">
+<img class="img-responsive pull-left gap-right" src="http://yliesc.github.io/images/koala-logo.svg" width="38"/> <span id="siteName">The Golden Koala</span>            </a>
+        </div>
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+
+            </ul>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+</div> <!-- /.navbar -->
+<!-- Banner -->
+<!-- End Banner -->
+<div class="container">
+    <div class="row">
+        <div class="col-sm-9">
+    <ol class="breadcrumb">
+        <li><a href="http://yliesc.github.io/" title="The Golden Koala">
+            <i class="fa fa-home fa-lg"></i>
+        </a></li>
+        <li class="active">Trouver et supprimer les goulots d'étranglement en Erlang</li>
+    </ol>
+    <section id="content" class="body">
+        <h1 class="entry-title">Trouver et supprimer les goulots d'étranglement en Erlang</h1>
+            <div class="entry-content">
+                    <div class="panel">
+                        <div class="panel-body">
+<footer class="post-info">
+    
+    <span class="published">
+        <span class="label label-default"><i class="fa fa-calendar"></i><time datetime="2014-09-27T00:00:00+02:00"> sam. 27 septembre 2014</time></span> | 
+    </span>
+        <span class="label label-default"><i class="fa fa-user-circle"></i> Black</span>  | 
+    <span class="label label-default">
+            <i class="fa fa-cc"></i> 
+        
+            CC-BY-SA
+    </span>
+</footer><!-- /.page-info -->                        </div>
+                    </div>
+            <div class="toc">
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#erlang">Erlang</a><ul>
+<li><a href="#modele-a-acteur">Modèle à acteur</a></li>
+<li><a href="#programmation-fonctionnelle">Programmation fonctionnelle</a></li>
+<li><a href="#machine-virtuelle">Machine virtuelle</a></li>
+</ul>
+</li>
+<li><a href="#two-phase-commit">Two-phase commit</a></li>
+<li><a href="#methodologie-de-suppression-des-goulots-detranglement">Méthodologie de suppression des goulots d'étranglement</a></li>
+<li><a href="#iterations">Itérations</a><ul>
+<li><a href="#iteration-1-approche-naive">Itération 1 : Approche naïve</a></li>
+<li><a href="#iteration-2-extraction-de-la-transaction">Itération 2 : Extraction de la transaction</a></li>
+<li><a href="#iteration-3-extraction-du-compte-client">Itération 3 : Extraction du Compte client</a></li>
+</ul>
+</li>
+<li><a href="#bilan">Bilan</a><ul>
+<li><a href="#comparaison-des-performances">Comparaison des performances</a><ul>
+<li><a href="#comparaison-par-iteration-et-nombre-de-clientsbanques">Comparaison par itération et nombre de clients/banques</a><ul>
+<li><a href="#iteration-1-approche-naive_1">Itération 1 : Approche naïve</a></li>
+<li><a href="#iteration-2-extraction-de-la-transaction_1">Itération 2 : Extraction de la transaction</a></li>
+<li><a href="#iteration-3-extraction-du-compte-client_1">Itération 3 : Extraction du Compte client</a></li>
+</ul>
+</li>
+<li><a href="#comparaison-par-nombre-de-curs-alloues">Comparaison par nombre de cœurs alloués</a></li>
+</ul>
+</li>
+<li><a href="#comparaison-de-la-taille-des-codes">Comparaison de la taille des codes</a></li>
+</ul>
+</li>
+<li><a href="#conclusion">Conclusion</a><ul>
+<li><a href="#notes">Notes</a></li>
+</ul>
+</li>
+<li><a href="#pour-aller-plus-loin">Pour aller plus loin</a><ul>
+<li><a href="#comparaison-par-nombre-de-curs-alloues_1">Comparaison par nombre de cœurs alloués</a></li>
+<li><a href="#remarques">Remarques</a></li>
+</ul>
+</li>
+<li><a href="#conclusion-2">Conclusion 2</a><ul>
+<li><a href="#notes-2">Notes 2</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<h2 id="introduction">Introduction</h2>
+<p>Implanter des systèmes distribués est une tâche complexe qui requiert de bons outils et une bonne méthode afin que ces systèmes puissent passer à l'échelle.</p>
+<p>Nous verrons comment réaliser un <a href="http://en.wikipedia.org/wiki/Two-phase_commit_protocol">Two-phase commit</a> en Erlang et comment, en deux itérations, nous pouvons le rendre plus performant.</p>
+<h2 id="erlang">Erlang</h2>
+<p><a href="http://www.erlang.org/">Erlang</a> est un langage de programmation fonctionnel basé sur le modèle à acteur, développé par Ericsson, afin de pouvoir construire des systèmes distribués et fiables. Erlang était destiné au domaine des télécommunications.</p>
+<h3 id="modele-a-acteur">Modèle à acteur</h3>
+<p>Le <a href="http://en.wikipedia.org/wiki/Actor_model">modèle à acteur</a> est une approche qui vise à concevoir un système sous la forme d'un ensemble de <strong>processus</strong> concurrents.</p>
+<p>Ces processus sont nommés <strong>Acteur</strong>s et lls communiquent par envoi de messages (<em>ou <a href="http://en.wikipedia.org/wiki/Message_passing">message passing</a></em>).</p>
+<p>Chaque acteur est l'unique propriétaire de ses propres données et il possède une messagerie comme point d'entrée où sont stockés les messages qui lui sont adressés et qu'il traitera par <em>ordre d'arrivée</em>.</p>
+<h3 id="programmation-fonctionnelle">Programmation fonctionnelle</h3>
+<p>La programmation fonctionnelle est à opposer à la programmation procédurale : il s'agit d'exprimer les relations entre les données plutôt que de décrire l'ordre des traitements qui leur seront appliqués.</p>
+<p>Le point principal à retenir est que les modifications de variables sont impossibles et, de ce fait, les boucles sont simulées par récursion. De plus, pour pouvoir représenter la progression d'un taitement, il faut impérativement construire une <a href="http://en.wikipedia.org/wiki/Finite-state_machine">machine à états finis</a>.</p>
+<h3 id="machine-virtuelle">Machine virtuelle</h3>
+<p>De la même manière que les programmes JAVA et C# sont compilés vers du <em><a href="http://en.wikipedia.org/wiki/Bytecode">bytecode</a></em>, pour être exécutés par une machine virtuelle, respectivement la JVM et la CLR. Les programmes Erlang sont compilés vers un format BEAM pour être exécutés par le <em>Erlang runtime system</em>.</p>
+<p>L'avantage de ce système est que la gestion des serveurs et des nœuds du système (ainsi que tous les aspects de gestion de pannes et de répartition de charge) soit confiée à la machine virtuelle et non au programme, ce qui le simplifie grandement.</p>
+<p>Tous ces aspects font que la machine virtuelle est en mesure de répartir la charge et les acteurs en fonction de leur communication, ce qui assure un passage à l'échelle quasi-linéaire, pour peu que le système ne comporte pas de problème de goulots d'étranglement.</p>
+<h2 id="two-phase-commit">Two-phase commit</h2>
+<p>Le Two-phase commit est un protocole utilisé pour permettre un consensus distribué, ici nous cherchons à garantir la cohérence des données d'un système.</p>
+<p>Pour les besoins de notre étude, nous allons implanter un Two-phase commit dans le cadre d'une gestion de comptes bancaires, de la manière suivante :</p>
+<ul>
+<li>Il y aura un <strong>Coordinateur</strong> chargé de relier les différentes banques entre elles.</li>
+<li>À cette fin, les <strong>Banques</strong>, lors de leur création, vont se déclarer au <strong>Coordinateur</strong>.</li>
+<li>Un <strong>Client</strong> s'inscrira alors auprès d'une <strong>Banque</strong> qui lui ouvrira un compte créditeur de 10 unités.</li>
+<li>Le <strong>Client</strong> fera, auprès de sa <strong>Banque</strong>, une demande de transfert d'une unité vers un autre <strong>Client</strong>.</li>
+<li>La <strong>Banque</strong> transmettra cette demande au <strong>Coordinateur</strong>.</li>
+<li>Le <strong>Coordinateur</strong> contactera toutes ses <strong>Banques</strong> pour savoir laquelle gère le compte du bénificiaire.</li>
+<li>La <strong>Banque</strong>, gestionnaire du compte du <strong>Client</strong> destinataire, répondra au <strong>Coordinateur</strong>.</li>
+<li>Le <strong>Coordinateur</strong> demandera à la <strong>Banque</strong> du <strong>Client</strong> émetteur de s'assurer qu'il dispose de suffisament d'argent pour effectuer le virement.</li>
+<li>Le <strong>Coordinateur</strong> effectuera un <strong>commit</strong> en émettant deux demandes d'actions : respectivement ajouter et retirer une unité.</li>
+<li>Si la <strong>Banque</strong> du <strong>Client</strong> émetteur ne possède plus suffisament d'unités, elle le signalera au <strong>Coordinateur</strong>.</li>
+<li>Le <strong>Coordinateur</strong> émettra alors une demande de <strong>rollback</strong> auprès de la <strong>Banque</strong> du destinataire qui lui retirera une unité.</li>
+</ul>
+<p><img alt="Le Coordinateur est le point central, il mène les transactions" src="http://progdupeu.pl/media/galleries/62/922c3375-ff0f-46c7-bd47-212a71fb1279.png" /></p>
+<h2 id="methodologie-de-suppression-des-goulots-detranglement">Méthodologie de suppression des goulots d'étranglement</h2>
+<p>Pour supprimer les goulots d'étranglement, il faut chercher les acteurs qui ont beaucoup de données ou qui reçoivent beaucoup de messages et en extraire une responsabilité dans un nouvel acteur.</p>
+<h2 id="iterations">Itérations</h2>
+<p>En partant de ce concept, trois versions, détaillées ci-dessous, ont été dérivées.</p>
+<p>Toutes les sources se trouvent à cette adresse : <a href="https://github.com/blackheaven/bottleneck-buster">https://github.com/blackheaven/bottleneck-buster</a>.</p>
+<h3 id="iteration-1-approche-naive">Itération 1 : Approche naïve</h3>
+<p>Comme son nom l'indique, il s'agit juste d'une implantation brute de l'algorithme.</p>
+<p>Les sources de la version se trouvent dans le répertoire <a href="https://github.com/blackheaven/bottleneck-buster/tree/master/dirty">dirty</a>.</p>
+<h3 id="iteration-2-extraction-de-la-transaction">Itération 2 : Extraction de la transaction</h3>
+<p>Le but ici est de décharger le <strong>Coordinateur</strong>, qui était devenu le goulot d'étranglement du système, du fait qu'il conduisait toutes les transactions, en créant un acteur chargé de gérer une <strong>Transaction</strong>.</p>
+<p>Le rôle du <strong>Coordinateur</strong> se limite à trouver la <strong>Banque</strong> du <strong>Client</strong> destinataire.</p>
+<p>Qui plus est, la <strong>Transaction</strong> est en mesure de se relancer par elle-même, en cas d'échec.</p>
+<p><img alt="La Transaction se gère de manière autonome, elle communique beaucoup avec les Banques" src="http://progdupeu.pl/media/galleries/62/8c5d2765-de94-41df-81c2-239a47dba755.png" /></p>
+<p>Les sources de la version se trouvent dans le répertoire <a href="https://github.com/blackheaven/bottleneck-buster/tree/master/clean">clean</a>.</p>
+<h3 id="iteration-3-extraction-du-compte-client">Itération 3 : Extraction du Compte client</h3>
+<p>Le but ici est de décharger les <strong>Banques</strong>, devenues, à leur tour, le goulot d'étranglement du système, car elles géraient tous les mouvements bancaires, par la création d'un acteur chargé de la gestion d'un
+<strong>Compte client</strong>.</p>
+<p>Le rôle de la <strong>Banque</strong> se borne à trouver les <strong>Comptes clients</strong>.</p>
+<p><img alt="Les Transactions communiquent directement avec les Comptes clients, ce qui permet d'éviter les banques" src="http://progdupeu.pl/media/galleries/62/5c6a632e-c1e7-48d9-8232-0c09cb86cf48.png" /></p>
+<p>Les sources de la version se trouvent dans le répertoire <a href="https://github.com/blackheaven/bottleneck-buster/tree/master/extreme">extreme</a>.</p>
+<h2 id="bilan">Bilan</h2>
+<h3 id="comparaison-des-performances">Comparaison des performances</h3>
+<p>Pour comparer les performances, nous allons utiliser le module <code>sim</code> qui se chargera de créer un <strong>Coordinateur</strong> et un nombre paramétrable de <strong>Banques</strong> et de <strong>Clients</strong> par <strong>Banque</strong>.</p>
+<p>Puis, pour générer un nombre suffisant de <strong>Transactions</strong>, le module va ordonner, pour chaque <strong>Client</strong>, un transfert vers tous les autres <strong>Clients</strong>.</p>
+<p>Pour ce faire, dans le Shell d'Erlang (lancé via <code>$ erl</code>) nous entrerons
+les commandes suivantes :</p>
+<div class="highlight"><pre><span></span>Erlang R16B03 (erts-5.10.4) [source] [smp:2:2] [async-threads:10] [kernel-poll:false]
+
+Eshell V5.10.4  (abort with ^G)
+1&gt; c(coordinator). c(bank). c(client). c(sim).
+{ok,coordinator}
+2&gt; c(bank). c(client). c(sim).
+{ok,bank}
+3&gt; c(client). c(sim).
+{ok,client}
+4&gt; c(sim).
+{ok,sim}
+5&gt; sim:run(1,1). % Préchauffe
+ok
+6&gt; timer:tc(sim, run, [5, 10]). % Crée 5 banques avec 10 clients par banque
+{470612,ok} % Temps en µs
+</pre></div>
+
+
+<p>Pour chaque mesure, 3 lancements successifs ont été réalisés et la moyenne obtenue donne le résultat reporté.</p>
+<p>Tous les tests ont été réalisés à l'aide d'un ordinateur doté d'un <strong>i7 870 @ 2.93 GHz</strong> avec <strong>HyperThreading activé</strong>, ce qui représente <strong>8 cœurs logique</strong>, ainsi que <strong>16 Gio</strong> de mémoire vive.</p>
+<p>L'ordinateur tourne sous <strong>FreeBSD 9.2-AMD64 GENERIC</strong> et Erlang est en version <strong>16.b.03</strong>.</p>
+<h4 id="comparaison-par-iteration-et-nombre-de-clientsbanques">Comparaison par itération et nombre de clients/banques</h4>
+<p>Il s'agit de mettre en évidence la capacité du système à gérer d'avantage de demandes avec un nombre fixe de ressources, pour observer si sa montée en charge est linéaire ou non.</p>
+<p>Chaque <strong>ligne</strong> représente le nombre de <strong>Banques</strong> et chaque <strong>colonne</strong> le nombre de <strong>Clients par Banque</strong>.</p>
+<p>Chaque <strong>cellule</strong> indique le résultat en <strong>millisecondes</strong>.</p>
+<h5 id="iteration-1-approche-naive_1">Itération 1 : Approche naïve</h5>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>2</th>
+<th>4</th>
+<th>6</th>
+<th>8</th>
+<th>10</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1</strong></td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>3</td>
+</tr>
+<tr>
+<td><strong>2</strong></td>
+<td>0</td>
+<td>1</td>
+<td>5</td>
+<td>16</td>
+<td>37</td>
+</tr>
+<tr>
+<td><strong>3</strong></td>
+<td>1</td>
+<td>5</td>
+<td>24</td>
+<td>84</td>
+<td>231</td>
+</tr>
+<tr>
+<td><strong>4</strong></td>
+<td>2</td>
+<td>18</td>
+<td>105</td>
+<td>342</td>
+<td>931</td>
+</tr>
+<tr>
+<td><strong>5</strong></td>
+<td>3</td>
+<td>54</td>
+<td>241</td>
+<td>1021</td>
+<td>2740</td>
+</tr>
+</tbody>
+</table>
+<h5 id="iteration-2-extraction-de-la-transaction_1">Itération 2 : Extraction de la transaction</h5>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>2</th>
+<th>4</th>
+<th>6</th>
+<th>8</th>
+<th>10</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1</strong></td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>2</td>
+</tr>
+<tr>
+<td><strong>2</strong></td>
+<td>0</td>
+<td>1</td>
+<td>2</td>
+<td>3</td>
+<td>6</td>
+</tr>
+<tr>
+<td><strong>3</strong></td>
+<td>0</td>
+<td>1</td>
+<td>3</td>
+<td>7</td>
+<td>17</td>
+</tr>
+<tr>
+<td><strong>4</strong></td>
+<td>1</td>
+<td>2</td>
+<td>6</td>
+<td>16</td>
+<td>30</td>
+</tr>
+<tr>
+<td><strong>5</strong></td>
+<td>1</td>
+<td>4</td>
+<td>11</td>
+<td>27</td>
+<td>49</td>
+</tr>
+</tbody>
+</table>
+<h5 id="iteration-3-extraction-du-compte-client_1">Itération 3 : Extraction du Compte client</h5>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>2</th>
+<th>4</th>
+<th>6</th>
+<th>8</th>
+<th>10</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1</strong></td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<td><strong>2</strong></td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>2</td>
+<td>4</td>
+</tr>
+<tr>
+<td><strong>3</strong></td>
+<td>1</td>
+<td>1</td>
+<td>2</td>
+<td>5</td>
+<td>10</td>
+</tr>
+<tr>
+<td><strong>4</strong></td>
+<td>1</td>
+<td>2</td>
+<td>5</td>
+<td>11</td>
+<td>24</td>
+</tr>
+<tr>
+<td><strong>5</strong></td>
+<td>1</td>
+<td>3</td>
+<td>9</td>
+<td>21</td>
+<td>50</td>
+</tr>
+</tbody>
+</table>
+<p>On constate que le fait d'avoir extrait la <strong>Transaction</strong> a augmenté drastiquement les performances, puisqu'on observe des performances jusqu'à <strong>60 fois supérieures</strong>.</p>
+<p>En revanche, l'écart n'est pas significatif pour l'extraction du <strong>Compte client</strong>, mais nous pouvons pondérer ceci par le fait que les échelles de temps étant tellement faibles, le moindre événement système peut fausser les résultats. Il faudrait comparer avec un jeu d'essais plus importants.</p>
+<h4 id="comparaison-par-nombre-de-curs-alloues">Comparaison par nombre de cœurs alloués</h4>
+<p>Il s'agit de mettre en évidence la capacité du système à gérer d'avantage de demandes avec un nombre fixe de ressources, pour observer si sa montée en charge est linéaire ou non.</p>
+<p>Chaque <strong>ligne</strong> représente le nombre de <strong>Banques</strong> et chaque <strong>colonne</strong> le nombre de <strong>Clients par Banque</strong>.</p>
+<p>Il s'agit de mettre en évidence la capacité du système à gérer une demande fixe (<strong>8 Banques avec 10 Clients chacune</strong>) avec un nombre croissant de ressources, pour observer sa capacité à passer à l'échelle.</p>
+<p>Chaque <strong>ligne</strong> représente une itération et chaque <strong>colonne</strong> le nombre de <strong>cœurs CPU alloués</strong>.</p>
+<p>Chaque <strong>cellule</strong> indique le résultat en <strong>millisecondes</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+<th>5</th>
+<th>6</th>
+<th>7</th>
+<th>8</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1</strong></td>
+<td>1</td>
+<td>14</td>
+<td>76</td>
+<td>272</td>
+<td>793</td>
+<td>2152</td>
+<td>4105</td>
+<td>8019</td>
+</tr>
+<tr>
+<td><strong>2</strong></td>
+<td>1</td>
+<td>3</td>
+<td>7</td>
+<td>13</td>
+<td>25</td>
+<td>44</td>
+<td>90</td>
+<td>168</td>
+</tr>
+<tr>
+<td><strong>3</strong></td>
+<td>1</td>
+<td>4</td>
+<td>8</td>
+<td>16</td>
+<td>30</td>
+<td>60</td>
+<td>75</td>
+<td>190</td>
+</tr>
+</tbody>
+</table>
+<p><img alt="Benchmark des trois itérations, pour 8  banques et 10 clients par banque" src="http://progdupeu.pl/media/galleries/62/d72b69ec-2c27-45ea-aa57-69f5e474510a.png" /></p>
+<p>Les remarques sont les mêmes qu'à la section précédente : on constate que la perte en performances (par rapport à un gain linéaire en performances), due à l'ajout de ressources, est jusqu'à <strong>70 fois moindre</strong> pour les itérations 2 et 3.</p>
+<p>De la même manière, on ne constate pas de différences flagrantes entre les deux dernières itérations.</p>
+<h3 id="comparaison-de-la-taille-des-codes">Comparaison de la taille des codes</h3>
+<p>Ici, nous tentons de déterminer si l'accroissement de la vitesse du système et de sa capacité à passer à l'échelle ne s'est pas fait au détriment d'un ajout de complexité dans le-dit système.</p>
+<p>Nous allons donc comparer le nombre de lignes de code non-vides nécessaires à chaque acteur.</p>
+<p>Chaque <strong>ligne</strong> représente une itération et chaque <strong>colonne</strong> un acteur.</p>
+<p>Chaque <strong>cellule</strong> indique le <strong>nombre de lignes de code</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Coordinateur</th>
+<th>Banque</th>
+<th>Client</th>
+<th>Transaction</th>
+<th>Compte client</th>
+<th>Total</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><em>1</em></td>
+<td>44</td>
+<td>76</td>
+<td>23</td>
+<td>-</td>
+<td>-</td>
+<td>143</td>
+</tr>
+<tr>
+<td><em>2</em></td>
+<td>14</td>
+<td>76</td>
+<td>15</td>
+<td>27</td>
+<td>-</td>
+<td>132</td>
+</tr>
+<tr>
+<td><em>3</em></td>
+<td>14</td>
+<td>39</td>
+<td>15</td>
+<td>29</td>
+<td>28</td>
+<td>125</td>
+</tr>
+</tbody>
+</table>
+<p>Le système a vu son nombre de lignes diminué de plus de 10%, ce qui implique une simplification de celui-ci. De plus, le nombre moyen de lignes par acteur est, lui, passé de 48 à 25, ce qui indique une diminution de près de la moitié, rendant ainsi les acteurs plus simples, plus compréhensibles et donc plus maintenables.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>Nous avons vu qu'Erlang nous permettait de construire, simplement et rapidement, des systèmes concurrents et distribués : cela s'avère utile pour tester des protocoles et des architectures.</p>
+<p>Nous avons vu que la diminution du nombre de données par acteur et leur simplification augmentait la capacité du système à passer à l'échelle.</p>
+<h3 id="notes">Notes</h3>
+<p>Toutes les sources se trouvent à cette adresse : <a href="https://github.com/blackheaven/bottleneck-buster/">https://github.com/blackheaven/bottleneck-buster/</a>.</p>
+<p>Cette étude n'a pas pris en compte toute une partie de la détection des goulots d'étranglement basée sur le profiling car La <a href="http://www.erlang.org/doc/efficiency_guide/profiling.html">documentation officielle</a> présente un certain nombre d'outils qui ne permettent de mettre en valeur que les sous-fonctions consommant le plus de ressources CPU, comme tous les outils de profiling de langages standard. Cette approche n'est plus pertinente* dans ce genre de systèmes où des métriques, comme le nombre de ressources consommées par acteur, le nombre de messages envoyés et reçus par acteur ainsi que son nombre de liens (nombre d'acteurs auxquels il a envoyé un message ou qui lui en ont envoyé un), sont plus utiles pour trouver les goulots d'étranglement.</p>
+<p>* Cependant, une <a href="http://www.erlang-factory.com/conference/SFBay2013/speakers/AlexanderGounares">intervention</a> faite par <a href="http://concurix.com/home">Concurix</a> lors du <a href="http://www.erlang-factory.com/conference/SFBay2013/">Erlang Factory SF Bay Area 2013</a> durant laquelle a été présenté un <a href="http://www.youtube.com/watch?v=GyHXLIHtPDM&amp;feature=youtu.be&amp;t=19m40s">outil de visualisation graphique des goulots d'étranglement</a> qui semble plus adapté à la recherche de goulots d'étranglement. Malheureusement, le-dit outil comporte deux parties : une partie à installer en local (nommée <a href="https://github.com/Concurix/cx_runtime">concurix_runtime</a>) et une autre partie hébergée sur les serveurs de Concurix, désactivée suite à un changement d'API, mais qui sera, après un échange de courriels avec Concurix, remise en place dans les prochains mois.</p>
+<h2 id="pour-aller-plus-loin">Pour aller plus loin</h2>
+<p>Nous avions vu plus haut que les deux dernières itérations étaient tellement efficaces que leurs performances ne pouvaient pas être appréciées sur un si petit échantillon (<strong>8 Banques avec 10 Clients chacune</strong>) et surtout pas en présence de la première itération, il est temps de muscler notre jeu.</p>
+<h3 id="comparaison-par-nombre-de-curs-alloues_1">Comparaison par nombre de cœurs alloués</h3>
+<p>Il s'agit de mettre en évidence la capacité du système à gérer d'avantage de demandes avec un nombre fixe de ressources, pour observer si sa montée en charge est linéaire ou non.</p>
+<p>Chaque <strong>ligne</strong> représente le nombre de <strong>Banques</strong> et chaque <strong>colonne</strong> le nombre de <strong>Clients par Banque</strong>.</p>
+<p>Il s'agit de mettre en évidence la capacité du système à gérer une demande fixe (<strong>15 Banques avec 1.000.000 Clients chacune</strong>) avec un nombre croissant de ressources, pour observer sa capacité à passer à l'échelle.</p>
+<p>Chaque <strong>ligne</strong> représente une itération et chaque <strong>colonne</strong> le nombre de <strong>cœurs CPU alloués</strong>.</p>
+<p>Chaque <strong>cellule</strong> indique le résultat en <strong>millisecondes</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+<th>5</th>
+<th>6</th>
+<th>7</th>
+<th>8</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>2</strong></td>
+<td>5</td>
+<td>32</td>
+<td>85</td>
+<td>312</td>
+<td>469</td>
+<td>1945</td>
+<td>2037</td>
+<td>2053</td>
+</tr>
+<tr>
+<td><strong>3</strong></td>
+<td>4</td>
+<td>18</td>
+<td>40</td>
+<td>103</td>
+<td>512</td>
+<td>1088</td>
+<td>1845</td>
+<td>4016</td>
+</tr>
+</tbody>
+</table>
+<p><img alt="Benchmark des deux dernières itérations, pour 15  banques et 1.000.000 clients par banque" src="http://progdupeu.pl/media/galleries/62/c0f6043d-cfef-4f5f-a741-9d4dc78fba99.png" /></p>
+<h3 id="remarques">Remarques</h3>
+<p>Nous pourrions être surpris vis-à-vis des résultats, visiblement la simplification a nuit à la capacité de notre système à passer à l'échelle.</p>
+<p>La cause est en partie détaillé dans <a href="http://jlouisramblings.blogspot.fr/2013/01/how-erlang-does-scheduling.html">cet article</a> :
+comme nous l'avons vu plus haut Erlang a été conçu pour être utilisé dans le secteur des télécommunications où l'une des notions clef de ce secteur est le temps réel, Erlang a donc intégré un cadre de <a href="http://en.wikipedia.org/wiki/Real-time_computing">Temps-réel mou</a>. Dans cette optique chaque fois qu'un acteur reprend son fil d’exécution il se voit attribué un <strong>budget de réductions</strong> de 2.000. En fonction des instructions qu'il va exécuter (conditions, envois de messages, appels de fonctions), se budget va être diminué d'un coup prédéterminé en fonction de l'instruction. Une fois ce budget épuisé, l'acteur est suspendu (on dit qu'il est <em>préempté</em>) et son exécution reprendra ultérieurement.</p>
+<p>Nous pouvons nous demander ce que cela implique pour nous lors du passage à l'échelle, la réponse est simple, un acteur à un nombre fixe d'actions qu'il peut effectuer sur une période de temps donnée, ce qui donne son débit maximal, son nombre de messages traités par unité de temps. Lorsque tous les acteurs sont sur le même cœur, ils ont grosso-modo tous le même débit, ce qui laisse le temps à notre acteur "central" (qui communique avec un grand nombre d'autre acteurs) de traiter les messages qu'il reçoit en conservant une file de messages à une taille plus ou moins fixe. En revanche, dès qu'il y a plusieurs cœurs, tous les acteurs qui envoient des messages à notre acteur central peuvent le faire en même temps, ce qui augmente le débit entrant de notre acteur central et comme nous l'avons vu, son débit maximal n'augmente pas, sa file d'attente va donc croître, ce qui va créer une <strong>contention</strong> dans le système. Comme si ça n'était pas suffisant, l'incapacité de notre acteur central à répondre rapidement à toutes ces demandes va causer des attentes prolongées des acteurs demandeurs, on parle alors de <strong>famine</strong>.</p>
+<p>Mais le budget de réductions va plus loin, en effet, en fonction de la localisation d'un acteur (c'est-à-dire le fait qu'il soit sur le même cœur, sur un autre cœur ou sur une autre machine), l'envoi de message ne va pas avoir le même coût de réduction. Le <em>Erlang runtime system</em> va donc tenter de rapprocher les acteurs qui communiquent le plus, ce qui est problématique dans notre cas puisque tout le monde communique avec tout le monde et tout le temps. Erlang va donc passer son temps à déplacer les acteurs de cœurs en cœurs ce qui va lui faire perdre un temps considérable.</p>
+<h2 id="conclusion-2">Conclusion 2</h2>
+<p>Nous avons vu que simplifier les acteurs pouvait entraîner une perte de capacité de passage à l'échelle.</p>
+<p>Bien que cela arrive souvent dans les systèmes réels, les causes de ces symptômes dans exemple jouet sont bien éloignées des causes que l'on trouve dans les systèmes réels, voici ces causes :</p>
+<ul>
+<li>les opérations effectuées sont très simples (très peu coûteuses en instructions) et ne présentent que peu d'intérêt à être distribuées</li>
+<li>tout le monde communique avec tout le monde et tout le temps, ce qui n'est pas le cas dans les systèmes réels où le nombre de relation est limité et où les échanges sont répartis dans le temps</li>
+</ul>
+<p>La morale de cette histoire est qu'une bonne intuition ne peut pas se permettre de ne pas être confirmée par un test, lorsque l'on tente d'optimiser un système, la méthodologie est censée être la suivante :</p>
+<ul>
+<li>conception d'une première version</li>
+<li>mesures de performances</li>
+<li>optimisations</li>
+<li>mesures de performances</li>
+<li>comparaison des mesures</li>
+</ul>
+<p>Il s'agit de l'unique moyen de savoir si nous avons contribué à améliorer les performances du système ou non.</p>
+<h3 id="notes-2">Notes 2</h3>
+<p>Pour pallier à ce problème, Concurix a modifié le budget des réductions, pour l'adapter au nombre de messages reçus plutôt qu'un nombre fixé à l'avance, ce qui a entraîné d'importantes accélérations dans les systèmes réels.</p>
+        </div>
+    </section>
+        </div>
+        <div class="col-sm-3" id="sidebar">
+            <aside>
+
+<section class="well well-sm">
+    <ul class="list-group list-group-flush">
+
+        <!-- Search bar in low width mode -->
+        <li id="searchSideBar" class="list-group-item"><span>
+                <form class="navbar-search" action="/blog/search">
+                  <input type="text" class="search-query" placeholder="Rechercher" name="q" id="tipue_search_input" required>
+                </form></span>
+        </li>
+
+        <li class="list-group-item"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Social</span></h4>
+              <ul class="list-group" id="social">
+                    <li class="list-group-item"><a href="https://example.org">
+                        <i class="fa fa-comment fa-lg"></i>
+                       Link 1</a>
+                    </li>
+                    <li class="list-group-item"><a href="https://example.org">
+                        <i class="fa fa-comments fa-lg"></i>
+                       Link 2</a>
+                    </li>
+                    <li class="list-group-item"><a href="/page/content">
+                        <i class="fa fa-etc fa-lg"></i>
+                       etc</a>
+                    </li>
+              </ul>
+            </li>
+
+
+            <li class="list-group-item"><a href="http://yliesc.github.io/"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Categories</span></h4></a>
+                <ul class="list-group" id="categories">
+                </ul>
+            </li>
+
+
+
+    <li class="list-group-item"><h4><i class="fa fa-link fa-lg"></i><span class="icon-label">External Links</span></h4>
+      <ul class="list-group" id="links">
+        <li class="list-group-item">
+            <a href="https://example.org" target="_blank">
+                Link 1
+            </a>
+        </li>
+        <li class="list-group-item">
+            <a href="https://example.org" target="_blank">
+                Link 2
+            </a>
+        </li>
+        <li class="list-group-item">
+            <a href="/page/content" target="_blank">
+                etc
+            </a>
+        </li>
+      </ul>
+    </li>
+
+        <li class="list-group-item" id="github">
+            <ul class="list-group">
+                <li class="list-group-item"><h5>Vous voyez une erreur ?</h5></li>
+                <li class="list-group-item">
+                    <a class="btn btn-info github" target="_blank" href="https://github.com/YliesC/website/edit/master/content/pages/pdp/content/trouver-et-supprimer-les-goulots-detranglement-en-erlang.md">
+                        <i class="fa fa-random"></i> Modifiez la page sur GitHub
+                    </a>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</section>            </aside>
+        </div>
+    </div>
+</div>
+<footer>
+   <div class="container">
+      <hr>
+      <div class="row">
+         <div class="col-xs-10">&copy;  
+            &middot; Powered by <a href="https://github.com/getpelican/pelican-themes/tree/master/pelican-bootstrap3" target="_blank">pelican-bootstrap3</a>,
+            <a href="http://docs.getpelican.com/" target="_blank">Pelican</a>,
+<a href="http://getbootstrap.com" target="_blank">Bootstrap</a>                <p><small>  <a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr"><img alt="Creative Commons License" style="border-width:0" src="//i.creativecommons.org/l/by-sa/4.0/80x15.png" /></a>
+    Content
+  licensed under a <a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">Creative Commons Attribution-ShareAlike 4.0 International License</a>, except where indicated otherwise.
+</small></p>
+         </div>
+         <div class="col-xs-2"><p class="pull-right"><i class="fa fa-arrow-up"></i> <a href="#">Back to top</a></p></div>
+      </div>
+   </div>
+</footer>
+<script src="http://yliesc.github.io/theme/js/jquery.min.js"></script>
+
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="http://yliesc.github.io/theme/js/bootstrap.min.js"></script>
+
+<!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
+<script src="http://yliesc.github.io/theme/js/respond.min.js"></script>
+
+<!--  -->
+
+
+</body>
+</html>

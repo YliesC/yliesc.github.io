@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="fr" prefix="og: http://ogp.me/ns# fb: https://www.facebook.com/2008/fbml">
+<head>
+    <title>Découverte des algorithmes de graphe - The Golden Koala</title>
+    <!-- Using the latest rendering mode for IE -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <link href="http://yliesc.github.io/images/koala-ico.png" rel="icon">
+
+<link rel="canonical" href="http://yliesc.github.io/pages/pdp/content/decouverte-des-algorithmes-de-graphe/">
+
+        <meta name="author" content="Algue-Rythme" />
+        <meta name="description" content="Ce tutoriel va vous expliquer ce qu&#39;est un graphe, et à quoi il sert. Il détaillera les algorithmes de graphe les plus courants, en indiquant leur complexité en temps et en mémoire, avec peut-être des schémas si vous êtes sages. Chaque algorithme sera accompagné d&#39;un pseudo-code pour laisser au programmeur …" />
+
+    <meta property="og:site_name" content="The Golden Koala" />
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="Découverte des algorithmes de graphe"/>
+    <meta property="og:url" content="http://yliesc.github.io/pages/pdp/content/decouverte-des-algorithmes-de-graphe/"/>
+    <meta property="og:description" content="Ce tutoriel va vous expliquer ce qu&#39;est un graphe, et à quoi il sert. Il détaillera les algorithmes de graphe les plus courants, en indiquant leur complexité en temps et en mémoire, avec peut-être des schémas si vous êtes sages. Chaque algorithme sera accompagné d&#39;un pseudo-code pour laisser au programmeur …" />
+
+
+    <!-- Bootstrap -->
+        <link rel="stylesheet" href="http://yliesc.github.io/theme/css/bootstrap.readable.min.css" type="text/css"/>
+    <link href="http://yliesc.github.io/theme/css/font-awesome.min.css" rel="stylesheet">
+
+    <link href="http://yliesc.github.io/theme/css/pygments/default.css" rel="stylesheet">
+    <link href="http://yliesc.github.io/theme/tipuesearch/tipuesearch.css" rel="stylesheet">
+    <link rel="stylesheet" href="http://yliesc.github.io/theme/css/style.css" type="text/css"/>
+        <link href="http://yliesc.github.io/css/custom.css" rel="stylesheet">
+
+        <link href="http://yliesc.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate"
+              title="The Golden Koala ATOM Feed"/>
+
+
+
+
+</head>
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+	<div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="http://yliesc.github.io/" class="navbar-brand">
+<img class="img-responsive pull-left gap-right" src="http://yliesc.github.io/images/koala-logo.svg" width="38"/> <span id="siteName">The Golden Koala</span>            </a>
+        </div>
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+
+            </ul>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+</div> <!-- /.navbar -->
+<!-- Banner -->
+<!-- End Banner -->
+<div class="container">
+    <div class="row">
+        <div class="col-sm-9">
+    <ol class="breadcrumb">
+        <li><a href="http://yliesc.github.io/" title="The Golden Koala">
+            <i class="fa fa-home fa-lg"></i>
+        </a></li>
+        <li class="active">Découverte des algorithmes de graphe</li>
+    </ol>
+    <section id="content" class="body">
+        <h1 class="entry-title">Découverte des algorithmes de graphe</h1>
+            <div class="entry-content">
+                    <div class="panel">
+                        <div class="panel-body">
+<footer class="post-info">
+    
+    <span class="published">
+        <span class="label label-default"><i class="fa fa-calendar"></i><time datetime="2014-09-27T00:00:00+02:00"> sam. 27 septembre 2014</time></span> | 
+    </span>
+        <span class="label label-default"><i class="fa fa-user-circle"></i> Algue-Rythme</span>  | 
+    <span class="label label-default">
+            <i class="fa fa-cc"></i> 
+        
+            CC-BY-SA
+    </span>
+</footer><!-- /.page-info -->                        </div>
+                    </div>
+            <p>Ce tutoriel va vous expliquer ce qu'est un graphe, et à quoi il sert. Il détaillera les algorithmes de graphe les plus courants, en indiquant leur complexité en temps et en mémoire, avec peut-être des schémas si vous êtes sages.  </p>
+<p>Chaque algorithme sera accompagné d'un pseudo-code pour laisser au programmeur l'opportunité de le coder dans son langage favori. Le cours est ouvert aux contributions : vous pouvez m'envoyer une implémentation de l'algorithme dans le langage de votre choix et je l'y ajouterais.  </p>
+<p>Il sera appuyé d'exemples concrets pour que l'intérêt de chaque algorithme apparaisse dans une situation courante. L'objectif est d'apprendre à reconnaître des problèmes de graphe, ou à modéliser un problème sous forme de graphe, pour le résoudre avec des outils éprouvés et efficaces.  </p>
+<p>Ce document n'a pas pour ambition de faire une démonstration formelle de la complexité ou de la validité des algorithmes. Il n'a aucune vocation académique. Les concepts seront présentés de façon intuitive et didactique pour permettre à tous de les appréhender et de les appliquer aisément. Il se veut être une "boîte à outils" aussi bien qu'un moyen de découvrir ce domaine de l'algorithmique. Le formalisme et la rigueur ont été sacrifiés sur l'autel de la simplicité, mais pas l'exactitude ni la précision.  </p>
+<p><strong>Pour suivre ce tutoriel vous devez </strong>  </p>
+<ul>
+<li>Savoir programmer (variables, boucles, tableaux, fonctions)   </li>
+<li>Avoir des notions de base en algorithmique : récursivité, structures de données courantes, tris...  </li>
+<li>Comprendre ce qu'est la <a href="../algorithmique-pour-lapprenti-programmeur">complexité</a> (facultatif mais utile) </li>
+</ul>
+<div class="toc">
+<ul>
+<li><a href="#graphes-et-representation-de-graphe">Graphes et représentation de graphe</a><ul>
+<li><a href="#dessine-moi-un-graphe">Dessine moi un graphe !</a><ul>
+<li><a href="#le-graphe">Le graphe</a></li>
+<li><a href="#une-carte-un-labyrinthe-un-lieu-et-la-recherche-de-chemins">Une carte, un labyrinthe, un lieu... et la recherche de chemins</a></li>
+<li><a href="#des-relations-entre-individus">Des relations entre individus</a></li>
+<li><a href="#lordonnancement-de-taches-le-tri-topologique">L’ordonnancement de tâches : le tri topologique</a></li>
+<li><a href="#minimiser-lusage-de-ressources-avec-les-arbres-couvrants-minimaux">Minimiser l'usage de ressources avec les arbres couvrants minimaux</a></li>
+<li><a href="#tromper-votre-ennui-en-geographie-en-coloriant-des-cartes">Tromper votre ennui en géographie en coloriant des cartes</a></li>
+<li><a href="#poster-du-courrier">Poster du courrier</a></li>
+<li><a href="#et-tout-le-reste">...et tout le reste !</a></li>
+</ul>
+</li>
+<li><a href="#un-peu-de-vocabulaire">Un peu de vocabulaire</a><ul>
+<li><a href="#quelques-conventions-et-notations">Quelques conventions et notations...</a></li>
+<li><a href="#graphe-simple-ou-multigraphe">Graphe simple ou multigraphe</a></li>
+<li><a href="#connexite">Connexité</a></li>
+<li><a href="#graphes-orientes-et-non-orientes">Graphes orientés et non-orientés</a></li>
+<li><a href="#graphes-ponderes">Graphes pondérés</a></li>
+<li><a href="#graphes-cycliques">Graphes cycliques</a></li>
+<li><a href="#densite-dun-graphe-et-degre-dun-nud">Densité d'un graphe et degré d'un nœud</a></li>
+<li><a href="#arbre">Arbre</a></li>
+</ul>
+</li>
+<li><a href="#representations-et-stockage-en-memoire">Représentations et stockage en mémoire</a><ul>
+<li><a href="#generalites">Généralités</a></li>
+<li><a href="#la-liste-dadjacence">La liste d'adjacence</a><ul>
+<li><a href="#la-matrice-dadjacence">La matrice d'adjacence</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#parcourir-un-graphe">Parcourir un graphe</a><ul>
+<li><a href="#le-parcours-en-profondeur-et-le-labyrinthe">Le parcours en profondeur et le labyrinthe</a><ul>
+<li><a href="#les-pyramides">Les pyramides</a></li>
+<li><a href="#le-parcours-en-profondeur">Le parcours en profondeur</a></li>
+<li><a href="#luke-je-suis-ton-pere">Luke, je suis ton père</a></li>
+</ul>
+</li>
+<li><a href="#le-parcours-en-largeur-et-le-buzz">Le parcours en largeur et le buzz</a><ul>
+<li><a href="#big-buzz">Big Buzz</a></li>
+<li><a href="#le-parcours-en-largeur">Le parcours en largeur</a></li>
+<li><a href="#le-prix-du-succes">Le prix du succès</a></li>
+</ul>
+</li>
+<li><a href="#lexhaustif-et-uno">L'exhaustif et Uno</a><ul>
+<li><a href="#lexhaustif">L'exhaustif</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<h1 id="graphes-et-representation-de-graphe">Graphes et représentation de graphe</h1>
+<p>Dans ce chapitre vous verrons la définition d'un graphe, ainsi que ses différentes caractéristiques remarquables. <br />
+Nous donnerons un premier aperçu des problèmes pouvant être identifiés comme des problèmes de graphe.<br />
+Puis nous étudierons les deux principaux moyens de le stocker en mémoire.  </p>
+<h2 id="dessine-moi-un-graphe">Dessine moi un graphe !</h2>
+<h4 id="le-graphe">Le graphe</h4>
+<p><strong>Citation : Wikipédia </strong>  </p>
+<blockquote>
+<p>Un graphe est un ensemble de points, dont certaines paires sont directement reliées par un (ou plusieurs) lien(s).  </p>
+</blockquote>
+<p>Ces points sont nommés <strong>nœuds</strong> ou <strong>sommets</strong>. Ces liens sont nommés <strong>arêtes</strong>.  </p>
+<p><img alt="" src="../../../progdupeupl//galleries/108/b362516e-09c1-4953-b3e1-8981ef5ffa18.jpg" /></p>
+<p>Notez bien que ces fameux points n'ont pas de position absolue dans le plan, ni de position relative les uns aux autres. De la même façon, les arêtes ne sont pas forcées d'être droites (bien que conventionnellement on les représente comme tel par soucis de lisibilité) : elles peuvent être courbes ou faire des détours, etc... Ainsi un graphe <strong>n'est pas</strong> une figure, bien que l'on puisse représenter un graphe par une figure. Les graphes ne se cantonnent donc pas à des considérations d’ordre purement géométrique, bien au contraire !  </p>
+<p>En effet, <strong>un graphe sert avant tout à manipuler des concepts, et à établir un lien entre ces concepts</strong>. N'importe quel problème comportant des objets avec des relations entre ces objets peut être modélisé par un graphe.<br />
+Il apparaît donc que les graphes sont des outils très puissants et largement répandus qui se prêtent bien à la résolution de nombreux problèmes.     </p>
+<p>En voici quelques uns.  </p>
+<h4 id="une-carte-un-labyrinthe-un-lieu-et-la-recherche-de-chemins">Une carte, un labyrinthe, un lieu... et la recherche de chemins</h4>
+<p>Il s'agit d'un cas très classique, notamment dans le domaine du jeu vidéo. Chaque nœud représente une <strong>position</strong> (ici une case libre) et chaque arête correspond à un <strong>chemin</strong> entre deux positions (ici deux cases libres adjacentes).<br />
+Il est courant de chercher le chemin le plus court entre deux positions : les IA s'en servent pour déplacer les créatures aussi vite que possible dans le monde virtuel. En remplaçant les nœuds par des <strong>adresses</strong> et les arêtes par des <strong>routes</strong>, on obtient le graphe utilisé par les GPS ou Google Map par exemple.<br />
+On utilise couramment le terme anglais <em>pathfinding</em> pour désigner la recherche de chemins dans un graphe.  </p>
+<p><img alt="" src="../../../progdupeupl//galleries/108/e6667d35-b849-443e-ae7c-485ce485beec.jpg" />   </p>
+<h4 id="des-relations-entre-individus">Des relations entre individus</h4>
+<p>Cet outil est très utilisé en sciences sociales pour représenter des <strong>individus</strong> et leurs différents <strong>liens</strong>. On en fait usage dans le milieu de la recherche, mais aussi dans les réseaux sociaux. L'objectif va être de pouvoir identifier les communautés formées, les centres d'intérêt communs... Une exploitation intelligente de ces données est indispensable pour suggérer à l'utilisateur les choses qu'il est susceptible d'aimer, les personnes qu'il connaît peut-être, et avant tout (et surtout) pour créer des publicités ciblées adaptées à chacun.  </p>
+<p>Une anecdote à ce sujet : en moyenne seules 8 personnes vous séparent de n'importe quelle autre personne à la surface de la Terre. Si vous prenez la connaissance de la connaissance etc... d'une de vos connaissances, en moyenne 8 personnes permettront de vous connecter avec n'importe quel français, américain, indien ou japonais. Et il est rare de dépasser 11 ou 12. Il s'agit là du <strong>diamètre moyen</strong> du graphe social de l'humanité.  </p>
+<p><img alt="" src="../../../progdupeupl//galleries/108/a720927e-92ce-4096-b391-6d0a3efcee46.png" />  </p>
+<h4 id="lordonnancement-de-taches-le-tri-topologique">L’ordonnancement de tâches : le tri topologique</h4>
+<p>Les problèmes d'ordonnancement de tâches sont toujours un sujet de recherche active aujourd'hui. On peut représenter chacune des <strong>tâches</strong> à effectuer par un nœud, et les <strong>dépendances entre chacune des tâches</strong> par les arêtes. Ainsi, l’ordre dans lequel on enfile chaussettes et pantalon importe peu, mais il faut que les deux soient mis avant de lacer ses chaussures. De la même façon, on peut installer les câblages électrique et téléphonique dans l'ordre de notre choix, mais il faut que les murs soient construits avant !<br />
+On résout ce problème avec un <strong>tri topologique</strong>. </p>
+<p><img alt="" src="../../../progdupeupl//galleries/108/65c89477-39e1-4c0e-bb71-549767fce794.jpg" />  </p>
+<h4 id="minimiser-lusage-de-ressources-avec-les-arbres-couvrants-minimaux">Minimiser l'usage de ressources avec les arbres couvrants minimaux</h4>
+<p>En parlant de câblage, vous souhaitez que toutes vos prises soient reliées au secteur, non ? Cela est simple ! Mais le fil électrique coûte cher au mètre et vous souhaitez minimiser le prix de votre installation.<br />
+Ainsi, vous associerez un nœud à chaque <strong>prise</strong>, et une arête à chaque <strong>fil</strong> qu'il est <em>possible</em> (mais pas nécessaire) d'installer. A vous de choisir l'ensemble de câbles les plus courts pour relier toutes les prises !<br />
+Cela correspond à la recherche de <strong>l'arbre couvrant minimal</strong>.       </p>
+<p><img alt="" src="../../../progdupeupl//galleries/108/8416aca5-47f8-48c9-91be-2578f71513d8.png" />  </p>
+<p>Ici l'ensemble de fils les plus courts est colorié en rouge.   </p>
+<h4 id="tromper-votre-ennui-en-geographie-en-coloriant-des-cartes">Tromper votre ennui en géographie en coloriant des cartes</h4>
+<p>Vous vous ennuyez à mourir en géographie. Comme vous êtes un individu froid et austère, mais aussi efficace, économe et démuni, vous souhaitez colorier cette triste carte en utilisant un minimum de couleurs, et en faisant en sorte que deux pays limitrophes ne soient jamais de la même couleur.<br />
+Il s'agit du problème de <strong>coloration de graphe</strong>. Pour une carte en 2D ne cherchez plus : la réponse est 4, mais ce n'est pas le cas de tout les graphes... en effet, dans un carte, chaque <strong>pays</strong> est un nœud, et les arêtes correspondent au <strong>frontières communes</strong>.  </p>
+<p><img alt="" src="../../../progdupeupl//galleries/108/721ef2e8-7423-4c85-945f-d8fbf0a8af6f.gif" />  </p>
+<h4 id="poster-du-courrier">Poster du courrier</h4>
+<p>Vous êtes le facteur d'un petit village, vous distribuez le courrier à vélo, à la seule force de vos jambes. Vous devez passer devant toutes les maisons du village, ce qui implique de traverser toutes les rues. Mais soucieux de préserver vos forces et de renouveler continuellement votre découverte des paysages, vous ne voulez pas traverser deux fois la même rue. Ici chaque nœud est un <strong>carrefour</strong>, et chaque arête une <strong>rue</strong>. Vous êtes en train de chercher un <strong>circuit Eulérien</strong> !  </p>
+<p>Il doit son nom à Leonhard Euler, qui chercha à savoir s'il était possible de franchir les 7 ponts de Königsberg sans jamais repasser deux fois sur le même (et en ne traversant le fleuve que grâce aux ponts, bien entendu).  </p>
+<p><img alt="" src="../../../progdupeupl//galleries/108/9ba4517e-b878-4fef-97eb-55be8cdd516b.png" />  </p>
+<h4 id="et-tout-le-reste">...et tout le reste !</h4>
+<p>Pensez à Youtube qui suggère des vidéos proches de celle que vous regardez (d'aucun prétendent qu'on finira toujours par aboutir à des vidéos de chats), pensez à wikipédia qui propose des articles <strong>connexes</strong> (nous reviendrons sur ce terme), pensez au cerveau humain, à ses milliards de neurones et à ses centaines de milliards de connexions entre eux ! Les graphes sont partout.  </p>
+<p>Apprenez à reconnaître un problème de graphe lorsque vous en voyez un, c'est déjà la moitié du travail. Il ne vous reste alors plus qu'à trouver l'algorithme qui répond à votre problème !  </p>
+<h2 id="un-peu-de-vocabulaire">Un peu de vocabulaire</h2>
+<h4 id="quelques-conventions-et-notations">Quelques conventions et notations...</h4>
+<p>Maintenant que nous avons une idée de ce qu'est un graphe, tâchons d'employer un vocabulaire précis pour traiter de chacune de ses caractéristiques. Certains algorithmes ne fonctionnent que sur des graphes possédant certaines particularités.  </p>
+<p>Pouvoir décrire en quelques mots les caractéristiques principales d'un graphe est donc indispensable, et vous devez toujours avoir le réflexe de le faire sitôt le graphe identifié. Cela vous guidera vers le choix de l'algorithme approprié.  </p>
+<p>Fixons d'ores et déjà quelques notations, par soucis de clarté. Ces notations sont conventionnellement utilisées dans la plupart des cours ou articles parlant de graphes.  </p>
+<p>L'ensemble des nœuds du graphe est désigné par $N$. L'ensemble des arêtes est désigné par $A$. Le graphe $G$ est simplement défini comme $G = (N,A)$. Ainsi, la représentation du graphe importe peu : les deux graphes ci-dessous sont <em>isomorphes</em> (ici, on peut traduire grossièrement ce terme barbare par <em>équivalents</em>).  </p>
+<p><img alt="" src="../../../progdupeupl//galleries/108/5308595c-2af5-49e7-b076-01f86d9656b2.png" /><br />
+<img alt="" src="../../../progdupeupl//galleries/108/696bcaa4-5c2c-4136-a62d-05453e718e37.png" />  </p>
+<h4 id="graphe-simple-ou-multigraphe">Graphe simple ou multigraphe</h4>
+<p>Une <strong>boucle</strong> est une arête qui relie un nœud à lui même.<br />
+Un <strong>lien double</strong> caractérise l'existence de plusieurs arêtes entre deux nœuds donnés.<br />
+Un graphe possédant l'une ou l'autre de ces caractéristiques est dit <strong>multigraphe</strong>. Un graphe ne possédant aucune des deux est dit <strong>graphe simple</strong>.<br />
+Nous travaillerons exclusivement sur des graphes simples par soucis de simplicité : ils couvrent la plupart des utilisations, et sont plus simples à traiter que les multigraphes dans le cas général.  </p>
+<p><img alt="" src="../../../progdupeupl//galleries/108/7e2b93cc-4d05-4f43-937e-bd66879e766d.png" />  </p>
+<h4 id="connexite">Connexité</h4>
+<p>Un graphe est dit <strong>connexe</strong> lorsqu'il existe un chemin entre toute paire de nœuds. Une composante connexe d'un graphe est un <strong>sous-graphe</strong> connexe de ce graphe. Ainsi, sur le dessin ci-dessous, vous ne voyez <em>qu'un seul et unique graphe</em>, comportant 3 composantes connexes.  </p>
+<p><img alt="" src="../../../progdupeupl//galleries/108/59e0f591-e7b1-42ea-92f7-6d84a5f2c798.gif" /><br />
+​    </p>
+<h4 id="graphes-orientes-et-non-orientes">Graphes orientés et non-orientés</h4>
+<p>Voici une autre caractéristique fondamentale d'un graphe. Dans un <strong>graphe orienté</strong> les arêtes sont à <em>sens unique</em>. On les représente donc avec une flèche sur les dessins. D'ailleurs, le terme employé n'est plus arête, mais <strong>arc</strong>. Cette distinction est importante, car nombre d'algorithmes ne fonctionnent tout simplement pas sur des graphes orientés. Notez bien que cela n'empêche en rien que deux nœuds puissent être reliés dans les deux sens : il suffit d'utiliser deux arcs, chacun dans un sens (cela ne rompt pas la condition de graphe simple).  </p>
+<p><img alt="" src="../../../progdupeupl//galleries/108/779dec79-869f-449f-88ae-857aed1e7a70.png" />  </p>
+<h4 id="graphes-ponderes">Graphes pondérés</h4>
+<p>Dans un <strong>graphe pondéré</strong> les arêtes (ou les arcs) sont, ben, <strong>pondérés</strong>, quoi. Autrement dit, on associe une valeur à chaque arête. Elles peuvent très bien être négatives.<br />
+Cela peut-être une distance : lorsque que l'on cherche un plus court chemin entre deux nœuds, il va de soit que la somme des pondérations des arêtes doit être aussi petit que possible.<br />
+Mais ça peut aussi être un réel dans $[0;1]$ pour désigner des probabilités dans les <a href="http://fr.wikipedia.org/wiki/Cha%C3%AEne_de_Markov">chaînes de Markov</a> par exemple. Cela peut aussi être un score, un prix, etc. N'importe quelle quantité qui peut vous passer par la tête !   </p>
+<p><img alt="" src="../../../progdupeupl//galleries/108/a4b026cd-480a-4406-b85e-ce7c6e4b2879.png" />  </p>
+<h4 id="graphes-cycliques">Graphes cycliques</h4>
+<p>Un graphe cyclique comporte au moins un <strong>cycle</strong>. Un cycle est un chemin qui permet de relier un nœud à lui même, sans jamais passer deux fois par la même arête. La détection de cycles est d'ailleurs un problème récurrent en informatique, notamment lorsqu'on s'intéresse aux dépendances d'un fichier ou d'un programme :  <strong>A</strong> requiert <strong>B</strong>, <strong>B</strong> requiert <strong>C</strong>, et <strong>C</strong> requiert <strong>A</strong> est un cas de dépendances cyclique habituel.  </p>
+<p><img alt="" src="../../../progdupeupl//galleries/108/266007f1-b403-454c-80c8-28513e7c03fa.png" />  </p>
+<p>Les graphes ne possédant pas de cycles dont dit <em>acycliques</em>. Il existe un sous-ensemble remarquable de graphes acycliques : les <strong>DAG</strong> (pour <em>Directed Acyclic Graph</em>); ce sont des graphes acycliques orientés. Les algorithmes dynamiques (nous verrons ça plus tard) ne peuvent travailler que sur des DAG.  </p>
+<p><img alt="" src="../../../progdupeupl//galleries/108/d9c52618-275c-4d31-9bbe-9fa51d9b7fbf.png" />  </p>
+<h4 id="densite-dun-graphe-et-degre-dun-nud">Densité d'un graphe et degré d'un nœud</h4>
+<p>La <strong>densité</strong> d'un graphe correspond au <strong>rapport du nombre d'arêtes sur le nombre total d'arêtes possibles</strong>. C'est donc un réel compris entre $0$ et $1$. Cette caractéristique influe sur le choix de sa représentation.<br />
+Une densité de $0$ correspond à un graphe sans arêtes où tout les sommets sont isolés.<br />
+Une densité de 1 correspond à un <strong>graphe complet</strong> : chaque nœud est relié à chaque autre nœud.  </p>
+<p>Ci-dessous le graphe complet à 9 nœuds.  </p>
+<p><img alt="" src="../../../progdupeupl//galleries/108/0f63b8f5-80ec-4941-94d5-55d5ef1c1f7c.png" /></p>
+<p>Dans un graphe simple orienté de $N$ nœuds, chaque nœud ne peut être relié qu'à ses $N-1$ voisins au maximum, soit un total de $N(N-1)=N^2-N$ arcs.<br />
+Et $\frac{N^2-N}{2}$ arêtes dans le cas d'un graphe non orienté.  </p>
+<p>Le <strong>degré</strong> d'un nœud correspond au nombre d'arêtes reliées à ce nœud. Dans le cas d'un graphe orienté, le <strong>degré entrant</strong> d'un nœud est le nombre d'arcs qui aboutissent à ce nœud, et le <strong>degré sortant</strong> le nombre d'arcs qui partent de ce nœud.  </p>
+<p>De façon générale, lorsque le nombre d'arêtes d'un graphe est de l'ordre de $N$, le graphe est dit <strong>creux</strong>. Le degré moyen de ses nœuds est une constante. A l'inverse, lorsque le nombre d'arêtes est de l'ordre de $N^2$, le graphe est dit <strong>dense</strong> : le degré moyen de ses nœuds est de l'ordre de $N$.  </p>
+<h4 id="arbre">Arbre</h4>
+<p>Un graphe est un <strong>arbre</strong> s'il vérifie les propriétés suivantes : il est <em>acyclique</em>, <em>non orienté</em>, et <em>connexe</em>. De cela il découle qu'il n'existe qu'un et un seul chemin entre deux nœuds donnés (c'est vraiment très pratique, je vous l'assure !).  </p>
+<p>Attardons sur quelques évidences. Un arbre possède une seule et unique <em>racine</em>. Il relié à d'autres nœuds - ses <em>fils</em> - par des <em>branches</em> (le terme arête demeure correct toutefois). Tout les nœuds peuvent posséder 0, 1 ou plusieurs fils. En revanche, ils possèdent tous un seul et unique <em>père</em>, à l'exception de la racine qui n'en a pas. Les <em>feuilles</em> sont caractérisées par l'absence de fils.  </p>
+<p>Un dessin pour mieux comprendre tout ce fouillis :<br />
+<img alt="" src="../../../progdupeupl//galleries/108/97387c0d-ca77-4589-8289-edbadcdcf24e.png" />  </p>
+<p>Comme vous pouvez le voir, les nœuds correspondent à des embranchements. Si on part d'un nœud et qu'on descend de fils en fils, on aboutira nécessairement à une feuille. Et si on remonte de père en pères, on aboutit à la racine (et dire qu'il y a encore des gens qui doutent du créationnisme !).  </p>
+<p>Si le graphe n'est pas connexe mais qu'il possède les propriétés cités ci-dessus, alors chacun des sous-graphes connexes est un arbre, et l'ensemble forme une <strong>forêt</strong> (ben oui, un ensemble d'arbres c'est une forêt).  </p>
+<p><img alt="" src="../../../progdupeupl//galleries/108/b3f5f2f1-934e-4cff-87f2-e2de92fd915c.jpg" />  </p>
+<h2 id="representations-et-stockage-en-memoire">Représentations et stockage en mémoire</h2>
+<h3 id="generalites">Généralités</h3>
+<p>Maintenant, cher lecteur, nous avons une idée bien plus précise de ce qu'est un graphe. Mais il n'est pas destiné à rester un outil purement théorique ! Il faut pouvoir résoudre des problèmes avec, et donc implémenter des algorithmes qui travaillent dessus.  </p>
+<p>Nous devons donc trouver une structure de données adaptée pour le stocker, qui soit économe en mémoire, et qui permette aux algorithmes de l'exploiter rapidement.</p>
+<p>Chaque nœud est stocké dans un tableau, une liste, ou n'importe quelle autre structure de données plus complexe (aucune contrainte particulière à ce propos, à vous de choisir la plus adaptée). Il est composé de  <em>propriétés</em>, comme par exemple une <em>position</em>, une <em>lettre</em>, une <em>valeur</em> ou n'importe quelle entité plus complexe, qui dépend du problème (au cas par cas).  </p>
+<p>La difficulté consiste donc à lister intelligemment les arêtes entre les nœuds.<br />
+On résout ce problème avec une <strong>liste d'adjacence</strong> ou une <strong>matrice d’adjacence</strong>. La quasi totalité des implémentations d'un graphe sont des variantes de ces deux structures de données.   </p>
+<p>Attention ! La liste et la matrice ne sont pas seulement des structures de données, <strong>elles sont aussi une représentation du graphe</strong>.<br />
+La matrice et la liste contiennent suffisamment d'informations pour définir le graphe, au même titre que la représentation géométrique à base de sommets et d'arêtes.<br />
+Mais contrairement à cette dernière, qui est plus intuitive et plus adaptés aux êtres humains, la matrice et la liste peuvent être aisément implémentées sous forme de structure de données et utilisées par un programme.  </p>
+<h3 id="la-liste-dadjacence">La liste d'adjacence</h3>
+<p>La <strong>liste d’adjacence</strong> est le moyen le plus répandu pour stocker un graphe en mémoire : elle correspond à la représentation intuitive que l'on s'en fait. La liste d'adjacence d'un nœud est la liste de ses voisins (ou la liste des arêtes qui le relie à ses voisins).  </p>
+<div class="highlight"><pre><span></span>struct Noeud
+{
+     proprietes
+     voisins []
+}  
+
+Noeud noeuds [] = graph
+</pre></div>
+
+
+<p>Fin de la théorie.  </p>
+<p>Passons à la pratique :  vous pouvez avoir, selon ce que vous propose votre langage, plusieurs moyens de stocker la liste des voisins.  </p>
+<p><strong>1) Des indices et un tableau</strong>  </p>
+<p>C'est la façon la plus naturelle, et la plus triviale. Vous mettez tout vos nœuds dans un tableau, et la liste d'adjacence de chaque nœud contient l'indice de ses voisins. En raison de sa simplicité et de son expressivité, c'est l'implémentation qui sera utilisée dans la suite du tutoriel.  </p>
+<p>Voici un moyen d'itérer sur tout les voisins du nœud indexé par <code>courant</code>.  </p>
+<div class="highlight"><pre><span></span>Pour chaque voisin V dans noeuds[courant].voisins
+     faire quelque chose avec noeuds[V]
+</pre></div>
+
+
+<p>Le facteur constant d'accès à chaque voisin est très faible, ce qui vous permet de vous "promener" très rapidement dans le graphe. Vous pouvez généralement obtenir de très bonnes performances de cette façon.  </p>
+<p>Le seul inconvénient de cette méthode est de devoir disposer de l'intégralité du graphe dans la mémoire. Problématique si vos ressources en mémoire sont limitées, ou si pire, le graphe est de taille infinie !<br />
+Cela impose également que vous connaissiez dès le début l'ensemble du graphe, ce qui n'est pas toujours le cas : il en résulte une représentation figée qui interdit toute modification de certaines données (nombre de nœuds... ), et se limite à leur simple exploitation (ce qui demeure suffisant pour la plupart des algorithmes, en particulier tout ceux que nous étudierons).  </p>
+<p><strong>2) Des hash et une table de hashage</strong>  </p>
+<p>Il s'agit de la version adaptée de l'implémentation précédente, pour palier à son principal défaut. Tout les nœuds que vous connaissez déjà sont stockés dans une table de hachage, et la liste d'adjacence de chaque nœud contient le hash de ses voisins. C'est généralement l'implémentation idéale pour un graphe dans lequel les arêtes entre chaque nœud sont définies par des règles précises, et non pas de manière purement arbitraire.  </p>
+<p>Prenons l'exemple du jeu d'échecs : en associant à un nœud à chaque position, on constate que les arêtes correspondent à chaque coup légal qui mène à une position légale elle aussi (le milieu des jeux de stratégie semble très policé). Ainsi, pour chaque nœud, on peut facilement lister ses voisins.<br />
+​  <br />
+<img alt="" src="../../../progdupeupl//galleries/108/ff576ea3-8eb0-4f5b-9166-4f22d13e8d0b.png" /><br />
+Il n'est pas possible de stocker autant de nœuds que de configurations du plateau : il en existe de l'ordre de $10^{50}$ !<br />
+Mais ce n'est pas un problème : jouer une partie revient à se promener dans ce graphe (c'est d'ailleurs un arbre), et il n'est en rien nécessaire d'énumérer tout les nœuds pour cela.  </p>
+<p>Le principal défaut de cette implémentation est le calcul des hashs : cela se fait en $O(1)$ en temps mais avec un facteur constant très important.  </p>
+<p><strong>3) Des pointeurs</strong>  </p>
+<p>Cette implémentation est à réserver aux langages qui supportent ce concept (langages bas-niveaux essentiellement).  </p>
+<p>La liste d'adjacence contient des pointeurs vers chaque nœud voisin. Chaque nœud est alloué dynamiquement. Cela permet une représentation très souple du graphe : ajout et suppression de nœuds, et d'arêtes. Pour reprendre un précédent exemple : sur des réseaux sociaux des comptes peuvent être supprimés ou ajoutés, et on peut "aimer" ou "ne plus aimer" certaines choses, etc...  </p>
+<p>Cependant, la construction du graphe et son exploitation n'est pas facile : cette implémentation sujette aux bugs est à réserver aux cas dans lesquels elle est absolument nécessaire.   </p>
+<p><strong>Conclusion</strong>  </p>
+<p>Voici quelques caractéristiques remarquables de la liste d'adjacence :   </p>
+<ul>
+<li>Complexité en mémoire : $O(N+A)$    </li>
+<li>Complexité  en temps pour itérer sur tout les voisins d'un nœud : $O(d)$ avec $d$ le degré sortant du nœud   </li>
+<li>Ajout d'arête : $O(1)$   </li>
+<li>Retrait d'arête : $O(d)$ car il faut la retrouver avant de la supprimer     </li>
+<li>Tester si deux nœuds sont voisins : $O(d)$ car il faut itérer naïvement sur toutes les arêtes de l'un des deux nœuds   </li>
+</ul>
+<p><strong>Variante :</strong>  </p>
+<p>Plutôt que d'utiliser une liste, vous pouvez utiliser un <a href="http://fr.wikipedia.org/wiki/Arbre_binaire_de_recherche">arbre binaire de recherche équilibré</a> :   </p>
+<ul>
+<li>Ajouts et retraits d'arêtes en $O(\log{d})$    </li>
+<li>Tester si deux nœuds sont voisins en $O(\log{d})$  <br />
+  En effet les opérations pour retrouver les arêtes sont plus rapides, mais en contre-partie leur ajout est plus long. Cette optimisation n'est raisonnablement valable que lorsque le degré des nœuds devient important (en particulier, en dessous de 8 les gains sont souvent invisibles, mais des tests s'imposent en toutes circonstances, ne faites pas de cette indication une généralité !).  </li>
+</ul>
+<p>N'oubliez pas que la construction du graphe au préalable nécessite un ajout des arêtes une à une, soit ici une construction du graphe en $O(N)$ contre $O(N\log{N})$.  </p>
+<p>Choisissez l'implémentation la plus adaptée à votre problème, faites un compromis, ou inventez en d'autres...  </p>
+<h4 id="la-matrice-dadjacence">La matrice d'adjacence</h4>
+<p>La <strong>matrice d'adjacence</strong> est un tableau en deux dimensions. Chacune des dimensions est indexée par les nœuds du graphe (typiquement de $0$ à $N-1$).<br />
+A l'intersection de chaque ligne et colonne on trouve un nombre : il vaut 1 si une arête relie les deux nœuds indexés par les coordonnées de la case, et 0 sinon.  </p>
+<p><img alt="" src="../../../progdupeupl//galleries/108/a784afbc-8392-4909-884c-bb4b7b843d86.jpg" /> </p>
+<p>On observe plusieurs choses intéressantes.  </p>
+<ul>
+<li>Les boucles reliant un nœud à lui même sont sur la diagonale de la matrice.  </li>
+<li>Cette matrice est symétrique par rapport à sa diagonale dans un graphe non-orienté (puisque si <strong>A</strong> est relié à <strong>B</strong>, alors <strong>B</strong> est relié à <strong>A</strong>).  </li>
+<li>Si le graphe ne comporte aucune arête, alors c'est la matrice nulle.   </li>
+<li>
+<p>Si le graphe est creux, alors la matrice le sera aussi.  </p>
+</li>
+<li>
+<p>Pour $N$ nœuds, cette matrice est de taille $N\times N$. Soit une complexité de $O(N^2)$ en mémoire. Si votre langage le permet, vous pouvez stocker chacun des booléens sur un bit; il en résulte une consommation en mémoire de $\frac{N^2}{8}$ octets exactement, ce qui est très compact (incompressible dans le cas général).   </p>
+</li>
+<li>Vous pouvez itérer sur tout les voisins d'un nœud en $O(N)$   </li>
+<li>En outre, à tout moment vous pouvez déterminer si deux nœuds sont voisins (c'est à dire reliés par une arête) en $O(1)$  </li>
+<li>Pour finir les ajouts et retraits d'arêtes se font en $O(1)$  </li>
+</ul>
+<p>Si cette représentation est couteuse pour un graphe creux (on lui préférera la liste d'adjacence), elle devient très rentable pour un graphe dense.<br />
+<strong>La densité est souvent le critère décisif du choix entre la matrice ou la liste.</strong> </p>
+<p>Si le graphe est pondéré, vous pouvez remplacer les booléens par des nombres correspondant à la pondération de chaque arête. Et vous fixez une valeur spéciale pour signifier l'absence d'arête ($-1$, $0$ ou $\infty$ par exemple, selon les cas).  </p>
+<p><img alt="" src="../../../progdupeupl//galleries/108/26492a4a-e988-4dd1-9ab8-6b1022262295.jpg" />  </p>
+<p>Les matrices d'adjacence sont particulièrement usitées lors de démonstrations sur un graphe, car la matrice est un outil mathématique bien connu.   </p>
+<h1 id="parcourir-un-graphe">Parcourir un graphe</h1>
+<p>C'est bon ? Vous avez un graphe joli tout plein ? Il attend sagement dans la RAM que vous vous occupiez de lui ?  </p>
+<p>Vous êtes ici pour pouvoir - enfin ! - programmer vos premiers algorithmes de graphe.  </p>
+<p>Vous allez apprendre à explorer la bébête, avec le <abbr title="Depth First Search">DFS</abbr>, le <abbr title="Algorithme de parcours en largeur">BFS</abbr> et l'exhaustif. Et avec la foultitude d'exemples que je vous donnerais, je vous jure que vous ne tarderez pas à découvrir le nombre incroyable de problèmes que ces simples algorithmes résolvent.  </p>
+<p>Préparez vous à plonger <em>profondément</em><sup id="fnref:1"><a class="footnote-ref" href="#fn:1" rel="footnote">1</a></sup> dans l'univers des graphes.  </p>
+<h2 id="le-parcours-en-profondeur-et-le-labyrinthe">Le parcours en profondeur et le labyrinthe</h2>
+<h3 id="les-pyramides">Les pyramides</h3>
+<p>Aaaah l'Egypte ! Le soleil, le sable, le Nil ! Le Sphinx et son nez ! Les pyramides, leurs labyrinthes, et leurs... euh... labyrinthes.  </p>
+<p>Fidèle à la tradition familiale vous êtes devenu un pilleur de tombeaux. Vous n'êtes pas sans ignorer que la chambre funéraire recèle maints trésors, que vous avez hâte de vous approprier afin d'ouvrir le magasin de guimauve dont vous rêvez depuis votre enfance.  </p>
+<p>Sauf qu'aujourd'hui vous êtes tombé sur une pyramide très particulière, avec de nombreux carrefours... mais certains mènent à des pièges abominables, tellement abominables que je n'ose pas les décrire ici !  </p>
+<p>Vous disposez d'une carte du labyrinthe (remettant ainsi en cause l'utilité de ce dernier). Soucieux de ne pas prendre de risques superflus, vous confiez à votre ordinateur la dure tâche de trouver un itinéraire fiable.   </p>
+<p>Voici le plan :  </p>
+<p><img alt="" src="../../../progdupeupl//galleries/108/5b062642-f4bb-49bc-9ea8-4eb58de6c7f2.png" />  </p>
+<p><strong> Exercice</strong> : trouvez le graphe associé à ce problème. Trouvez ses caractéristiques principales. Trouvez quelle question on se pose sur ce graphe. Puis choisissez la structure de données qui vous semble la plus appropriée à la résolution du problème !  </p>
+<p><strong>Commençons par le graphe.</strong>  </p>
+<p>Il apparaît clairement que chaque <em>couloir</em> est une arête.<br />
+Par conséquent les nœuds seront des <em>intersections</em>.  </p>
+<p>Certains nœuds sont particuliers.<br />
+Les <em>entrées</em> du labyrinthe : c'est de l'une d'entre elles que commence le chemin.<br />
+La <em>chambre funéraire</em> : c'est l'aboutissement d'un chemin (s'il existe).  </p>
+<p>Les salles piégées posent problème : elles existent mais nous ne pouvons pas les traverser. Deux solutions.<br />
+Soit on ajoute ces nœuds particuliers au graphe, en précisant bien qu'ils sont piégés pour que l'algorithme les ignore (compliqué et désagréable à implémenter, plein de cas particuliers à gérer).<br />
+Soit on les ignore purement et simplement lors de la construction du graphe, comme s'ils n'en faisaient pas parti (plus simple, plus propre).  </p>
+<p>Nous choisirons donc la seconde solution.<br />
+Et retenez de cela qu'il ne faut pas s'encombrer de superflu (un sérieux coup de pied dans les fesses de la société de consommation, pas vrai ?), la simplicité, l'expressivité et la concision sont les mots d'ordre du développeur. 
+Cela vous évitera de tristes après-midis de débogage.   </p>
+<p><img alt="" src="../../../progdupeupl//galleries/108/ad01114c-7bbe-4a44-86a0-8dfa2f2ed7bc.png" /></p>
+<p><strong>Passons aux caractéristiques du graphe.</strong>  </p>
+<p>Ce graphe est <em>non orienté</em> : vous pouvez traverser un couloir dans les deux sens, et même sur les mains si ça vous plaît.<br />
+Ce graphe est <em>cyclique</em>, car certains itinéraires tournent en rond (<em>ah les fourbes !</em>).<br />
+Ce graphe n'est <em>pas pondéré</em>. Certains objecteront qu'on peut associer à chaque couloir sa longueur, le coefficient de dureté du sol, l'âge de sa construction ou que sais-je encore. C'est vrai. Sauf qu'on s'en fout. On est pas ici pour trouver le chemin le plus respectueux pour vos pieds, donc ne nous encombrons pas de ces broutilles. <em>Pas de superflu.</em><br />
+Ce graphe n'est <em>pas connexe</em> : vous ne pouvez pas accéder à n'importe quel endroit depuis n'importe quel autre endroit. On dénombre 2 composantes connexes d'ailleurs. <br />
+Ce graphe est <em>creux</em> : on a seulement 17 arêtes pour 18 nœuds (après suppression des nœuds piégés et des couloirs qui leur sont associés).  On choisira donc la <em>liste d'adjacence</em> pour stocker ce graphe !  </p>
+<p><strong>Pour finir voici la question que l'on se pose.</strong>  </p>
+<p>Existe-t-il un chemin entre une entrée et la chambre funéraire ?<br />
+Autrement dit, la chambre funéraire est-elle connexe à au moins une entrée ?<br />
+Quel est ce chemin (ou l'un de ces chemins) ?  </p>
+<h3 id="le-parcours-en-profondeur">Le parcours en profondeur</h3>
+<p>Le <abbr title="Depth First Search">DFS</abbr> est la méthode la plus simple pour parcourir un graphe. Elle fonctionne sur tout type de graphe, cyclique ou non,orienté ou non, etc.   </p>
+<p>En langage naturel ça donne : <em>je pars d'un endroit que je ne connais pas, je me dirige vers d'autres endroits que je ne connais pas, et quand je suis bloqué je fais demi-tour jusqu'à retrouver un chemin que je n'ai pas encore parcouru</em>. Assez instinctif pas vrai ?  </p>
+<p>C'est la méthode que l'on utilise lorsqu'on est perdu, ou lorsqu'on visite un bâtiment : on essaie plusieurs chemins, et lorsqu'on est coincés on fait demi-tour jusqu'à la précédente intersection.  </p>
+<p>Voici sa description sous forme d'algorithme :  </p>
+<ul>
+<li>1) Je cherche un nœud non visité.  </li>
+<li>2) Pour visiter ce nœud, je marque le nœud comme visité.  </li>
+<li>3) Je prends l'un de ses voisins :  <ul>
+<li>si le voisin a déjà été visité je l'ignore et je cherche un autre voisin  </li>
+<li>si le voisin n'a pas encore été visité, je le visite  </li>
+<li>si tout les voisins ont été visité, je reviens au nœud précédent, et je ré-applique le <strong>3)</strong>  </li>
+</ul>
+</li>
+<li>4) Je reprend le <strong>1)</strong> tant qu'il reste des nœuds non visités  </li>
+</ul>
+<p>Vous avez remarqué ? Une boucle (de <strong>4</strong> à <strong>1</strong>) englobe la totalité de l'algorithme. Cette condition d'arrêt (<em>tant qu'il reste des nœuds non visités</em>) nous assure que l'entièreté du graphe sera exploré.<br />
+Il n'y a pas que ça : pour visiter un nœud, il faut aussi visiter l'un de ses voisins non visité. Un concept qui se renvoie à lui même pour se définir, ça ne vous fait penser à rien ? Mais si, <a href="http://zestedesavoir.com/tutoriels/218/la-recursivite/">la récursivité</a> bien sûr !  </p>
+<p>Passons au pseudo-code.    </p>
+<div class="highlight"><pre><span></span>Procedure explorer(Graphe G)  
+{
+   Pour chaque noeud N de G     
+      Si N non visite    
+         DFS(G, N)  
+}  
+
+Procedure DFS(Graphe G, Noeud N)  
+{  
+   Marquer N comme visite  
+   Pour chaque voisin V de N  
+      Si V non visite  
+         DFS(G, V)  
+}
+</pre></div>
+
+
+<p>Remarquez une chose : la fonction <code>explorer</code> fera autant d'appels à <abbr title="Depth First Search">DFS</abbr> qu'il existe de composantes connexes distinctes, dans un graphe non orienté. Le <abbr title="Depth First Search">DFS</abbr> est donc un bon moyen de retrouver les composantes connexes d'un graphe non orienté.<br />
+Si nous ne marquions pas les nœuds comme étant visités, nous nous mettrions à tourner en rond, dans le cas d'un graphe cyclique. Cela entraînerait donc des appels récursifs infinis, et notre programme ne se terminerait jamais ! Pour cette raison, le <abbr title="Depth First Search">DFS</abbr> est l'algorithme le plus adapté à la détection de cycles.  </p>
+<p>Vous comprenez maintenant l'origine du nom <abbr title="Depth First Search">DFS</abbr> : l'algorithme descend en profondeur dans le graphe, avant de faire demi-tour.<br />
+Sur le graphe ci-dessous l'ordre d'exploration pourra donc être : <strong>A - B - D - F - E - C - G</strong> </p>
+<p><img alt="" src="../../../progdupeupl//galleries/108/27f67c44-e00f-40ff-b99a-de1247671263.png" />  </p>
+<p>Voyons le problème sous un autre angle, et dessinons les arêtes empruntées par le <abbr title="Depth First Search">DFS</abbr> :  </p>
+<p><img alt="" src="../../../progdupeupl//galleries/108/34024a92-c895-4733-93d0-81261af2b340.png" /></p>
+<p>Cela ne vous fait penser à rien ? C'est un arbre !<br />
+En effet, ce graphe ne comporte pas de cycles (puis que le <abbr title="Depth First Search">DFS</abbr> ne doit pas boucler).<br />
+Et on s'aperçoit que le <abbr title="Depth First Search">DFS</abbr>, de nature récursive, se prête bien au parcours de cette structure de données récursive : pour explorer un arbre, on explore sa racine puis les sous-arbres qui le composent.   </p>
+<p>Jetons un petit coup d’œil à la complexité en temps de cet algorithme.<br />
+On remarque que chaque nœud ne sera traité qu'une seule fois, et on a tôt fait de conclure (à tort) qu'il est en $O(N)$.<br />
+Sauf que... pour chaque nœud, on itère sur tout ses voisins (qu'un appel récursif soit fait dessus ou non).<br />
+D'où une complexité en temps de $O(N+A)$. On voit donc ici que le nombre de nœuds est fonction - de façon assez évidente - de la vitesse d'exécution, mais que la densité du graphe a elle aussi un rôle très important.<br />
+La complexité en mémoire dépend du nombre d'appels récursifs (qui font grossir la pile), et il peut y en avoir autant que de nœuds dans le graphe. La complexité en mémoire est donc $O(N)$. Le pire des cas correspond à un graphe sous la forme d'une liste de nœuds chaînés les uns à la suite des autres, là où la profondeur d'appel est maximale.  </p>
+<p>Le <abbr title="Depth First Search">DFS</abbr> tel que je vous l'ai présenté ici est assez "nu" mais il va sans dire qu'avec quelques modifications il est en mesure de résoudre un grand nombre de problèmes (ici déterminer si deux nœuds sont sur la même composante connexe). Nous verrons cela dans les chapitres suivants.  </p>
+<p>Que le <abbr title="Depth First Search">DFS</abbr> soit de nature récursive est autant un avantage qu'un inconvénient. Un avantage car beaucoup plus simple à lire, à écrire et à déboguer (lorsqu'on est à l'aise avec la récursivité). Mais un inconvénient car chaque appel récursif fait grossir la pile d'appel, qui possède une taille limitée dépendant de votre langage, de votre OS et de votre compilateur/interpréteur (souvent 1000 mais n'en faites pas une généralité). Si votre graphe est trop gros vous pourriez rencontrer d'importants problèmes de mémoire. La solution consiste à ré-implémenter le <abbr title="Depth First Search">DFS</abbr> en itératif en simulant la pile d'appel grâce à une pile LIFO (<em>Last In First Out</em>).   </p>
+<h3 id="luke-je-suis-ton-pere">Luke, je suis ton père</h3>
+<p>Normalement, vous disposez d'assez d'informations pour résoudre le problème à présent. Il suffit de modifier un peu la fonction <abbr title="Depth First Search">DFS</abbr>.<br />
+Ne regardez pas la solution avant d'avoir bien cherché !  </p>
+<p>Bon, récapitulons : si ce chemin existe, après l'avoir parcouru, il faut savoir le retrouver.<br />
+Remarquons deux choses : ce chemin, quel qu'il soit, reste le même quelque soit le sens dans le quel on l'emprunte; en outre, chaque nœud n'est visité qu'une et une seule fois, donc il n'existe qu'un seul moyen de parvenir à lui dans le <abbr title="Depth First Search">DFS</abbr>.<br />
+C'est directement en lien avec l'observation de tout à l'heure : le <abbr title="Depth First Search">DFS</abbr> explore un arbre, donc chaque nœud n'a qu'un seul père.<br />
+Il suffit donc de remonter dans l'arbre, depuis la chambre funéraire jusqu'à la racine (c'est à dire le premier appel à la fonction <abbr title="Depth First Search">DFS</abbr> sur cette composante connexe).<br />
+Et pour cela rien de plus simple : il faut que chaque nœud retienne qui est son père.  </p>
+<div class="highlight"><pre><span></span>Fonction trouverChemin(Graphe G)
+{
+   Pour chaque noeud N de G
+      pere[N] = NUL
+   explorer(G)
+   Noeud chemin[]
+   Noeud courant = chambreFuneraire
+   Tant que courant != NUL // == Tant qu&#39;on est pas sorti  
+      chemin.ajouter(courant)
+      courant = pere[courant]
+   Renvoyer inverse(chemin) // car le chemin est reconstruit à l&#39;envers  
+}  
+
+Procedure explorer(Graphe G)  
+{
+   Pour chaque noeud N de G     
+      Si N non visite et N est une entree
+         pere[N] = NUL
+         DFS(G, N)  
+}  
+
+Procedure DFS(Graphe G, Noeud N)  
+{  
+   Marquer N comme visite  
+   Pour chaque voisin V de N  
+      Si V non visite  
+         pere[V] = N  
+         DFS(G, V)  
+}
+</pre></div>
+
+
+<p>Si ce chemin existe il sera trouvé.  Sinon, la fonction <code>trouverChemin</code> renverra la liste singleton <code>[NUL]</code> pour signifier l'absence de chemin.<br />
+Ci-dessous, un exemple de solution (pas forcément la plus courte).  </p>
+<p><img alt="" src="../../../progdupeupl//galleries/108/24dcf953-111a-4581-8dc3-a517de49332c.png" /></p>
+<p>Et voilà ! Vous avez trouvé votre chemin. Mais n'oubliez pas : <em>il y a une différence entre connaître le chemin et arpenter le chemin</em>.</p>
+<h2 id="le-parcours-en-largeur-et-le-buzz">Le parcours en largeur et le buzz</h2>
+<h3 id="big-buzz">Big Buzz</h3>
+<p>Vous venez d'achever l’œuvre de votre vie : une vidéo si stupide qu'elle va rencontrer un succès incroyable.<br />
+Elle va faire le <em>buzz</em>, vous le savez : quiconque la voit ne pourra pas s'empêcher de la partager juste après. Personne n'y échappera, subjugué par tant de bêtise humaine.<br />
+Vous voulez suivre la progression de votre création sur le net, et en particulier vous souhaitez savoir combien de personnes en tout ont visionné votre vidéo au bout d'un certain nombre d'heures.  </p>
+<p>Vous êtes ami avec un employé de la NSA, ce qui vous permet d'obtenir une carte très détaillée de votre réseau social préféré, où vous voyez les liens entre chaque individu. Sitôt qu'un individu voit la vidéo, il la partage. Tous ses contacts la voient très exactement une heure après, puis la partagent immédiatement à leur tour, etc.  </p>
+<p>Vous êtes le point d'émission de la vidéo à l'heure 0, qui ira vers vos amis, puis les amis de vos amis... A partir du réseau social, vous souhaitez obtenir la liste triée des gens l'ayant vue, en fonction de l'heure.  </p>
+<p><strong>Quel est le graphe ?</strong>  </p>
+<p>Bon là c'est assez explicite, un nœud pour chaque <em>individu</em>, et une arête pour chaque <em>relation entre deux individus</em>.<br />
+Ce graphe est <em>cyclique</em>, <em>non orienté</em> (l'amitié marche dans les deux sens normalement, mais si vous préférez un système avec des <em>followers</em> ce sera un graphe orienté), <em>non pondéré</em>, et <em>creux</em> (sauf quand tout le monde connait tout le monde, mais c'est rare). On va donc, une fois de plus, utiliser une liste d'adjacence. 
+On veut obtenir la liste des nœuds en fonction de leur distance à un nœud particulier, <em>le vôtre</em>.  </p>
+<h3 id="le-parcours-en-largeur">Le parcours en largeur</h3>
+<p>Le <abbr title="Algorithme de parcours en largeur">BFS</abbr> est l'algorithme qui permet de parcourir tout les nœuds en fonction de leur distance à l'origine. Il explore les cartes par cercles concentriques de plus en plus grands. Il fonctionne sur tout type de graphe, cyclique ou non, orienté ou non, etc.   </p>
+<p>Le <abbr title="Algorithme de parcours en largeur">BFS</abbr> procède de la façon suivante : il prend le premier nœud (distance 0), puis traite tout les nœuds qui sont à une distance de 1, puis tout les nœuds à une distance de 2, puis tout les nœuds à une distance de 3... et ainsi de suite.<br />
+On remarque très vite que les nœuds à une distance 1 de l'origine sont ses voisins, à une distance de 2 ce sont les voisins de ses voisins, à une distance 3 les voisins des voisins de ses voisins... de manière générale, un nœud à distance $n$ est : soit relié à des nœuds de distance $n-1$, soit des nœuds de distance $n$, soit des nœuds de distance $n+1$. Certainement pas plus : sinon il existerait un moyen plus rapide de rejoindre le nœud suivant; certainement pas moins, sinon le nœud courant aurait pu être atteint plus rapidement.<br />
+Si nous disposons de tout les nœuds à distance $n$, nous avons accès à tout les nœuds de distance $n+1$.<br />
+Dès le début on a accès au nœud de distance 0, donc en appliquant itérativement ce procédé on aura accès à tout les nœuds en fonction de leur distance à l'origine (s'ils sont connexes à elle).   </p>
+<p>Si vous ignorez ce qu'est une file FIFO, <a href="https://fr.wikipedia.org/wiki/First_in,_first_out">il n'est pas trop tard</a> !</p>
+<p>Voici l'algorithme :  </p>
+<ul>
+<li>1) Je prend le premier nœud de la file d'attente des nœuds à traiter.  </li>
+<li>2) Pour visiter ce nœud je le marque comme visité.  </li>
+<li>3) Je prend chacun de ses voisins non visités et je les ajoute à la fin de la file d'attente des nœuds à visiter  </li>
+<li>4) Je reprends le 1) tant qu'il reste des nœuds à traiter dans la file d'attente  </li>
+</ul>
+<p>Voici le pseudo code correspondant :  </p>
+<div class="highlight"><pre><span></span>Procedure BFS(Graphe G, Noeud Origine)
+{
+   File aTraiter  
+   Marquer N comme visite  
+   aTraiter.enfiler(Origine)
+
+   Tant que aTraiter.nonVide()
+   {
+      Noeud N = aTraiter.defiler()
+
+      Pour chaque voisin V de N
+         Si V non visite  
+            Marquer V comme visite  
+            aTraiter.enfiler(V)
+   }
+}
+</pre></div>
+
+
+<p>Cet algorithme fonctionne, je vous le promet !<br />
+Il commence par enfiler l'origine à distance 0, puis tout les nœuds 1, puis pour chaque nœud à distance 1 il va enfiler d'autres nœuds à la distance 2 (à la suite des nœuds à distance 1 donc), puis il défilera les nœuds à distance 2 pour enfiler des nœuds à distance 3 à leur suite.<br />
+Ainsi les nœuds ne sont jamais mélangés : ils sont présents dans la file par "paquets" consécutifs qui correspondent à leur distance à l'origine.  </p>
+<p>Sur un arbre, il explore les nœuds en fonction de leur hauteur (distance à la racine) contrairement au <abbr title="Depth First Search">DFS</abbr> qui va effectuer toutes les descentes possibles de la racine à une feuille. Ainsi, l'ordre d'exploration des nœuds du graphe ci-dessous pourra être : <strong>A - B - C - E - D - F - G</strong>. Comme vous pouvez le constater, tout les nœuds frères sont parcourus les uns à la suite des autres, la racine étant l'origine du <abbr title="Algorithme de parcours en largeur">BFS</abbr>.  </p>
+<p><img alt="" src="../../../progdupeupl//galleries/108/27f67c44-e00f-40ff-b99a-de1247671263.png" />  </p>
+<p>Et que se passera-t-il si d'aventure nous remplacions la file par une pile ? On retrouve la version itérative du <abbr title="Depth First Search">DFS</abbr> présentée à la section précédente !<br />
+Il apparaît donc qu'il y a un lien important entre algorithme et structure de données. L'écriture sous forme itérative ou récursive dépend essentiellement de facteurs comme la lisibilité, la manière de laquelle l'algorithme s'explique le mieux, et enfin les performances.  </p>
+<p>Tout comme pour le <abbr title="Depth First Search">DFS</abbr>, la complexité en temps est en $O(N+A)$. Une fois encore la densité du graphe influe beaucoup sur les performances de l'algorithme.<br />
+La file peut contenir autant de nœuds que le graphe en possède, d'où une complexité en mémoire de $O(N)$. Le pire des cas concerne un graphe de diamètre très faible : la file est encombrée par la présence des nombreux nœuds à distance égale de l'origine.  </p>
+<p>Le <abbr title="Algorithme de parcours en largeur">BFS</abbr> peut servir à détecter les composantes connexes d'un graphe (tout comme le <abbr title="Depth First Search">DFS</abbr>), si plusieurs appels à la fonction <code>BFS()</code> sont réalisés avec des origines différentes. Mais le <abbr title="Algorithme de parcours en largeur">BFS</abbr> a un avantage sur le <abbr title="Depth First Search">DFS</abbr> lors de la recherche de composantes connexes : il trouve le plus court chemin entre ces deux nœuds (s'il existe) dans le cas d'un graphe non pondéré.<br />
+Dans le cas d'un graphe implicite de taille infini (ou de très très grande taille) le <abbr title="Depth First Search">DFS</abbr> risque de s'engager dans une mauvaise voie dans le début et de s'y enfoncer trop profondément, voir à l'infini ! Impossible de déterminer en un temps raisonnable (ou un temps fini) un chemin entre deux nœuds connexes, alors que le <abbr title="Algorithme de parcours en largeur">BFS</abbr> va explorer plusieurs chemins possibles à la fois, ce qui lui donne l'assurance de trouver un jour ce chemin. Pour cette raison les graphes implicites de grande taille sont souvent parcouru par un <abbr title="Algorithme de parcours en largeur">BFS</abbr> plutôt qu'un <abbr title="Depth First Search">DFS</abbr>.<br />
+Mais le <abbr title="Algorithme de parcours en largeur">BFS</abbr> peut aussi servir à marquer les nœuds en fonction de leur distance à l'origine. C'est ce que nous allons voir tout de suite !  </p>
+<h3 id="le-prix-du-succes">Le prix du succès</h3>
+<p>Une petite modification suffit à la résolution du problème.  </p>
+<div class="highlight"><pre><span></span>Procedure BFS(Graphe G, Noeud Origine)
+{
+   File aTraiter  
+   profondeur[Origine] = 0
+   Marquer Origine comme visite
+   aTraiter.enfiler(Origine)
+
+   Tant que aTraiter.nonVide()
+   {
+      Noeud N = aTraiter.defiler()  
+
+      Afficher : N.nom + &quot; voit la video a l&#39;heure &quot; + profondeur[N]
+
+      Pour chaque voisin V de N
+         Si V non visite  
+            profondeur[V] = profondeur[N] + 1
+            Marquer V comme visite
+            aTraiter.enfiler(V)
+   }
+}
+</pre></div>
+
+
+<p>Et voilà. Vous pouvez également indiquer le nombre total de gens ayant vu la vidéo à chaque heure, je vous laisse le coder vous même, ce n'est pas très difficile.  </p>
+<h2 id="lexhaustif-et-uno">L'exhaustif et Uno</h2>
+<p>Connaissez-vous <em>Uno</em>$^{TM}$ ?  </p>
+<p>Comme nous l'explique si bien <a href="http://fr.wikipedia.org/wiki/Uno">Wikipédia</a>, c'est un jeu de carte américain créé en 1971 par Merle Robbins. Il est pourvu de pleins de règles subtiles et de cartes agressives pour faire rager les petits comme les grands.  </p>
+<p>Aujourd'hui, je ne vous propose pas de programmer ce célèbre jeu. A la place je vous propose plutôt de résoudre ce petit problème.  </p>
+<p>Dans Uno, chaque joueur possède un certain nombre de cartes en main, qui peuvent être de 4 couleurs : <em>bleues</em>, <em>vertes</em>, <em>rouges</em> ou <em>jaunes</em>.<br />
+Elles sont numérotées de 0 à 9.<br />
+Il existe également certaines cartes spéciales ("Joker", "Inversion", "Super Joker"...) mais nous ne y intéresserons pas ici, par soucis de simplicité.  </p>
+<p>Le jeu comporte un talon. On ne peut poser une carte sur le sommet de ce talon que si la carte au sommet du talon est :    </p>
+<ul>
+<li>De même couleur que la carte qu'on joue  </li>
+<li>De même valeur faciale que la carte qu'on joue  </li>
+</ul>
+<p>Un petit exemple :  </p>
+<ul>
+<li>poser un 7 rouge sur un 9 rouge est autorisé  </li>
+<li>poser un 4 vert sur un 4 bleu est autorisé  </li>
+<li>poser un 2 jaune sur un 2 jaune est autorisé  </li>
+<li>poser un 6 bleu sur un 3 vert est interdit  </li>
+</ul>
+<p>Il est ainsi possible d'empiler ces cartes de diverses façons en suivant ces règles, pour obtenir un talon plus ou moins haut.  </p>
+<p>Comme vous n'avez rien de mieux à faire, vous voulez savoir, à partir d'un ensemble de cartes donné, quels sont tout les talons qu'il est possible de réaliser avec. Les cartes qui ne pourront pas être ajoutées au talon seront éventuellement laissées sur le côté.<br />
+Vous pouvez empiler les cartes de votre choix dans n'importe quel ordre, tant que vous respectez les règles.  </p>
+<p><img alt="" src="../../../progdupeupl//galleries/108/9c18ac1a-030f-4fb7-b2e3-096c77c64ffb.jpg" />  </p>
+<p><strong>Exercice :</strong> vous commencez à le connaître par cœur normalement.<br />
+Quel est le graphe ? Quels sont ses caractéristiques ? Quelle question se pose-t-on sur lui ?  </p>
+<p><strong>Correction :</strong>  </p>
+<p>Rappelez-vous : un graphe représente des objets et des relations entre ces objets.<br />
+Ici chaque objet, chaque nœud, est donc une <em>carte</em>. Les arêtes sont définies par <em>une valeur faciale ou une couleur commune</em>. C'est donc un bon exemple de graphe dans lequel les arêtes peuvent être déduites du nœud à partir de certaines règles de construction simples.<br />
+Ce graphe est <em>cyclique</em>. Certes, on ne peut pas utiliser une même carte plus d'une fois, mais il y a plus d'une manière de poser une carte, qui aboutira à d'autres situations où il serait ensuite théoriquement valide de poser cette carte si elle n'avait pas déjà été jouée.<br />
+Ce graphe est non <em>orienté</em>. L'ordre dans lequel sont empilés les cartes n'a pas d'importance, puisque les règles ne s'intéressent qu'à la relation d'adjacence de deux cartes, indépendamment de leur ordre.<br />
+Ce graphe est <em>non pondéré</em> (sapristi, un de plus !).  </p>
+<p>Ce graphe est <em>dense</em>, selon moi. En effet il n'y a pas de caractérisation formelle entre un graphe dense et un graphe qui ne l'est pas, c'est laissé à l'appréciation de chacun. Laissez moi vous expliquer ma démarche.<br />
+En supposant que l'on ait beaucoup de cartes, disons $N$, et qu'elles soient toutes tirées au hasard : en moyenne nous aurons $\frac{N}{4}$ cartes de chaque couleur (car il y a 4 couleurs).<br />
+Toutes les cartes de même couleur seront au moins reliées entre elles. Donc, en moyenne, chaque carte sera reliées à au moins $\frac{N}{4}$ autres cartes.<br />
+Chaque carte est aussi reliée à un $\frac{1}{10}$ (car 10 chiffres) des cartes des 3 autres couleurs, soit $\frac{3\times N}{40}$ autres cartes en moyenne.<br />
+Cela fait une moyenne de $0,325\times N$ arêtes par nœud. Le degré de chaque nœud n'est pas constant : il dépend de $N$.<br />
+Ce qui porte le total à environ $0,162\times N^2$ arêtes, car c'est un graphe non orienté (il ne faut pas compter deux fois chaque arête).<br />
+Le nombre d'arêtes du graphe est fonction de $N^2$. On peut donc qualifier ce graphe de dense.<br />
+Et il est suffisamment dense pour rendre la matrice d'adjacence plus intéressante que la liste.  </p>
+<p>Voici le graphe associé à un ensemble de 20 cartes (5 de chaque couleur).  </p>
+<p><img alt="" src="../../../progdupeupl//galleries/108/b4bb461a-7a18-4709-ae9f-ff43abccb82e.png" />  </p>
+<p>En théorie chaque carte devrait être reliée à elle même. Mais comme on ne peut pas utiliser deux fois la même carte (ce qui n'empêche pas celle-ci d'être présente en plusieurs exemplaires dans le jeu de départ), on sait d'avance que ces arêtes (qu'on nomme <em>boucle</em>) ne nous serviront pas. Autant les supprimer maintenant.   </p>
+<p>On souhaite connaître quels sont tout les talons possibles. Un talon est caractérisé par un ensemble de cartes dans un certain ordre. Et les contraintes d'adjacence de deux cartes sont celles des arêtes du graphe !<br />
+Par conséquent, chaque talon peut être représenté par un chemin du graphe : l'ordre de visite des nœuds et la taille du chemin suffit à définir le talon.<br />
+Pour générer tout les talons possibles, il faut donc générer tout les chemins du graphe !  </p>
+<h4 id="lexhaustif">L'exhaustif</h4>
+<p><strong>Wiktionnaire :</strong>  </p>
+<blockquote>
+<p><strong>Exhaustif</strong> : qui inclut tous les éléments possibles d’une liste, qui traite totalement un sujet.  </p>
+</blockquote>
+<p>Nous cherchons une liste de <em>tout</em> les talons possibles, sans en oublier aucun. Il nous faut donc une liste <em>exhaustive</em> des talons possibles.<br />
+Cela nécessite un algorithme capable d'effectuer une <strong>énumération exhaustive</strong> de tout les chemins du graphe. D'où le nom "exhaustif".<br />
+Il faut trouver une méthode systématique pour dénombrer les chemins du graphe.  </p>
+<p>Comment procéderions-nous "à la main" ?  </p>
+<p>Par exemple, nous pourrions prendre une carte et l'ajouter au talon. Puis prendre une autre carte et l'ajouter au talon (en respectant les règles). Puis continuer à ajouter des cartes qu'il est possible d'en ajouter, sans réutiliser deux fois la même (évidemment).<br />
+Et lorsqu'on est bloqué ? Une retire une carte au sommet du talon et on met une autre à la place, et c'est reparti !<br />
+On continue d'ajouter des cartes jusqu'à ce qu'on soit forcé d'en retirer une au sommet pour la remplacer par une autre qui n'a pas déjà été posée à cette hauteur et avec ce talon spécifique en dessous.<br />
+Ainsi, à la fin, tout les talons auront été construits.  </p>
+<p>Vous avez remarqué ? Un talon est une pile, donc nous aurons sûrement affaire à une pile dans cet algorithme !  </p>
+<p>En voici le pseudo-code :  </p>
+<div class="highlight"><pre><span></span>Fonction listerChemins(Graphe G)  
+{
+    Chemin chemins[]
+    Pour chaque noeud N  
+        autresChemins = exhaustif(G, N, cheminVide)  
+        chemins.concatener(autresChemins)
+    Renvoyer chemins
+}  
+
+Fonction exhaustif(Graphe G, Noeud N, Chemin C)  
+{    
+    Marquer N comme utilise  
+    C.ajouter(N)    
+
+    Chemin chemins[]  
+    chemins.ajouter(C)  
+    Pour chaque voisin V de N  
+        Si V inutilise  
+            autresChemins = exhaustif(G, V, C)  
+            chemins.concatener(autresChemins)  
+
+    Marquer N comme inutilise  
+    Renvoyer chemins
+}  
+</pre></div>
+
+
+<p>Sans grande surprise, ici, la pile est la pile d'appel. Mais une fois encore, cet algorithme peut être passé sous forme itérative si le besoin s'en fait sentir.   </p>
+<p>Cette fonction ressemble beaucoup à celle du <abbr title="Depth First Search">DFS</abbr>, à deux exceptions près.<br />
+Premièrement, elle retourne quelque chose : la liste des chemins.<br />
+Secondement, et c'est là le point le plus important : l'état d'un nœud n'est pas définitivement fixé. A l'entrée de la fonction le nœud est marqué comme "utilisé"; en revanche, à la sortie de la fonction, il est de nouveau marqué comme "inutilisé".<br />
+Ainsi, la fonction <code>exhaustif</code> va pouvoir traiter plusieurs fois le même nœud, ce qui est somme-toute logique puisque qu'un même nœud peut faire parti de plusieurs chemins distincts. L'importance de marquer un nœud comme utilisé durant son utilisation (comme les toilettes publiques à verrou coloré) est la même que celle du <abbr title="Depth First Search">DFS</abbr> : empêcher les appels récursifs infinis en bouclant dans un cycle.  </p>
+<p>Sur le graphe ci-dessous, après un appel sur le nœud A, l'ordre d’exploration des nœuds pourrait être : <strong>A - B - D - F - E - C - G - E - F - B - D</strong>. </p>
+<p><img alt="" src="../../../progdupeupl//galleries/108/27f67c44-e00f-40ff-b99a-de1247671263.png" />  </p>
+<p>Cela générerait les chemins suivants :  </p>
+<ul>
+<li><strong>A</strong>  </li>
+<li><strong>A - B</strong>    </li>
+<li><strong>A - B - D</strong>  </li>
+<li><strong>A - B - F</strong>  </li>
+<li><strong>A - B - F - E</strong>  </li>
+<li><strong>A - C</strong>  </li>
+<li><strong>A - C - G</strong>  </li>
+<li><strong>A - E</strong>  </li>
+<li><strong>A - E - F</strong>  </li>
+<li><strong>A - E - F - B</strong>  </li>
+<li><strong>A - E - F - B - D</strong>  </li>
+</ul>
+<p>Et cela juste avec le nœud A comme origine ! Je vous épargne les autres.  </p>
+<p>Comme vous pouvez le constater le nombre de chemins différents augmente très vite et atteint un nombre important, même sur un graphe de petite taille.  </p>
+<p>Ce qui nous amène tout de suite à une question épineuse : quelle est la complexité en temps et en mémoire de l'algorithme ?  </p>
+<p>Commençons par la complexité en temps.<br />
+Quel est le pire des cas ?<br />
+Le pire des cas serait un jeu de carte où toutes les cartes sont reliées entre elles (typiquement : toutes de même couleur), ce qui revient à travailler sur un <strong>graphe complet</strong>.<br />
+Ainsi, je dispose de $N$ choix pour le premier élément du talon. Puis de $N-1$ pour le second. Puis de $N-2$ pour le troisième, et ainsi de suite. Le nombre de talons possible est donc égal à $N \times  (N-1) \times  (N-2) \times  ... \times  2 \times  1 = N!$<br />
+En fait, toutes les permutations de cartes sont possibles (puisque toutes les cartes peuvent être adjacentes). Et le nombre de <a href="http://fr.wikipedia.org/wiki/Permutation">permutations</a> de $N$ éléments est bien égal à $N!$.<br />
+Cet algorithme est donc en $O(N!)$ en temps.<br />
+La fonction factorielle croit asymptotiquement plus vite que la fonction exponentielle. Pour cette raison, même sur des instances de petite taille, certains problèmes sont insolubles en un temps raisonnable.  </p>
+<p>Pour vous faire une idée, 20! = 2 432 902 008 176 640 000. Donc si le graphe ci-dessus était complet, il faudrait plusieurs dizaines de milliers d'années de calcul. Heureusement il ne l'est pas ! De mon côté j'ai trouvé 437 672 443 chemins différents (vous pouvez vérifier si l'envie vous en prend).   </p>
+<p>Quant à la complexité en mémoire, elle est nécessairement $O(N!)$ elle aussi, puisqu'il s'agit là du nombre de solutions.<br />
+Cependant, si vous n'aviez qu'à dénombrer les solutions (sans les produire), vous auriez alors un algorithme en $O(N)$, car la profondeur de récursion peut atteindre N nœuds.   </p>
+<p>La recherche exhaustive, bien que donnant des résultat exacts de par son exhaustivité, ne peut pas être utilisée en pratique pour tout les problèmes, à cause de sa lenteur.<br />
+Pour cette raison, de nombreux problèmes sont résolus avec des algorithmes donnant une réponse approchée (ou exacte mais dont on ne peut pas prouver qu'elle est exacte) qui ont une durée d'exécution plus courte. Ces algorithmes sont des sujets de recherche encore actifs qui mériteraient un tutoriel entier à eux seuls, donc nous n'en parlerons pas plus ici.</p>
+<p>Ce tutoriel n'est pas terminé !  </p>
+<p>D'autres chapitres viendront :  </p>
+<p><strong>III] Problèmes usuels de graphes</strong>  </p>
+<ul>
+<li>Tri topologique   </li>
+<li>Circuit Eulérien  </li>
+<li>Nœuds essentiels  </li>
+<li>Arêtes essentielles  </li>
+<li>Algorithmes dynamiques pour les DAG (Directed Acyclic Graph)  </li>
+</ul>
+<p><strong>IV] Pathfinding</strong>   </p>
+<ul>
+<li><abbr title="Algorithme de parcours en largeur">BFS</abbr> (on en reparle)  </li>
+<li>Ford-Bellman  </li>
+<li>Dijkstra  </li>
+<li>Floyd-Warshall  </li>
+<li>A* et autres heuristiques du même type  </li>
+</ul>
+<p>Restez au courant si ça vous intéresse.  </p>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:1">
+<p>Vous comprendrez plus tard.&#160;<a class="footnote-backref" href="#fnref:1" rev="footnote" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+        </div>
+    </section>
+        </div>
+        <div class="col-sm-3" id="sidebar">
+            <aside>
+
+<section class="well well-sm">
+    <ul class="list-group list-group-flush">
+
+        <!-- Search bar in low width mode -->
+        <li id="searchSideBar" class="list-group-item"><span>
+                <form class="navbar-search" action="/blog/search">
+                  <input type="text" class="search-query" placeholder="Rechercher" name="q" id="tipue_search_input" required>
+                </form></span>
+        </li>
+
+        <li class="list-group-item"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Social</span></h4>
+              <ul class="list-group" id="social">
+                    <li class="list-group-item"><a href="https://example.org">
+                        <i class="fa fa-comment fa-lg"></i>
+                       Link 1</a>
+                    </li>
+                    <li class="list-group-item"><a href="https://example.org">
+                        <i class="fa fa-comments fa-lg"></i>
+                       Link 2</a>
+                    </li>
+                    <li class="list-group-item"><a href="/page/content">
+                        <i class="fa fa-etc fa-lg"></i>
+                       etc</a>
+                    </li>
+              </ul>
+            </li>
+
+
+            <li class="list-group-item"><a href="http://yliesc.github.io/"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Categories</span></h4></a>
+                <ul class="list-group" id="categories">
+                </ul>
+            </li>
+
+
+
+    <li class="list-group-item"><h4><i class="fa fa-link fa-lg"></i><span class="icon-label">External Links</span></h4>
+      <ul class="list-group" id="links">
+        <li class="list-group-item">
+            <a href="https://example.org" target="_blank">
+                Link 1
+            </a>
+        </li>
+        <li class="list-group-item">
+            <a href="https://example.org" target="_blank">
+                Link 2
+            </a>
+        </li>
+        <li class="list-group-item">
+            <a href="/page/content" target="_blank">
+                etc
+            </a>
+        </li>
+      </ul>
+    </li>
+
+        <li class="list-group-item" id="github">
+            <ul class="list-group">
+                <li class="list-group-item"><h5>Vous voyez une erreur ?</h5></li>
+                <li class="list-group-item">
+                    <a class="btn btn-info github" target="_blank" href="https://github.com/YliesC/website/edit/master/content/pages/pdp/content/decouverte-des-algorithmes-de-graphe.md">
+                        <i class="fa fa-random"></i> Modifiez la page sur GitHub
+                    </a>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</section>            </aside>
+        </div>
+    </div>
+</div>
+<footer>
+   <div class="container">
+      <hr>
+      <div class="row">
+         <div class="col-xs-10">&copy;  
+            &middot; Powered by <a href="https://github.com/getpelican/pelican-themes/tree/master/pelican-bootstrap3" target="_blank">pelican-bootstrap3</a>,
+            <a href="http://docs.getpelican.com/" target="_blank">Pelican</a>,
+<a href="http://getbootstrap.com" target="_blank">Bootstrap</a>                <p><small>  <a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr"><img alt="Creative Commons License" style="border-width:0" src="//i.creativecommons.org/l/by-sa/4.0/80x15.png" /></a>
+    Content
+  licensed under a <a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">Creative Commons Attribution-ShareAlike 4.0 International License</a>, except where indicated otherwise.
+</small></p>
+         </div>
+         <div class="col-xs-2"><p class="pull-right"><i class="fa fa-arrow-up"></i> <a href="#">Back to top</a></p></div>
+      </div>
+   </div>
+</footer>
+<script src="http://yliesc.github.io/theme/js/jquery.min.js"></script>
+
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="http://yliesc.github.io/theme/js/bootstrap.min.js"></script>
+
+<!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
+<script src="http://yliesc.github.io/theme/js/respond.min.js"></script>
+
+<!--  -->
+
+
+</body>
+</html>

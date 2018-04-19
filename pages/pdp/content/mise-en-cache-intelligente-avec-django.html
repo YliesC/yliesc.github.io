@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="fr" prefix="og: http://ogp.me/ns# fb: https://www.facebook.com/2008/fbml">
+<head>
+    <title>Mise en cache intelligente avec Django - The Golden Koala</title>
+    <!-- Using the latest rendering mode for IE -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <link href="http://yliesc.github.io/images/koala-ico.png" rel="icon">
+
+<link rel="canonical" href="http://yliesc.github.io/pages/pdp/content/mise-en-cache-intelligente-avec-django/">
+
+        <meta name="author" content="Microjoe" />
+        <meta name="description" content="Vous êtes en train de construire votre site internet avec Python et Django, tout va pour le mieux du monde ; mais plus votre site grossit et plus des fonctionnalités gourmandes apparaissent, effectuant de plus en plus de requêtes SQL même si vous les optimisez afin d’éviter la casse. Que …" />
+
+    <meta property="og:site_name" content="The Golden Koala" />
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="Mise en cache intelligente avec Django"/>
+    <meta property="og:url" content="http://yliesc.github.io/pages/pdp/content/mise-en-cache-intelligente-avec-django/"/>
+    <meta property="og:description" content="Vous êtes en train de construire votre site internet avec Python et Django, tout va pour le mieux du monde ; mais plus votre site grossit et plus des fonctionnalités gourmandes apparaissent, effectuant de plus en plus de requêtes SQL même si vous les optimisez afin d’éviter la casse. Que …" />
+
+
+    <!-- Bootstrap -->
+        <link rel="stylesheet" href="http://yliesc.github.io/theme/css/bootstrap.readable.min.css" type="text/css"/>
+    <link href="http://yliesc.github.io/theme/css/font-awesome.min.css" rel="stylesheet">
+
+    <link href="http://yliesc.github.io/theme/css/pygments/default.css" rel="stylesheet">
+    <link href="http://yliesc.github.io/theme/tipuesearch/tipuesearch.css" rel="stylesheet">
+    <link rel="stylesheet" href="http://yliesc.github.io/theme/css/style.css" type="text/css"/>
+        <link href="http://yliesc.github.io/css/custom.css" rel="stylesheet">
+
+        <link href="http://yliesc.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate"
+              title="The Golden Koala ATOM Feed"/>
+
+
+
+
+</head>
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+	<div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="http://yliesc.github.io/" class="navbar-brand">
+<img class="img-responsive pull-left gap-right" src="http://yliesc.github.io/images/koala-logo.svg" width="38"/> <span id="siteName">The Golden Koala</span>            </a>
+        </div>
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+
+            </ul>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+</div> <!-- /.navbar -->
+<!-- Banner -->
+<!-- End Banner -->
+<div class="container">
+    <div class="row">
+        <div class="col-sm-9">
+    <ol class="breadcrumb">
+        <li><a href="http://yliesc.github.io/" title="The Golden Koala">
+            <i class="fa fa-home fa-lg"></i>
+        </a></li>
+        <li class="active">Mise en cache intelligente avec Django</li>
+    </ol>
+    <section id="content" class="body">
+        <h1 class="entry-title">Mise en cache intelligente avec Django</h1>
+            <div class="entry-content">
+                    <div class="panel">
+                        <div class="panel-body">
+<footer class="post-info">
+    
+    <span class="published">
+        <span class="label label-default"><i class="fa fa-calendar"></i><time datetime="2014-09-27T00:00:00+02:00"> sam. 27 septembre 2014</time></span> | 
+    </span>
+        <span class="label label-default"><i class="fa fa-user-circle"></i> Microjoe</span>  | 
+    <span class="label label-default">
+            <i class="fa fa-cc"></i> 
+        
+            CC-BY-SA
+    </span>
+</footer><!-- /.page-info -->                        </div>
+                    </div>
+            <p>Vous êtes en train de construire votre site internet avec Python et Django, tout va pour le mieux du monde ; mais plus votre site grossit et plus des fonctionnalités gourmandes apparaissent, effectuant de plus en plus de requêtes SQL même si vous les optimisez afin d’éviter la casse.</p>
+<p>Que faire quand on a optimisé la génération de ses pages mais que le rendu est encore lent ? Utiliser la mise en cache !</p>
+<div class="toc">
+<ul>
+<li><a href="#presentation">Présentation</a><ul>
+<li><a href="#les-differentes-implementation-du-cache">Les différentes implémentation du cache</a></li>
+<li><a href="#differents-niveaux-de-mise-en-cache">Différents niveaux de mise en cache</a></li>
+</ul>
+</li>
+<li><a href="#exemple-systeme-de-notifications">Exemple : système de notifications</a><ul>
+<li><a href="#situation-initiale">Situation initiale</a></li>
+<li><a href="#mise-en-place-du-cache">Mise en place du cache</a></li>
+<li><a href="#independance-du-cache">Indépendance du cache</a></li>
+</ul>
+</li>
+<li><a href="#mise-a-jour-intelligente-du-cache">Mise à jour intelligente du cache</a><ul>
+<li><a href="#persistance-indesirable">Persistance indésirable</a></li>
+<li><a href="#peremption-automatique">Péremption automatique</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<h1 id="presentation">Présentation</h1>
+<p>La mise en cache est une technique courante qui consiste à <strong>stocker pendant un temps défini un résultat qui provient d’une opération lourde</strong>. Lors de la demande d’accès à ce résultat, on retourne la valeur que l’on a gardé en mémoire au lieu de relancer l’opération lourde, il en résulte un gain de réactivité (très) important.</p>
+<h3 id="les-differentes-implementation-du-cache">Les différentes implémentation du cache</h3>
+<p>Django nous propose nativement un système de cache assez poussé. Celui-ci vous permet d’utiliser différentes plateformes afin de se souvenir des valeurs que vous voulez réutiliser, dont notamment :</p>
+<ul>
+<li>Solutions très rapides : via la RAM<ul>
+<li><a href="http://memcached.org/">memcached</a>, la référence en la matière qui va stocker directement dans la mémoire vive les valeurs afin de garantir un temps d’accès optimal ; de plus, l’architecture distribuée de memcached permet d’utiliser des machines distantes afin de répartir la mise en cache, tout est géré automatiquement.</li>
+<li>Si vous n’êtes pas en mesure d’installer, de configurer et d’utiliser memcached (par exemple si vous n’avez pas les droits root sur le serveur) mais que vous voulez tout de même avoir un stockage en RAM pour un accès plus rapide, <a href="https://docs.djangoproject.com/en/dev/topics/cache/#local-memory-caching">Django possède un <em>backend</em> prévu à cet effet</a>.</li>
+</ul>
+</li>
+<li>Solutions un peu moins rapides : via le disque<ul>
+<li><a href="https://docs.djangoproject.com/en/dev/topics/cache/#database-caching">Dans une base de données</a> ;</li>
+<li><a href="https://docs.djangoproject.com/en/dev/topics/cache/#filesystem-caching">Dans des fichiers temporaires</a>.</li>
+</ul>
+</li>
+<li>Autres solutions :<ul>
+<li><a href="https://docs.djangoproject.com/en/dev/topics/cache/#dummy-caching-for-development">Un cache qui ne cache rien</a> (à utiliser sur des versions de développement par exemple) ;</li>
+<li><a href="https://docs.djangoproject.com/en/dev/topics/cache/#using-a-custom-cache-backend">Un cache personnalisé</a>.</li>
+</ul>
+</li>
+</ul>
+<p>C’est à vous de faire le choix concernant le <em>backend</em> que vous voulez utiliser en fonction de vos besoins, mais sachez qu’il est possible d’utiliser plusieurs <em>backends</em> sur un même site ! Par exemple, les éléments peu nombreux et utilisés très souvent pourront être stockés dans la mémoire vive alors que les éléments plus volumineux, nombreux et moins souvent accédés pourront se trouver sur le disque (sauf si vous avez à votre disposition 256 Go de RAM).</p>
+<h3 id="differents-niveaux-de-mise-en-cache">Différents niveaux de mise en cache</h3>
+<p>De plus, Django nous permet différent seuils de granularité :</p>
+<ul>
+<li><strong>Une mise en cache globale du site :</strong> chaque page sera cachée pendant un certain temps.</li>
+<li><strong>Une mise en cache par vue :</strong> seulement certaines vues seront cachées par l’utilisation d’un décorateur Python.</li>
+<li><strong>Une mise en cache au niveau des <em>templates</em> :</strong> c’est la méthode la plus fine, qui permet de cacher uniquement certains bouts dans certains modèles HTML.</li>
+</ul>
+<p>C’est en se basant sur cette dernière technique que nous allons réaliser une mise en cache intelligente.</p>
+<h1 id="exemple-systeme-de-notifications">Exemple : système de notifications</h1>
+<h3 id="situation-initiale">Situation initiale</h3>
+<p>Prenons un cas concret : vous êtes en train de réaliser une application pour votre site qui s‘occupe de gérer l’envoi de messages entre les membres de votre site. Vous avez intégrer la notification de nouveaux messages via une icône présente sur tout le reste de votre site.</p>
+<div class="highlight"><pre><span></span><span class="x">&lt;div class=&quot;message-box-icon&quot;&gt;</span>
+<span class="x">    Vous avez </span><span class="cp">{{</span> <span class="nv">get_new_messages_count</span> <span class="nv">user</span> <span class="cp">}}</span><span class="x"> nouveaux messages.</span>
+<span class="x">&lt;/div&gt;</span>
+</pre></div>
+
+
+<p>Cependant, <strong>la requête pour récupérer le nombre de nouveaux messages est lourde et prend 3 secondes</strong>. Sachant que cette requête est effectuée sur chaque page puisque vous vous servez le l’icône pour afficher le nombre de nouveaux messages, <strong>toutes les pages de votre site mettent 3 secondes de plus à charger à cause de cette requête</strong>.</p>
+<p>Heureusement, comme on l’a vu précédemment, Django nous propose un système de mise en cache au niveau des <em>templates</em> HTML. Et si nous utilisions cet outil afin d’accélérer la génération de nos pages ?</p>
+<h3 id="mise-en-place-du-cache">Mise en place du cache</h3>
+<p>Rendons nous dans notre <em>template</em> où le code gourmand est appelé, et mettons ce résultat en cache :</p>
+<div class="highlight"><pre><span></span><span class="cp">{%</span> <span class="k">load</span> <span class="nv">cache</span> <span class="cp">%}</span><span class="x"></span>
+
+<span class="x">&lt;div class=&quot;message-box-icon&quot;&gt;</span>
+<span class="x">    </span><span class="c">{# On cache le bloc suivant sous le nom de &#39;messages-count&#39; pendant 120 secondes #}</span><span class="x"></span>
+<span class="x">    </span><span class="cp">{%</span> <span class="k">cache</span> <span class="m">120</span> <span class="nv">message-count</span> <span class="cp">%}</span><span class="x"></span>
+<span class="x">        Vous avez </span><span class="cp">{{</span> <span class="nv">get_new_messages_count</span> <span class="nv">user</span> <span class="cp">}}</span><span class="x"> nouveaux messages.</span>
+<span class="x">    </span><span class="cp">{%</span> <span class="k">endcache</span> <span class="cp">%}</span><span class="x"></span>
+<span class="x">&lt;/div&gt;</span>
+</pre></div>
+
+
+<p>Après avoir configuré correctement le système de cache (n’utilisez pas le cache qui ne cache pas sinon ça risque de ne pas fonctionner), on remarque que la première génération de page prend toujours 3 secondes mais que <strong>les autres pages sont rendues quasiment instantanément</strong> !</p>
+<p>Cependant il y a un problème. En effet, si vous vous connectez sous le nom d’un autre utilisateur, alors vous aller voir le bloc qui a été caché pour le premier utilisateur à avoir entrainé la mise en cache. Ainsi il se peut très bien que vous ayez une notification de nouveau message alors que c’est en fait le nombre de messages pour le premier utilisateur qui avait été mis en cache !</p>
+<h3 id="independance-du-cache">Indépendance du cache</h3>
+<p>Django nous permet de palier à ce problème : il nous suffit de trouver un élément unique qui diffère et de le passer à la balise de mise en cache pour que celle-ci stocke les différentes valeurs en fonction de cet élément unique. Dans le cadre de nos utilisateurs, on peut dire que le pseudonyme est un bon élément unique :</p>
+<div class="highlight"><pre><span></span><span class="cp">{%</span> <span class="k">load</span> <span class="nv">cache</span> <span class="cp">%}</span><span class="x"></span>
+
+<span class="x">&lt;div class=&quot;message-box-icon&quot;&gt;</span>
+<span class="x">    </span><span class="c">{# On cache le bloc suivant sous le nom de &#39;messages-count&#39; pendant 120 secondes #}</span><span class="x"></span>
+<span class="x">    </span><span class="cp">{%</span> <span class="k">cache</span> <span class="m">120</span> <span class="nv">message-count</span> <span class="nv">user.username</span> <span class="cp">%}</span><span class="x"></span>
+<span class="x">        Vous avez </span><span class="cp">{{</span> <span class="nv">get_new_messages_count</span> <span class="nv">user</span> <span class="cp">}}</span><span class="x"> nouveaux messages.</span>
+<span class="x">    </span><span class="cp">{%</span> <span class="k">endcache</span> <span class="cp">%}</span><span class="x"></span>
+<span class="x">&lt;/div&gt;</span>
+</pre></div>
+
+
+<p>Ainsi, chaque utilisateur aura sa propre mise en cache de son nombre de nouveaux messages. Ouf !</p>
+<h1 id="mise-a-jour-intelligente-du-cache">Mise à jour intelligente du cache</h1>
+<h3 id="persistance-indesirable">Persistance indésirable</h3>
+<p>Il nous reste cependant un dernier petit problème à régler :</p>
+<p>Considérons que je viens de recevoir un nouveau message ; la valeur mise en cache m’indique bien que j’ai un nouveau message puisque c’est la première page que je génère, tout fonctionne comme prévu.</p>
+<p>Je lis mon message et éventuellement répond à son auteur avant de continuer paisiblement ma navigation sur le site. Cependant, je remarque que le nombre de nouveaux messages reste bloqué à 1 ! En effet, la valeur a été mise en cache pendant un certain temps (120 secondes dans notre exemple précédent) et ne sera pas actualisée avant que ces 120 secondes se soient écoulées !</p>
+<p>Cet effet est gênant pour tous les utilisateurs de votre site, mais comment faire pour éviter ce cas de figures tout en gardant les bénéfices de la mise en cache ?</p>
+<h3 id="peremption-automatique">Péremption automatique</h3>
+<p>Afin de solliciter un appel frais à la fonction de génération de notifications, il nous faudrait invalider le contenu qui a été précédemment mis en cache. Pour cela, nous allons devoir utiliser l’accès « bas niveau » au cache de Django.</p>
+<p>Le cache fonctionne comme un dictionnaire avec un système de clés/valeurs ; pour supprimer un élément il nous faut donc retrouver sa clé. Les clés utilisées au niveau du cache sont assez bizarres, considérons le bloc suivant :</p>
+<div class="highlight"><pre><span></span>{% cache 120 message-count user.username %}
+    ...
+{% endcache %}
+</pre></div>
+
+
+<p>La clé associée sera la suivante :</p>
+<div class="highlight"><pre><span></span>template.cache.message-count.f71dbe52628a3f83a77ab494817525c6
+</pre></div>
+
+
+<p>On y retrouve le nom du bloc ainsi qu’un hash MD5 créé à partir des arguments passés au bloc. Pour retrouver facilement cette clé, on peut utiliser la fonction <code>make_template_fragment_key</code> apparue dans la version 1.6 de Django :</p>
+<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">django.core.cache.utils</span> <span class="kn">import</span> <span class="n">make_template_fragment_key</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">make_template_fragment_key</span><span class="p">(</span><span class="s1">&#39;messages-count&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;toto&#39;</span><span class="p">])</span>
+<span class="s1">&#39;template.cache.message-count.f71dbe52628a3f83a77ab494817525c6&#39;</span>
+</pre></div>
+
+
+<p>Il nous reste maintenant à supprimer cette clé du cache lors des actions qui pourraient potentiellement mettre à jour ce cache. Par exemple, si l’on reprend notre cas, on aimerai bien que le cache soit mis à jour lors de la consultation du nouveau message :</p>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.core.cache</span> <span class="kn">import</span> <span class="n">cache</span>
+<span class="kn">from</span> <span class="nn">django.core.cache.utils</span> <span class="kn">import</span> <span class="n">make_template_fragment_key</span>
+
+<span class="k">def</span> <span class="nf">view_message</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+
+    <span class="c1"># Si on consulte un message qui n’était pas lu jusqu’à présent,</span>
+    <span class="c1"># on peut considérer qu’il est lu et donc mettre à jour l’icône</span>
+    <span class="c1"># du nombre de messages non-lus.</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">message_read</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
+        <span class="n">cache</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">make_template_fragment_key</span><span class="p">(</span><span class="s1">&#39;message-count&#39;</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">))</span>
+
+    <span class="c1"># Rendu du template, etc.</span>
+</pre></div>
+
+
+<p>Il vous reste à mettre en place cette demande explicite de suppression de contenu mis en cache à chaque endroit où ce contenu aurait pu en effet être modifié. Ainsi, les utilisateurs sont toujours prévenus en temps et en heure et en plus si aucun changement n’a été détecté la valeur peut directement être lue dans le cache !</p>
+<p>Vous êtes désormais en mesure d’utiliser la mise en cache de Django sur votre site internet sans y retrouver les effets néfastes : la mise à jour différée des données.</p>
+<p>Sources :</p>
+<ul>
+<li><a href="https://docs.djangoproject.com/en/1.6/topics/cache/">La documentation officielle de Django 1.6</a> ;</li>
+<li><a href="http://progdupeu.pl/forums/sujet/407/utilisation-de-cache-pour-un-rendu-beaucoup-plus-rapide">Mon expérience personnelle lors de la mise en place d’un système de cache pour Progdupeupl</a>.</li>
+</ul>
+        </div>
+    </section>
+        </div>
+        <div class="col-sm-3" id="sidebar">
+            <aside>
+
+<section class="well well-sm">
+    <ul class="list-group list-group-flush">
+
+        <!-- Search bar in low width mode -->
+        <li id="searchSideBar" class="list-group-item"><span>
+                <form class="navbar-search" action="/blog/search">
+                  <input type="text" class="search-query" placeholder="Rechercher" name="q" id="tipue_search_input" required>
+                </form></span>
+        </li>
+
+        <li class="list-group-item"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Social</span></h4>
+              <ul class="list-group" id="social">
+                    <li class="list-group-item"><a href="https://example.org">
+                        <i class="fa fa-comment fa-lg"></i>
+                       Link 1</a>
+                    </li>
+                    <li class="list-group-item"><a href="https://example.org">
+                        <i class="fa fa-comments fa-lg"></i>
+                       Link 2</a>
+                    </li>
+                    <li class="list-group-item"><a href="/page/content">
+                        <i class="fa fa-etc fa-lg"></i>
+                       etc</a>
+                    </li>
+              </ul>
+            </li>
+
+
+            <li class="list-group-item"><a href="http://yliesc.github.io/"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Categories</span></h4></a>
+                <ul class="list-group" id="categories">
+                </ul>
+            </li>
+
+
+
+    <li class="list-group-item"><h4><i class="fa fa-link fa-lg"></i><span class="icon-label">External Links</span></h4>
+      <ul class="list-group" id="links">
+        <li class="list-group-item">
+            <a href="https://example.org" target="_blank">
+                Link 1
+            </a>
+        </li>
+        <li class="list-group-item">
+            <a href="https://example.org" target="_blank">
+                Link 2
+            </a>
+        </li>
+        <li class="list-group-item">
+            <a href="/page/content" target="_blank">
+                etc
+            </a>
+        </li>
+      </ul>
+    </li>
+
+        <li class="list-group-item" id="github">
+            <ul class="list-group">
+                <li class="list-group-item"><h5>Vous voyez une erreur ?</h5></li>
+                <li class="list-group-item">
+                    <a class="btn btn-info github" target="_blank" href="https://github.com/YliesC/website/edit/master/content/pages/pdp/content/mise-en-cache-intelligente-avec-django.md">
+                        <i class="fa fa-random"></i> Modifiez la page sur GitHub
+                    </a>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</section>            </aside>
+        </div>
+    </div>
+</div>
+<footer>
+   <div class="container">
+      <hr>
+      <div class="row">
+         <div class="col-xs-10">&copy;  
+            &middot; Powered by <a href="https://github.com/getpelican/pelican-themes/tree/master/pelican-bootstrap3" target="_blank">pelican-bootstrap3</a>,
+            <a href="http://docs.getpelican.com/" target="_blank">Pelican</a>,
+<a href="http://getbootstrap.com" target="_blank">Bootstrap</a>                <p><small>  <a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr"><img alt="Creative Commons License" style="border-width:0" src="//i.creativecommons.org/l/by-sa/4.0/80x15.png" /></a>
+    Content
+  licensed under a <a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">Creative Commons Attribution-ShareAlike 4.0 International License</a>, except where indicated otherwise.
+</small></p>
+         </div>
+         <div class="col-xs-2"><p class="pull-right"><i class="fa fa-arrow-up"></i> <a href="#">Back to top</a></p></div>
+      </div>
+   </div>
+</footer>
+<script src="http://yliesc.github.io/theme/js/jquery.min.js"></script>
+
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="http://yliesc.github.io/theme/js/bootstrap.min.js"></script>
+
+<!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
+<script src="http://yliesc.github.io/theme/js/respond.min.js"></script>
+
+<!--  -->
+
+
+</body>
+</html>

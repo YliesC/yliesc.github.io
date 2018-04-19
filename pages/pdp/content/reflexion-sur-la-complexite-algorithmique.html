@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="fr" prefix="og: http://ogp.me/ns# fb: https://www.facebook.com/2008/fbml">
+<head>
+    <title>Réflexion sur la complexité algorithmique - The Golden Koala</title>
+    <!-- Using the latest rendering mode for IE -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <link href="http://yliesc.github.io/images/koala-ico.png" rel="icon">
+
+<link rel="canonical" href="http://yliesc.github.io/pages/pdp/content/reflexion-sur-la-complexite-algorithmique/">
+
+        <meta name="author" content="Höd" />
+        <meta name="description" content="L&#39;article qui suit présuppose quelques notions basiques d&#39;algorithmique et de calcul de complexité (temporelle). Il vise à aborder deux grandes erreurs commises par les novices dans ces domaines et à en constater les effets. Une première partie sera dédiée à une erreur classique d&#39;évaluation de la classe de complexité d&#39;un …" />
+
+    <meta property="og:site_name" content="The Golden Koala" />
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="Réflexion sur la complexité algorithmique"/>
+    <meta property="og:url" content="http://yliesc.github.io/pages/pdp/content/reflexion-sur-la-complexite-algorithmique/"/>
+    <meta property="og:description" content="L&#39;article qui suit présuppose quelques notions basiques d&#39;algorithmique et de calcul de complexité (temporelle). Il vise à aborder deux grandes erreurs commises par les novices dans ces domaines et à en constater les effets. Une première partie sera dédiée à une erreur classique d&#39;évaluation de la classe de complexité d&#39;un …" />
+
+
+    <!-- Bootstrap -->
+        <link rel="stylesheet" href="http://yliesc.github.io/theme/css/bootstrap.readable.min.css" type="text/css"/>
+    <link href="http://yliesc.github.io/theme/css/font-awesome.min.css" rel="stylesheet">
+
+    <link href="http://yliesc.github.io/theme/css/pygments/default.css" rel="stylesheet">
+    <link href="http://yliesc.github.io/theme/tipuesearch/tipuesearch.css" rel="stylesheet">
+    <link rel="stylesheet" href="http://yliesc.github.io/theme/css/style.css" type="text/css"/>
+        <link href="http://yliesc.github.io/css/custom.css" rel="stylesheet">
+
+        <link href="http://yliesc.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate"
+              title="The Golden Koala ATOM Feed"/>
+
+
+
+
+</head>
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+	<div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="http://yliesc.github.io/" class="navbar-brand">
+<img class="img-responsive pull-left gap-right" src="http://yliesc.github.io/images/koala-logo.svg" width="38"/> <span id="siteName">The Golden Koala</span>            </a>
+        </div>
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+
+            </ul>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+</div> <!-- /.navbar -->
+<!-- Banner -->
+<!-- End Banner -->
+<div class="container">
+    <div class="row">
+        <div class="col-sm-9">
+    <ol class="breadcrumb">
+        <li><a href="http://yliesc.github.io/" title="The Golden Koala">
+            <i class="fa fa-home fa-lg"></i>
+        </a></li>
+        <li class="active">Réflexion sur la complexité algorithmique</li>
+    </ol>
+    <section id="content" class="body">
+        <h1 class="entry-title">Réflexion sur la complexité algorithmique</h1>
+            <div class="entry-content">
+                    <div class="panel">
+                        <div class="panel-body">
+<footer class="post-info">
+    
+    <span class="published">
+        <span class="label label-default"><i class="fa fa-calendar"></i><time datetime="2014-09-27T00:00:00+02:00"> sam. 27 septembre 2014</time></span> | 
+    </span>
+        <span class="label label-default"><i class="fa fa-user-circle"></i> Höd</span>  | 
+    <span class="label label-default">
+            <i class="fa fa-cc"></i> 
+        
+            CC-BY-SA
+    </span>
+</footer><!-- /.page-info -->                        </div>
+                    </div>
+            <p>L'article qui suit présuppose quelques notions basiques d'algorithmique et de calcul de complexité (temporelle). Il vise à aborder deux grandes erreurs commises par les novices dans ces domaines et à en constater les effets.<br />
+Une première partie sera dédiée à une erreur classique d'évaluation de la classe de complexité d'un problème à partir de la complexité calculée d'un algorithme, ce qui aura des conséquences désastreuses en terme de performances. La seconde partie présentera une erreur liée à l'erreur d'évaluation directe de la classe de complexité d'un problème, qui va cette fois avoir des conséquences sur la manière d'aborder un problème pour tenter de le résoudre.</p>
+<p>Les notions utiles à la compréhension de cet article seront expliquées dans une première partie et la totalité des démonstrations sera omise (mais on peut évidemment grassement payer l'auteur pour qu'il les fasse sur le forum).</p>
+<div class="toc">
+<ul>
+<li><a href="#rappels-sur-la-complexite-temporelle">Rappels sur la complexité temporelle</a><ul>
+<li><a href="#complexite-en-temps">Complexité en temps</a></li>
+<li><a href="#reduction-polynomiale-et-classes-dequivalence">Réduction polynomiale et classes d'équivalence</a></li>
+<li><a href="#en-resume">En résumé</a></li>
+</ul>
+</li>
+<li><a href="#erreur-1-evaluation-de-la-complexite-dun-algorithme">Erreur 1 : Évaluation de la complexité d'un algorithme</a><ul>
+<li><a href="#le-propos">Le propos</a></li>
+<li><a href="#exemple-nombre-compose">Exemple : Nombre composé</a></li>
+<li><a href="#en-resume_1">En résumé</a></li>
+</ul>
+</li>
+<li><a href="#erreur-2-erreur-sur-la-classe-dun-probleme">Erreur 2 : Erreur sur la classe d'un problème</a><ul>
+<li><a href="#le-propos_1">Le propos</a></li>
+<li><a href="#exemple-sat">Exemple : SAT</a></li>
+<li><a href="#exemple-arbre-couvrant-de-poids-minimal">Exemple : Arbre couvrant de poids minimal</a></li>
+</ul>
+</li>
+<li><a href="#conclusion">Conclusion</a></li>
+</ul>
+</div>
+<h3 id="rappels-sur-la-complexite-temporelle">Rappels sur la complexité temporelle</h3>
+<h4 id="complexite-en-temps">Complexité en temps</h4>
+<p>Il est coutume que de manière informelle, on enseigne aux novices de l'algorithmique que la complexité d'un algorithme correspond au nombre  d'étapes (élémentaires) de l'algorithme, qui est fonction de la taille des données du problème. Cette définition a l'avantage d'être très facile à appliquer, facilement compréhensible et de donner une borne assez fidèle dans la plupart des applications.</p>
+<p>Cependant, cette définition est problématique, comme nous allons le voir, lorsque l'on donne la définition formelle des classes d'équivalence de complexité algorithmique. On présente souvent les classes de complexité principales : $P$ et $NP$, respectivement pour <em>Polynomial</em> et <em>Non-<strong>Déterministe</strong> Polynomial</em>. Le terme « non déterministe » est important puisqu'à l'heure actuelle, nous ne savons pas si $P = NP$ (et pour l'anecdote, il s'agit d'un des problèmes du prix du millénaire, récompensé par la coquette somme d'un million de dollars par le <em>Clay Mathematical Institute</em>).<br />
+De manière formelle, un algorithme $A$ de <strong>machine de Turing déterministe</strong> est polynomial s'il existe un polynôme $p_A$ tel que $\forall x \in \Sigma^*, |x|=n, t_A(x) \leq p_A(n)$ où $x$ est un mot de l'alphabet $\Sigma$ (ensemble des symboles différents pour coder l'entrée), $t_A(x)$ le nombre de pas jusqu'à l'arrêt de $A$ et $n$, la longueur de l'entrée, qui est arbitrairement fixée.<br />
+On appelle complexité en temps de $A$, le maximum des $t_A(x)$ pour un $n=|x|$ fixé. On comprend donc aisément qu'un algorithme est polynomial si sa complexité temporelle est bornée par un polynôme.<br />
+Par extension, on dira qu'un problème $\Pi$ est polynomial s'il existe un algorithme $A$ polynomial qui résout $\Pi$.</p>
+<p>Cette définiton est excessivement formelle et oblige à recourir aux machines de Turing. Cependant, il existe toujours des fonctions permettant de passer d'un formalisme en machine de Turing à un formalisme utilisant nos ordinateurs modernes, le tout, évidemment, en temps polynomial. Ainsi, par la suite, on ne reviendra jamais aux machines de Turing pour calculer des complexités, et heureusement !</p>
+<p>Est-ce qu'un algorithme qui n'est pas dans $P$ est dans $NP$ ? C'est une question que l'on retrouve assez souvent et la réponse est évidemment non. Il suffit de se référer à la définition formelle d'un algorithme non-déterministe polynomial. Pour cela, nous devons introduire la notion de <strong>certificat</strong> et de <strong>vérification</strong>.<br />
+Un certificat est une aide permettant, pour une entrée donnée, de déterminer si $x$ est reconnu par un algorithme $A$. De manière conceptuelle, il peut être vu comme une intervention divine ou une indication, comme en donnerait un professeur lors d'un examen, pour guider l'étudiant à démontrer un résultat difficile.<br />
+La vérification est un algorithme permettant de savoir si l'entrée est reconnue sachant le certificat.  </p>
+<p>On dira qu'un algorithme $A$ est non-déterministe polynomial s'il existe un polynome $p_A$ tel que $\forall x \in \Sigma^n$, $t_A(x) \leq p_A(n)$ où $t_A(x)$ est le temps de reconnaissance de $x$ (c'est à dire le temps minimal de reconnaissance de $x$ parmi l'ensemble des temps de reconnaissance de $x$, qui peuvent varier selon le certificat).<br />
+De même, un problème $\Pi$ est non-déterministe polynomial s'il existe un algorithme $A$ non-déterministe polynomial qui résout $\Pi$.  </p>
+<h4 id="reduction-polynomiale-et-classes-dequivalence">Réduction polynomiale et classes d'équivalence</h4>
+<p>Une dernière partie théorique permettant d'introduire la notion de <strong>réduction polynomiale</strong> et ainsi la notion de <strong>classes de complexité</strong>, de manière plus formelle.</p>
+<p>Soient $\Pi_1$ et $\Pi_2$, deux problèmes de décision. On dit que $\Pi_1$ se réduit polynomialement en $\Pi_2$ noté $\Pi_1 \propto \Pi_2$ s'il existe une fonction $f:D_{\Pi_1} \rightarrow D_{\Pi_2}$ telle que :</p>
+<ul>
+<li>$f$ est calculable polynomialement</li>
+<li>$I\in Y_{\Pi_1} \Leftrightarrow f(I)\in Y_{\Pi_2}$</li>
+</ul>
+<p>Où $D_{\Pi_1}$ et $D_{\Pi_2}$ sont, respectivement, les instances possibles (entrées possibles) pour le problème $\Pi_1$ et $\Pi_2$ et $Y_{\Pi_1}$, l'ensemble des instances de $\Pi_1$ renvoyant <em>VRAI</em> au problème de décision.  </p>
+<p>Par exemple, on peut considérer le problème de savoir si un entier $n$ donné est pair. L'ensemble des données possibles en entrée est l'ensemble des entiers. L'ensemble renvoyant <em>VRAI</em> est, évidemment, l'ensemble des nombres pairs.</p>
+<p>Cette relation possède quelques propriétés intéressantes mais ce n'est pas le propos de cet article. Par contre, il s'agit d'une relation d'ordre partiel sur l'ensemble des problèmes de décision, à laquelle on peut ajouter une notion de <em>symétrie</em> permettant de construire une relation d'équivalence, et par là même, définir des classes d'équivalence au sens de cette relation.  </p>
+<p>La classe $P$ est la plus petite classe au sens de cette relation et la classe $NP$-complet est la plus grande.</p>
+<p>Enfin, pour éclaircir le vocabulaire. On parle de problème $NP$-difficile dans le cadre des problèmes de décision. Cela signifie qu'un problème est aussi difficile que les problèmes de la classe $NP$-complet.  </p>
+<h4 id="en-resume">En résumé</h4>
+<p>Que faut-il retenir de cette introduction très formelle ?</p>
+<ul>
+<li>Un problème $\Pi$ est polynomial s'il existe un algorithme $A$ polynomial qui résout $\Pi$.</li>
+<li>un problème $\Pi$ est non-déterministe polynomial s'il existe un algorithme $A$ non-déterministe polynomial qui résout $\Pi$.</li>
+<li>$P \subseteq NP$.</li>
+<li>Tous les problèmes d'une classe donnée sont équivalents (au sens de la réduction polynomiale).</li>
+</ul>
+<h3 id="erreur-1-evaluation-de-la-complexite-dun-algorithme">Erreur 1 : Évaluation de la complexité d'un algorithme</h3>
+<h4 id="le-propos">Le propos</h4>
+<p>Rappelez-vous de la définition formelle de la complexité temporelle. Que ce soit pour l'ensemble $P$ ou $NP$ nous avons l'inégalité suivante :<br />
+$t_A(x) \leq p_A(n)$ où $x$ est un mot de l'alphabet $\Sigma$ (ensemble des symboles en pour coder l'entrée), $t_A(x)$ le nombre de pas jusqu'à l'arrêt de $A$, $n$, longueur de l'entrée est arbitrairement fixé et $p_A(n)$, un polynôme fonction de $n$.</p>
+<p>C'est bien ici qu'est le propos de cette première erreur : le polynôme qui borne le temps d'éxécution n'est pas fonction de l'entrée mais de la taille de codage ou d'écriture du problème. Quelle différence ? Voyons sur un exemple très simple.</p>
+<h4 id="exemple-nombre-compose">Exemple : Nombre composé</h4>
+<p>Un nombre est composé s'il n'est pas premier.<br />
+Donnons nous le problème de décision suivant : Soit un entier n. Est-il composé ?</p>
+<p>Un algorithme naïf serait le suivant :</p>
+<div class="highlight"><pre><span></span><span class="go">Pour i = 2 à $\sqrt{n} faire  </span>
+<span class="go">    Si $n \mod i = 0$ alors  </span>
+<span class="go">        Retourner Vrai  </span>
+<span class="go">Fin pour</span>
+<span class="go">Retourne Faux</span>
+</pre></div>
+
+
+<p>La question à se poser est : quelle est la complexité de cet algorithme ?<br />
+Au premier coup d'œil, nous parcourons une boucle dans laquelle nous effectuons une opération plus ou moins élémentaire. Bref, il semblerait que cet algorithme soit en $O(n)$ voire $O(n^{\frac{1}{2}})$ si nous voulions être plus précis. Dans les deux cas, un joli polynôme. Notre problème est donc un problème polynomial.</p>
+<p>Ce calcul est évidemment bon mais la conclusion est fausse, pour la raison évoquée : elle ne tient pas compte de la taille d'écriture du problème.
+Quelle est donc la taille d'écriture de ce problème ?<br />
+Nous avons un entier $n$ quelconque. Quelque soit la base $b$ dans laquelle il est exprimé, sa longueur d'écriture est $\left\lfloor{log_bn}\right\rfloor + 1$, c'est à dire partie entière inférieure du logarithme en base $b$ de $n$ plus une unité.</p>
+<p>Ainsi, le polynôme cherché est un polynôme fonction de $O(log n)$. $O(n^{\frac{1}{2}})$ n'est pas borné par un polynôme en $O(log n)$, ce qui fait que notre algorithme n'est <strong>PAS</strong> polynomial.<br />
+Attention toutefois, cela n'exclut pas que le problème soit polynomial (qu'il existe un algorithme polynomial pour le résoudre), mais ce ne sera pas celui-ci. Une bonne pratique consiste à vérifier qu'il est au moins dans la classe $NP$ et ensuite d'essayer de montrer qu'il est dans $P$ ... s'il est dans $P$.</p>
+<p>Au vu de la définition formelle de la section précédente, il suffit de trouver un bon certificat qui permette de trouver un algorithme en temps polynomial en fonction de la taille d'écriture du problème.<br />
+On peut simplement prendre deux entiers $a$ et $b$ comme certificat et cet algorithme de vérification :</p>
+<div class="highlight"><pre><span></span><span class="go">Si $a*b=n$ alors  </span>
+<span class="go">    Retourner Vrai</span>
+</pre></div>
+
+
+<p>Dans la vérification, on ne s'intéresse qu'à savoir si $x$ est vérifié, comme son nom l'indique.<br />
+Nous avons bien un algorithme qui est cette fois borné par un polynôme et donc notre problème admet un algorithme de la classe $NP$ qui le résout. Il s'agit donc d'un problème $NP$.</p>
+<p>Pour la petite histoire, ce problème est effectivement dans la classe $P$. Le co-problème associé est le test de primalité, dont la preuve de l'appartenance à la classe $P$ n'a été trouvée qu'en 2002, avec les algorithmes AKS (au pluriel car de nombreuses variantes se sont développées). Ne vous inquiétez pas, cela ne suffit cependant pas à casser RSA.  </p>
+<h4 id="en-resume_1">En résumé</h4>
+<p>Ainsi s'achève cette première partie qui consistait à pointer du doigt un piège courant de l'évaluation de la classe de complexité d'un algorithme. La conclusion à en tirer est que la notion de complexité est certe relative au nombre d'étapes d'un algorithme, mais elle représente surtout une garantie que si la taille du problème augmente, le temps de calcul n'explose pas.  </p>
+<h3 id="erreur-2-erreur-sur-la-classe-dun-probleme">Erreur 2 : Erreur sur la classe d'un problème</h3>
+<h4 id="le-propos_1">Le propos</h4>
+<p>Lorsque l'on est face à un problème d'optimisation combinatoire ou de décision (les deux ensembles de problèmes sont équivalents), on procède généralement de la sorte :</p>
+<ul>
+<li>Trouver un modèle mathématique du problème (hypothèses, données, limites du modèle)</li>
+<li>Déterminer à quelle famille se rattache ce problème.</li>
+<li>Déterminer ou concevoir un algorithme de résolution du problème.</li>
+</ul>
+<p>Une technique usuelle est de se ramener à un problème modèle, dont on connait d'une part la classe mais d'autre part des algorithmes de résolution plus ou moins efficaces.</p>
+<p>Une erreur classique est de confondre énoncé et donnée. Cette distinction est parfois peu perceptible du fait que la formulation du problème va très peu changer, pouvant induire en erreur sur la nature du problème (et potentiellement sa classe de complexité).  </p>
+<h4 id="exemple-sat">Exemple : SAT</h4>
+<p>Nous allons à présent parler d'un problème historique de décision. Il s'agit du problème SAT pour Satisfaction de Contraintes Logiques. Voici son énoncé formel :<br />
+<strong>Données</strong> : $n$ variables logiques $x_i$ pour $0 \leq 1 \leq n$<br />
+On appelle $x_i$ et $\overline{x_i}$ des littéraux.<br />
+On dispose également de $p$ clauses qui sont un ensemble de littéraux.<br />
+Exemple de clause : ${x_1,\overline{x_3},x_8}$.  </p>
+<p>La question est la suivante : existe-t-il une fonction de vérité (c'est à dire une fonction qui à tout $x_i$ va associer une valeur VRAI ou FAUX) telles que les $p$ clauses soient vérifiées ?</p>
+<p>C'est Cook qui, en 1972 fit une démonstration directe de la $NP$-Complétude de ce problème.  </p>
+<p>Il existe un ensemble de sous-problèmes à SAT qui sont 1-SAT, 2-SAT, 3-SAT, etc.<br />
+Ainsi pour 1-SAT nous avons le problème SAT avec des clauses à un littéral, pour 2-SAT des clauses à 2 littéraux, etc.</p>
+<p>On pourrait penser que tous ces problèmes sont $NP$-complets sans appartenir à $P$ puisque leur énoncé est quasiment le même. On se rend vite compte que ce n'est pas le cas :  </p>
+<ul>
+<li>1-SAT peut être résolu de manière triviale, en temps linéaire. Il suffit de parcourir l'ensemble des clauses et de retourner FAUX si l'on en rencontre une qui est fausse (cela correspond à regarder un simple booléen par clause).</li>
+<li>2-SAT peut être résolu en temps polynomial. Je vous laisser chercher l'algorithme qui n'est guère compliqué.</li>
+<li>3-SAT est $NP$-complet.</li>
+</ul>
+<p>On peut d'ailleurs montrer que SAT $\propto$ 3-SAT pour montrer que 3-SAT est $NP$-complet.</p>
+<h4 id="exemple-arbre-couvrant-de-poids-minimal">Exemple : Arbre couvrant de poids minimal</h4>
+<p>Pour clore cet article sur une touche moins technique, on peut citer un second problème dont la modification d'un petit élément d'énoncé peut changer la classe du problème.<br />
+Le problème de l'arbre couvrant de poids minimal est un problème que l'on peut formuler de la manière suivante : étant donné un graphe valué, trouver l'arbre contenant l'ensemble des sommets, pour lequel, la somme des valeurs des arcs est minimale.<br />
+Il s'agit d'un problème avec de nombreuses applications concrètes. On peut citer par exemple l'optimisation de la longueur de câblage dans un avion ou tout autre appareil.  </p>
+<p>Ce problème peut être résolu par l'algorithme de <strong>Prim</strong> ou de <strong>Kruskal</strong> en temps polynomial (on utilisera l'un ou l'autre selon la structure du graphe).</p>
+<p>Voici une variante de ce problème : étant donné un graphe valué, trouver un arbre couvrant de poids minimal dont le degré des sommets de l'arbre est borné par $k$ fixé (c'est à dire que pour chaque sommet, il ne peut arriver ou partir que $k$ arcs).<br />
+Cette variante peut modéliser une situation réelle, dans le cas du câble d'un établissement où les différents switchs ne disposent que de $k$ ports.</p>
+<p>Cela peut paraître étonnant, mais ce problème n'est plus polynomial.  </p>
+<h3 id="conclusion">Conclusion</h3>
+<p>J'espère que cet article vous aura convaincu de l'intérêt de posséder des notions basiques sur le calcul de complexité algorithmique et surtout sur la connaissance des différentes classes de complexité qui conditionnent le choix des méthodes de résolution d'un problème (et également ses performances).
+Un algorithme d'apparence polynomial n'en est pas forcément un, et un problème apparent à un autre problème par son énoncé n'est pas forcément dans la même classe de complexité. Seule une étude formelle de la taille d'écriture permet de répondre au premier piège et quelques techniques permettent de s'assurer que l'on peut réduire un problème à un autre (réduction polynomiale ou notion de sous-problème).  </p>
+        </div>
+    </section>
+        </div>
+        <div class="col-sm-3" id="sidebar">
+            <aside>
+
+<section class="well well-sm">
+    <ul class="list-group list-group-flush">
+
+        <!-- Search bar in low width mode -->
+        <li id="searchSideBar" class="list-group-item"><span>
+                <form class="navbar-search" action="/blog/search">
+                  <input type="text" class="search-query" placeholder="Rechercher" name="q" id="tipue_search_input" required>
+                </form></span>
+        </li>
+
+        <li class="list-group-item"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Social</span></h4>
+              <ul class="list-group" id="social">
+                    <li class="list-group-item"><a href="https://example.org">
+                        <i class="fa fa-comment fa-lg"></i>
+                       Link 1</a>
+                    </li>
+                    <li class="list-group-item"><a href="https://example.org">
+                        <i class="fa fa-comments fa-lg"></i>
+                       Link 2</a>
+                    </li>
+                    <li class="list-group-item"><a href="/page/content">
+                        <i class="fa fa-etc fa-lg"></i>
+                       etc</a>
+                    </li>
+              </ul>
+            </li>
+
+
+            <li class="list-group-item"><a href="http://yliesc.github.io/"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Categories</span></h4></a>
+                <ul class="list-group" id="categories">
+                </ul>
+            </li>
+
+
+
+    <li class="list-group-item"><h4><i class="fa fa-link fa-lg"></i><span class="icon-label">External Links</span></h4>
+      <ul class="list-group" id="links">
+        <li class="list-group-item">
+            <a href="https://example.org" target="_blank">
+                Link 1
+            </a>
+        </li>
+        <li class="list-group-item">
+            <a href="https://example.org" target="_blank">
+                Link 2
+            </a>
+        </li>
+        <li class="list-group-item">
+            <a href="/page/content" target="_blank">
+                etc
+            </a>
+        </li>
+      </ul>
+    </li>
+
+        <li class="list-group-item" id="github">
+            <ul class="list-group">
+                <li class="list-group-item"><h5>Vous voyez une erreur ?</h5></li>
+                <li class="list-group-item">
+                    <a class="btn btn-info github" target="_blank" href="https://github.com/YliesC/website/edit/master/content/pages/pdp/content/reflexion-sur-la-complexite-algorithmique.md">
+                        <i class="fa fa-random"></i> Modifiez la page sur GitHub
+                    </a>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</section>            </aside>
+        </div>
+    </div>
+</div>
+<footer>
+   <div class="container">
+      <hr>
+      <div class="row">
+         <div class="col-xs-10">&copy;  
+            &middot; Powered by <a href="https://github.com/getpelican/pelican-themes/tree/master/pelican-bootstrap3" target="_blank">pelican-bootstrap3</a>,
+            <a href="http://docs.getpelican.com/" target="_blank">Pelican</a>,
+<a href="http://getbootstrap.com" target="_blank">Bootstrap</a>                <p><small>  <a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr"><img alt="Creative Commons License" style="border-width:0" src="//i.creativecommons.org/l/by-sa/4.0/80x15.png" /></a>
+    Content
+  licensed under a <a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">Creative Commons Attribution-ShareAlike 4.0 International License</a>, except where indicated otherwise.
+</small></p>
+         </div>
+         <div class="col-xs-2"><p class="pull-right"><i class="fa fa-arrow-up"></i> <a href="#">Back to top</a></p></div>
+      </div>
+   </div>
+</footer>
+<script src="http://yliesc.github.io/theme/js/jquery.min.js"></script>
+
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="http://yliesc.github.io/theme/js/bootstrap.min.js"></script>
+
+<!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
+<script src="http://yliesc.github.io/theme/js/respond.min.js"></script>
+
+<!--  -->
+
+
+</body>
+</html>

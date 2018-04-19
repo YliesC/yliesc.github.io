@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="fr" prefix="og: http://ogp.me/ns# fb: https://www.facebook.com/2008/fbml">
+<head>
+    <title>À la découverte d’Erlang - The Golden Koala</title>
+    <!-- Using the latest rendering mode for IE -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <link href="http://yliesc.github.io/images/koala-ico.png" rel="icon">
+
+<link rel="canonical" href="http://yliesc.github.io/pages/pdp/content/a-la-decouverte-derlang/">
+
+        <meta name="author" content="rks" />
+        <meta name="description" content="Ce tuto est un peu inhabituel car, au lieu de vous apprendre un langage de programmation, en partant des bases et en exposant toutes ses caractéristiques, il vise à vous faire découvrir un langage de programmation. Il est donc conçu pour être court, et incomplet : c&#39;est un avant goût. Après …" />
+
+    <meta property="og:site_name" content="The Golden Koala" />
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="À la découverte d’Erlang"/>
+    <meta property="og:url" content="http://yliesc.github.io/pages/pdp/content/a-la-decouverte-derlang/"/>
+    <meta property="og:description" content="Ce tuto est un peu inhabituel car, au lieu de vous apprendre un langage de programmation, en partant des bases et en exposant toutes ses caractéristiques, il vise à vous faire découvrir un langage de programmation. Il est donc conçu pour être court, et incomplet : c&#39;est un avant goût. Après …" />
+
+
+    <!-- Bootstrap -->
+        <link rel="stylesheet" href="http://yliesc.github.io/theme/css/bootstrap.readable.min.css" type="text/css"/>
+    <link href="http://yliesc.github.io/theme/css/font-awesome.min.css" rel="stylesheet">
+
+    <link href="http://yliesc.github.io/theme/css/pygments/default.css" rel="stylesheet">
+    <link href="http://yliesc.github.io/theme/tipuesearch/tipuesearch.css" rel="stylesheet">
+    <link rel="stylesheet" href="http://yliesc.github.io/theme/css/style.css" type="text/css"/>
+        <link href="http://yliesc.github.io/css/custom.css" rel="stylesheet">
+
+        <link href="http://yliesc.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate"
+              title="The Golden Koala ATOM Feed"/>
+
+
+
+
+</head>
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+	<div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="http://yliesc.github.io/" class="navbar-brand">
+<img class="img-responsive pull-left gap-right" src="http://yliesc.github.io/images/koala-logo.svg" width="38"/> <span id="siteName">The Golden Koala</span>            </a>
+        </div>
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+
+            </ul>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+</div> <!-- /.navbar -->
+<!-- Banner -->
+<!-- End Banner -->
+<div class="container">
+    <div class="row">
+        <div class="col-sm-9">
+    <ol class="breadcrumb">
+        <li><a href="http://yliesc.github.io/" title="The Golden Koala">
+            <i class="fa fa-home fa-lg"></i>
+        </a></li>
+        <li class="active">À la découverte d’Erlang</li>
+    </ol>
+    <section id="content" class="body">
+        <h1 class="entry-title">À la découverte d’Erlang</h1>
+            <div class="entry-content">
+                    <div class="panel">
+                        <div class="panel-body">
+<footer class="post-info">
+    
+    <span class="published">
+        <span class="label label-default"><i class="fa fa-calendar"></i><time datetime="2014-09-27T00:00:00+02:00"> sam. 27 septembre 2014</time></span> | 
+    </span>
+        <span class="label label-default"><i class="fa fa-user-circle"></i> rks, gasche, MicroJoe</span>  | 
+    <span class="label label-default">
+            <i class="fa fa-cc"></i> 
+        
+            CC-BY-SA
+    </span>
+</footer><!-- /.page-info -->                        </div>
+                    </div>
+            <p>Ce tuto est un peu inhabituel car, au lieu de vous apprendre un langage de
+programmation, en partant des bases et en exposant toutes ses caractéristiques,
+il vise à vous faire découvrir un langage de programmation. Il est donc conçu
+pour être court, et incomplet : c'est un <em>avant goût</em>.</p>
+<p>Après une présentation succincte du langage et des problématiques qu'il aborde,
+vous serez confronté à un exemple de code, qui met en valeur ses spécificités.
+Le but n'est pas d'apprendre la syntaxe, qui ne sera quasiment pas présentée
+(un minimum quand même, pour que vous puissiez lire le code) mais plutôt
+d'avoir un aperçu des <em>concepts</em> du langage. C'est à vous, le programmeur, de
+faire le travail d'adaptation ; en espérant que cela vous donne peut-être envie
+d'en savoir plus sur ce langage surprenant !</p>
+<div class="toc">
+<ul>
+<li><a href="#presentation-du-langage">Présentation du langage</a><ul>
+<li><a href="#le-probleme-du-parallelisme">Le problème du parallélisme</a></li>
+<li><a href="#lhistoire-derlang">L'histoire d'Erlang</a></li>
+</ul>
+</li>
+<li><a href="#les-concepts-fondamentaux">Les concepts fondamentaux</a><ul>
+<li><a href="#les-processus">Les processus</a></li>
+<li><a href="#communication-asynchrone">Communication asynchrone</a></li>
+</ul>
+</li>
+<li><a href="#exemple-une-todo-list-distribuee">Exemple : une todo-list distribuée</a><ul>
+<li><a href="#le-serveur">Le serveur</a></li>
+<li><a href="#et-le-client">Et le client ?</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<h1 id="presentation-du-langage">Présentation du langage</h1>
+<h3 id="le-probleme-du-parallelisme">Le problème du parallélisme</h3>
+<p>À l'heure actuelle, les possibilités d'augmentation des performances des
+processeurs sont assez limitées, et les fabricants ont donc décidé de se
+tourner vers une méthode différente d'augmentation des performances : la
+multiplication des processeurs. Le problème, c'est que les principaux
+programmes actuels sont écrits pour tourner sur un seul processeur à la fois,
+et souvent ne savent donc pas exploiter cette possibilité.</p>
+<p>Malheureusement, il est beaucoup plus difficile de concevoir des applications
+tournant sur plusieurs processeurs (ou threads, ou plus généralement "parties")
+en même temps : la difficulté réside principalement dans l'interaction entre
+les différents parties du programme. Si par exemple deux parties ont accès à
+une même variable, il y a un risque qu'une partie modifie cette variable
+pendant que l'autre en avait besoin (imaginez qu'entre la vérification du mot
+de passe et son stockage (chiffré, évidemment) dans la BDD, une autre partie de
+votre site web modifie cette variable pour y stocker le contenu d'un message
+!). Pour éviter ces problèmes on peut mettre en place un système de "verrous",
+qui bloquent une variable en empêchant la modification par les autres parties.
+On rencontre alors des problèmes encore plus complexes, où plusieurs parties
+différentes peuvent bloquer des variables dont elles ont mutuellement besoin,
+et bloquer complètement tout le programme, qui ne peut plus avancer.</p>
+<p>Ce n'est pas un problème lié à la compétence des programmeurs (on dit souvent
+par exemple que les problèmes de sécurité en PHP sont en partie liés au niveau
+des webmasters) : même pour un excellent programmeur, il est très difficile,
+voir impossible, de programmer une application concurrente (dont différentes
+parties s'exécutent simultanément en interagissant) complexe sans erreurs, et
+ces erreurs sont très difficiles à corriger. C'est un problème d'<em>outils</em> : les
+langages de programmations principaux ne sont pas adaptés.</p>
+<p>Les programmeurs, et surtout les concepteurs de langages de programmation, se
+sont donc mis à la recherche de manières différentes d'aborder le problème. Les
+idées qu'ils ont alors tenté d'exploiter ne sont pour la plupart pas
+<em>nouvelles</em>, mais plutôt <em>retrouvées</em> : elles viennent de langages moins
+utilisés par la majorité des programmeurs, conçus par des "scientifiques",
+principalement des universitaires, qui mettent en place des langages basés sur
+un support théorique solide, avec des approches parfois radicalement
+différentes des langages « grand public ».</p>
+<p>Erlang, le langage que nous allons présenter ici, est un de ces exemples de
+langage créé par une rencontre de la théorie (programmation logique, et
+programmation fonctionnelle) et de la pratique (une équipe d'ingénieurs avec un
+problème précis : la télécommunication).</p>
+<h3 id="lhistoire-derlang">L'histoire d'Erlang</h3>
+<p>Le langage Erlang est né du besoin d'un grand opérateur téléphonique, Ericsson,
+d'un langage adapté à la programmation de systèmes complexes : certaines
+parties de l'infrastructure d'un opérateur gèrent en continu (24 heures sur 24,
+7 jours sur 7, et une panne est très grave) un grand nombre de connexions
+simultanées.</p>
+<p>Les explorations qui ont donné lieu au langage Erlang ont commencé en 1981. Il
+s'agissait à l'époque de versions de <a href="http://fr.wikipedia.org/wiki/Prolog">Prolog</a>, un langage de programmation
+logique, spécialisées pour la concurrence. Petit à petit les ingénieurs
+d'Ericsson ont abouti à un nouveau langage, qui reprenait un grand nombre
+d'idées de Prolog, mais pas seulement (on observe par exemple une grande
+influence des langages fonctionnels). Erlang est longtemps resté interne à
+Ericsson, qui s'est mis ensuite à le vendre à des clients spécialisés.</p>
+<p>En 1998, Ericsson à décidé de se recentrer sur l'<em>utilisation</em> de langages de
+programmation (Erlang était alors devenu un des points forts de l'entreprise,
+avec la mise en place de projets critiques dans ce langage), plutôt que sur
+l'innovation en matière de langages. L'équipe qui avait créé Erlang a donc
+quitté Ericsson, qui a alors décidé de rendre Erlang <a href="http://fr.wikipedia.org/wiki/Open_source"><em>open source</em></a> :
+l'implémentation du langage, ainsi que les bibliothèques l'accompagnant, ont
+été rendues disponibles à tous.</p>
+<p>Erlang est spécialisé dans la concurrence, mais plus particulièrement la
+<em>gestion des erreurs</em> : un programme erlang peut fonctionner dans un
+environnement très hétérogène (plusieurs machines connectées par une liaison
+peu fiable, par exemple), et doit savoir gérer les erreurs ou les problèmes de
+communication. Tout est mis en place pour qu'un programme puisse surmonter
+chaque erreur (au lieu de s'arrêter tout simplement), et même se réparer
+lui-même : il est possible de modifier un programme Erlang en direct, pendant
+son fonctionnement, sans que les utilisateurs observent de discontinuité.</p>
+<p>Toutes ces qualités d'Erlang sont principalement dues à un modèle particulier
+de communication entre les différentes parties du programme, par « envoi de
+message ». C'est cette idée fondamentale que nous allons présenter par la suite,
+avec une mise en application.</p>
+<h1 id="les-concepts-fondamentaux">Les concepts fondamentaux</h1>
+<h3 id="les-processus">Les processus</h3>
+<p>Un programme Erlang est constitué, pendant son exécution, d'un ensemble de
+<em>processus</em> parallèles (qui s'exécutent en même temps, par exemple sur des
+processeurs différents). La communication entre ces processus s'effectue par
+transmission de <em>messages</em> : chaque processus peut envoyer des messages à un
+autre processus, qui peut les recevoir et effectuer des actions en conséquence.</p>
+<p>Le nombre des processus et leurs relations dépendent du programme : on peut
+mettre en place une multitude de « schémas » différents, avec par exemple un
+simple canal de communication (deux processus qui échangent des messages), un
+modèle client-serveur (un serveur central qui reçoit des messages de tous les
+clients, qui ne communiquent pas directement entre eux), ou même une
+architecture <em>pair à pair</em> (les clients se parlent entre eux). Le langage
+lui-même n'impose aucun choix à ce sujet, car la méthode utilisée (le <em>passage
+de message</em>) est très flexible.</p>
+<h3 id="communication-asynchrone">Communication asynchrone</h3>
+<p>Chaque processus envoie et reçoit des messages. Il existe différents modèles de
+messages, celui choisit par Erlang est asynchrone : quand un processus A envoie
+un message à un processus B, il ne « se passe rien » : le processus B n'est pas
+perturbé dans son fonctionnement.</p>
+<p>Le message est en effet stocké dans un espace spécifique au processus B, une
+sorte de <em>boîte aux lettres</em>, où il attend. Périodiquement, le processus B peut
+consulter le contenu de sa boîte aux lettres (plus il le fait souvent, plus
+vite il sera au courant des messages qu'on lui envoie).</p>
+<p>Cette méthode « détendue » de communication, par sa grande souplesse, permet
+d'éviter certains bugs liés aux problèmes de synchronisation.</p>
+<h1 id="exemple-une-todo-list-distribuee">Exemple : une todo-list distribuée</h1>
+<p>Comme exemple nous allons mettre en place une todo-list (liste de tâches). Une
+todo-list se présente comme une liste de tâches à effectuer (["acheter des
+tomates", "prendre une douche", "manger"...]), à laquelle on peut ajouter des
+tâches (quand le devoir nous appelle) ou en retirer (quand on les a
+effectuées).</p>
+<p>Notre todo-list a la particularité d'être <em>multi-utilisateurs</em>, c'est à dire
+qu'elle est accessible par plusieurs personnes <em>en même temps</em> : tout le monde
+peut y ajouter ou en enlever des tâches, ou consulter la liste.</p>
+<p>On peut aussi imaginer des modèles plus précis (par exemple dans une école :
+les professeurs ne font qu'ajouter des tâches, et vous vous devez les retirer), mais celui là est suffisamment simple pour mettre en œuvre la plupart
+des <em>outils de base</em> du langage, tout en restant compréhensible.</p>
+<h3 id="le-serveur">Le serveur</h3>
+<p>Voici le code :</p>
+<div class="highlight"><pre><span></span><span class="p">-</span><span class="ni">module</span><span class="p">(</span><span class="n">todo_list</span><span class="p">).</span>
+<span class="p">-</span><span class="ni">export</span><span class="p">([</span><span class="n">start</span><span class="o">/</span><span class="mi">0</span><span class="p">,</span> <span class="n">loop</span><span class="o">/</span><span class="mi">1</span><span class="p">]).</span>
+
+<span class="nf">loop</span><span class="p">(</span><span class="nv">Liste</span><span class="p">)</span> <span class="o">-&gt;</span>
+    <span class="k">receive</span>
+        <span class="p">{</span><span class="n">add</span><span class="p">,</span> <span class="nv">X</span><span class="p">}</span> <span class="o">-&gt;</span> <span class="n">loop</span><span class="p">([</span><span class="nv">X</span><span class="p">|</span><span class="nv">Liste</span><span class="p">]);</span>
+        <span class="p">{</span><span class="n">del</span><span class="p">,</span> <span class="nv">X</span><span class="p">}</span> <span class="o">-&gt;</span> <span class="n">loop</span><span class="p">([</span><span class="nv">Y</span> <span class="p">||</span> <span class="nv">Y</span> <span class="o">&lt;-</span> <span class="nv">Liste</span><span class="p">,</span> <span class="nv">Y</span> <span class="o">=/=</span> <span class="nv">X</span><span class="p">]);</span>
+        <span class="p">{</span><span class="nv">From</span><span class="p">,</span> <span class="n">show</span><span class="p">}</span> <span class="o">-&gt;</span> <span class="nv">From</span> <span class="o">!</span> <span class="nv">Liste</span><span class="p">,</span>
+                        <span class="n">loop</span><span class="p">(</span><span class="nv">Liste</span><span class="p">);</span>
+        <span class="n">close</span> <span class="o">-&gt;</span> <span class="nn">io</span><span class="p">:</span><span class="nf">format</span><span class="p">(</span><span class="s">&quot;Fin de la connexion</span><span class="si">~n</span><span class="s">&quot;</span><span class="p">)</span>
+    <span class="k">end</span><span class="p">.</span>
+
+<span class="nf">start</span><span class="p">()</span> <span class="o">-&gt;</span>
+    <span class="nn">io</span><span class="p">:</span><span class="nf">format</span><span class="p">(</span><span class="s">&quot;Création d&#39;un processus</span><span class="si">~n</span><span class="s">&quot;</span><span class="p">),</span>
+    <span class="nb">spawn</span><span class="p">(</span><span class="n">todo_list</span><span class="p">,</span> <span class="n">loop</span><span class="p">,</span> <span class="p">[[]]).</span>
+</pre></div>
+
+
+<p>Les deux premières lignes servent en fait à <em>déclarer</em> notre programme. Par
+cette dénomination pour le moins surprenante je veux signifier que ces deux
+lignes vont nous permettre de réutiliser le code qui va être écrit ensuite.</p>
+<div class="highlight"><pre><span></span><span class="p">-</span><span class="ni">module</span><span class="p">(</span><span class="n">todo_list</span><span class="p">).</span>
+<span class="p">-</span><span class="ni">export</span><span class="p">([</span><span class="n">start</span><span class="o">/</span><span class="mi">0</span><span class="p">,</span> <span class="n">loop</span><span class="o">/</span><span class="mi">1</span><span class="p">]).</span>
+</pre></div>
+
+
+<p>Ces deux directives ne sont pas intéressantes pour une première approche :
+elles s'occupent de la portée des variables et de l'interaction de ce fichier
+avec le reste du code, un peu comme l'inclusion de .h en C, et les déclarations
+de portée (publique / privée).</p>
+<p>Comme cela a été expliqué dans la première partie, de multiples schémas de
+communication sont possibles. Ici, nous allons mettre en oeuvre une
+architecture <em>client-serveur</em> (simplifiée). Plus exactement, ce code ne
+contient que le comportement du serveur (fonction <code>loop</code>), c'est à dire la
+partie qui gère l'accès et la modification par tous les utilisateurs (les
+« clients ») de la liste; les clients sont très simples, et on peut passer
+directement par la console erlang pour cela.</p>
+<p>Le serveur fonctionne d'une manière assez spécifique aux programmes Erlang, que
+l'on peut décrire de la manière suivante : </p>
+<ul>
+<li>On donne la liste à un « employé », on
+     lui dit « garde là tant que tu ne reçois pas de message ».</li>
+<li>S'il reçoit un
+     message, différents cas se présentent, selon le contenu du message ; on gérera
+       ici trois types de messages : </li>
+<li>« ajouter la tâche machin » ;</li>
+<li>« retirer la tâche
+    bidule » ;</li>
+<li>« montrer la liste à la personne truc ».</li>
+<li>Il agit en conséquence, et la
+     partie spécifique se déroule à ce moment là : au lieu de <em>modifier</em> la liste
+       des tâches, il donne une <em>autre</em> liste à un nouvel employé, qui est alors
+       chargé de répéter le processus. Par exemple, si le message était « ajoute la
+       tâche 'manger' », il va donner à un autre employé sa liste de tâches ainsi que la nouvelle tâche
+       "manger" (ce qui constitue donc une nouvelle liste plus grande), et c'est ce
+       nouvel employé qui s'occupera des messages suivants.</li>
+</ul>
+<p>C'est une mise en œuvre particulière de la <strong>récursivité</strong>.</p>
+<p>Voyons maintenant le code. La structure <code>receive .. end</code> permet d'examiner les
+messages, et d'agir en fonction de leur contenu. Si on prévoit de recevoir deux
+types de messages différents, le code aura cette tête là (où <code>expression</code>
+désigne un bout de code qui renvoie une valeur) :</p>
+<div class="highlight"><pre><span></span><span class="k">receive</span>
+    <span class="n">premier_type</span> <span class="o">-&gt;</span> <span class="n">expression</span><span class="p">;</span>
+    <span class="n">deuxieme_type</span> <span class="o">-&gt;</span> <span class="n">expression</span>
+<span class="k">end</span>
+</pre></div>
+
+
+<p>On peut remarquer que le point virgule <code>;</code> ne sert pas à séparer les
+instructions, mais à séparer les différents cas possibles. Pour exécuter deux
+instructions à la suite, on utilise une simple virgule.</p>
+<div class="highlight"><pre><span></span><span class="nf">loop</span><span class="p">(</span><span class="nv">Liste</span><span class="p">)</span> <span class="o">-&gt;</span>
+    <span class="k">receive</span>
+        <span class="p">{</span><span class="n">add</span><span class="p">,</span> <span class="nv">X</span><span class="p">}</span> <span class="o">-&gt;</span> <span class="n">loop</span><span class="p">([</span><span class="nv">X</span><span class="p">|</span><span class="nv">Liste</span><span class="p">]);</span>
+        <span class="p">{</span><span class="n">del</span><span class="p">,</span> <span class="nv">X</span><span class="p">}</span> <span class="o">-&gt;</span> <span class="n">loop</span><span class="p">([</span><span class="nv">Y</span> <span class="p">||</span> <span class="nv">Y</span> <span class="o">&lt;-</span> <span class="nv">Liste</span><span class="p">,</span> <span class="nv">Y</span> <span class="o">=/=</span> <span class="nv">X</span><span class="p">]);</span>
+        <span class="p">{</span><span class="nv">From</span><span class="p">,</span> <span class="n">show</span><span class="p">}</span> <span class="o">-&gt;</span> <span class="nv">From</span> <span class="o">!</span> <span class="nv">Liste</span><span class="p">,</span>
+                        <span class="n">loop</span><span class="p">(</span><span class="nv">Liste</span><span class="p">);</span>
+        <span class="n">close</span> <span class="o">-&gt;</span> <span class="nn">io</span><span class="p">:</span><span class="nf">format</span><span class="p">(</span><span class="s">&quot;Fin de la connexion</span><span class="si">~n</span><span class="s">&quot;</span><span class="p">)</span>
+    <span class="k">end</span><span class="p">.</span>
+</pre></div>
+
+
+<p>Ici, on reçoit quatre types de messages :</p>
+<ul>
+<li>L'ajout d'un élément à une liste.</li>
+<li>La suppression d'un élément de la liste.</li>
+<li>La demande de montrer la liste à quelqu'un.</li>
+<li>Un message de fin, en cas de fermeture de l'application.</li>
+</ul>
+<p>Le message de fermeture est « simple » : c'est le message <code>close</code> : quand on le
+reçoit, on envoie un message de fermeture, et on s'arrête. Les autres messages
+sont un peu plus délicats parce qu'ils contiennent de l'information : quand on
+envoie le message « ajoute à la liste », il faut préciser l'élément à ajouter :
+il est contenu dans le message. De même, le message « montre la liste à machin »
+doit contenir l'adresse de machin, pour que le serveur puisse lui envoyer la
+liste. Pour faire cela, on utilise des messages en plusieurs parties : <code>{...,
+...}</code> est un message en deux parties. Certaines parties sont fixes (par exemple
+<code>add</code> et <code>del</code>) : on appelle ça des <em>atomes</em>, et on peut voir cela un peu comme
+des constantes définies par le programmeur. D'autres parties sont variables :
+le <code>X</code> dans les deux premiers messages est une variable qui contient la valeur
+donnée (et dépend donc du message reçu). Les parties fixes sont en minuscule,
+et les parties variables commencent par une majuscule.</p>
+<p>Le message d'ajout fonctionne simplement : si l'on reçoit <code>{add, X}</code> (on sait
+que c'est un message d'ajout grâce à la présence de l'atome <code>add</code>), on rappelle
+<code>loop</code> avec la nouvelle valeur <code>[X|Liste]</code>, c'est à dire une liste qui contient
+tous les éléments de la liste initiale, plus le contenu de la variable <code>X</code>.
+(c'est là qu'on doit imaginer que l'on donne cette nouvelle liste à un nouvel
+employé).</p>
+<p>La nouvelle liste donnée en cas de message de suppression est un peu
+particulière : la syntaxe <code>[Y || Y &lt;- Liste, truc(Y)]</code> signifie « tous les
+éléments Y de la liste, qui vérifient 'truc' ». Ici, on sélectionne tous les
+éléments de la liste qui sont <em>différents</em> de X : on a donc à la fin la liste,
+sauf la valeur de <code>X</code>, qui a donc bien été supprimée. C'est ce qu'on appelle
+une <em>compréhension de liste</em> (expression maladroite venant de l'anglais <em>list
+comprehension</em>).</p>
+<p>Enfin, le message « montrer la liste à machin » met en œuvre une deuxième
+structure essentielle à la communication inter-processus en Erlang, l'envoi de
+messages : <code>!</code>. La syntaxe est <code>Pid ! Msg</code>, et cela envoie le message <code>Msg</code> au
+processus dont l'adresse est <code>Pid</code>. Ici, cette adresse a été donnée dans le
+message, c'est la valeur <code>From</code> (vous pouvez remarquer que contrairement aux
+deux premiers messages, la partie variable a été placée en premier : c'est la
+convention quand on envoie son adresse dans un message). La valeur que l'on
+envoie est <code>Liste</code> : on envoie bien le contenu de la liste de tâches au
+processus dont l'adresse est <code>From</code>. Ensuite (après la virgule) on rappelle
+<code>loop(Liste)</code> : le serveur continue à tourner, avec la même liste.</p>
+<p>Voici enfin la dernière fonction du programme, qui joue un peu le rôle du
+« main » en C : c'est la fonction de départ, qui est appelée au lancement du
+programme.</p>
+<div class="highlight"><pre><span></span><span class="nf">start</span><span class="p">()</span> <span class="o">-&gt;</span>
+    <span class="nn">io</span><span class="p">:</span><span class="nf">format</span><span class="p">(</span><span class="s">&quot;Création d&#39;un processus</span><span class="si">~n</span><span class="s">&quot;</span><span class="p">),</span>
+    <span class="nb">spawn</span><span class="p">(</span><span class="n">todo_list</span><span class="p">,</span> <span class="n">loop</span><span class="p">,</span> <span class="p">[[]]).</span>
+</pre></div>
+
+
+<p>La fonction <code>start</code> contient deux instructions séparées par une virgule (erlang
+utilise le point-virgule pour dénoter un autre type de séparation, c'est donc
+la virgule que l'on utilise pour séparer deux instructions; les fonctions sont
+séparées par des points). La première instruction, <code>io:format</code>, affiche du
+texte sur la sortie standard.</p>
+<p>La deuxième instruction est plus intéressante : il s'agit de la dernière des
+trois structures principales de gestion de la concurrence en erlang : c'est la
+fonction <code>spawn</code>, qui lance un nouveau processus, et renvoie un identifiant le
+concernant.</p>
+<p>Les arguments contiennent le module à utiliser (ici <code>todo_list</code>), le nom de la
+fonction à appeler (<code>loop</code>), et enfin une liste d'arguments à donner à cette
+fonction : avec <code>[[]]</code>, on donne un seul argument qui est <code>[]</code>, la liste vide :
+au départ, notre todo-list sera vide.</p>
+<h3 id="et-le-client">Et le client ?</h3>
+<p>Le client ne présente que peu d'intérêt : il suffit d'envoyer au serveur les
+bons messages, et cela marche tout seul.</p>
+<p>Pour une mise en œuvre rapide de cette todo-list, on peut utiliser la console
+erlang. C'est un environnement interactif (un peu comme la ligne de commande
+sous GNU/Linux) qui permet de manipuler des modules erlang de manière simple,
+pour faire des tests par exemple.</p>
+<p>Le résultat se présente ainsi : les lignes qui commencent par un nombre suivi
+de '&gt;' sont les lignes de code que l'utilisateur a entrées. Les lignes qui les
+suivent sont les résultat renvoyés par la console. Ici, l'utilisateur manipule
+notre module <code>todo_list</code>, en envoyant une tâche au serveur, avant de récupérer
+la liste des tâches. Les phrases après <code>%%</code> sont des commentaires : elle servent
+d'explications mais ne sont pas lues par l'interpréteur.</p>
+<div class="highlight"><pre><span></span><span class="mi">1</span><span class="o">&gt;</span> <span class="n">c</span><span class="p">(</span><span class="n">todo_list</span><span class="p">).</span> <span class="c">%% cette commande sert à compiler le module</span>
+<span class="p">{</span><span class="n">ok</span><span class="p">,</span><span class="n">todo_list</span><span class="p">}</span>
+<span class="mi">2</span><span class="o">&gt;</span> <span class="nv">Serv</span> <span class="o">=</span> <span class="nn">todo_list</span><span class="p">:</span><span class="nf">start</span><span class="p">().</span> <span class="c">%% on initialise la variable Serv avec le pid (l&#39;adresse)</span>
+<span class="nv">Creation</span> <span class="n">d</span><span class="err">&#39;</span><span class="n">un</span> <span class="n">processus</span>      <span class="c">%% du processus crée dans start (le serveur)</span>
+<span class="o">&lt;</span><span class="mi">0</span><span class="p">.</span><span class="mi">38</span><span class="p">.</span><span class="mi">0</span><span class="o">&gt;</span>
+<span class="mi">3</span><span class="o">&gt;</span> <span class="nv">Serv</span> <span class="o">!</span> <span class="p">{</span><span class="n">add</span><span class="p">,</span> <span class="s">&quot;faire mes devoirs&quot;</span><span class="p">}.</span> <span class="c">%% on ajoute un élément à notre todo liste</span>
+<span class="p">{</span><span class="n">add</span><span class="p">,</span><span class="s">&quot;faire mes devoirs&quot;</span><span class="p">}</span>
+<span class="mi">4</span><span class="o">&gt;</span> <span class="nv">Serv</span> <span class="o">!</span> <span class="p">{</span><span class="n">self</span><span class="p">(),</span> <span class="n">show</span><span class="p">}.</span> <span class="c">%% self() permet d&#39;obtenir le pid du processus courant,</span>
+<span class="p">{</span><span class="n">show</span><span class="p">,</span> <span class="o">&lt;</span><span class="mi">0</span><span class="p">.</span><span class="mi">31</span><span class="p">.</span><span class="mi">0</span><span class="o">&gt;</span><span class="p">}</span>          <span class="c">%% nécessaire pour que le serveur puisse répondre</span>
+<span class="mi">5</span><span class="o">&gt;</span> <span class="k">receive</span> <span class="nv">Liste</span> <span class="o">-&gt;</span> <span class="nv">Liste</span> <span class="k">end</span><span class="p">.</span> <span class="c">%% reçois la réponse du serveur et on l&#39;affiche</span>
+<span class="p">[</span><span class="s">&quot;faire mes devoirs&quot;</span><span class="p">]</span>
+<span class="mi">6</span><span class="o">&gt;</span> <span class="nv">Serv</span> <span class="o">!</span> <span class="n">close</span><span class="p">.</span> <span class="c">%% on ferme la connexion</span>
+<span class="nv">Fin</span> <span class="n">de</span> <span class="n">la</span> <span class="n">connexion</span>
+<span class="n">close</span>
+<span class="mi">7</span><span class="o">&gt;</span>
+</pre></div>
+
+
+<p>Voilà une brève présentation du langage. J'espère que vous comprenez à peu près
+comment fonctionne la communication entre processus.</p>
+<p>Certains se demanderont peut-être ce qu'apporte Erlang par rapport à un langage
+généraliste comme le C dans ce cas précis. L'exemple est peut-être un peu trop
+simple pour exposer véritablement les avantages de cette méthode, mais on peut
+déjà constater que cette todo-list, étant multi-utilisateurs, est
+potentiellement accessible de n'importe où (même à travers le réseau, si on met
+en place le client Erlang correspondant), et ce sans surcoût, alors que l'ajout
+de cette fonctionnalité demanderait dans un autre langage un effort important.
+C'est là la grande force de l'erlang.</p>
+<p>Quoi qu'il en soit, nous espérons vous avoir donné envie de découvrir un peu
+plus profondément Erlang. Une simple pré-connaissance de la diversité des
+langages de programmation vous servira sûrement, même si vous ne vous lancez
+pas immédiatement dans un nouveau langage, mais si par hasard c'était votre
+souhait, vous pouvez aller consulter <a href="http://www.erlang.org/">le site web dédié au langage</a>.</p>
+<p>Si vous voulez directement un cours complet, et que lire en anglais ne vous
+gêne pas (trop), vous pouvez essayer <a href="http://www.erlang.org/download/erlang-book-part1.pdf">ce
+livre</a> (en ligne) ou encore le populaire <a href="http://learnyousomeerlang.com/"><em>Learn you some Erlang for Great Good</em></a>.</p>
+        </div>
+    </section>
+        </div>
+        <div class="col-sm-3" id="sidebar">
+            <aside>
+
+<section class="well well-sm">
+    <ul class="list-group list-group-flush">
+
+        <!-- Search bar in low width mode -->
+        <li id="searchSideBar" class="list-group-item"><span>
+                <form class="navbar-search" action="/blog/search">
+                  <input type="text" class="search-query" placeholder="Rechercher" name="q" id="tipue_search_input" required>
+                </form></span>
+        </li>
+
+        <li class="list-group-item"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Social</span></h4>
+              <ul class="list-group" id="social">
+                    <li class="list-group-item"><a href="https://example.org">
+                        <i class="fa fa-comment fa-lg"></i>
+                       Link 1</a>
+                    </li>
+                    <li class="list-group-item"><a href="https://example.org">
+                        <i class="fa fa-comments fa-lg"></i>
+                       Link 2</a>
+                    </li>
+                    <li class="list-group-item"><a href="/page/content">
+                        <i class="fa fa-etc fa-lg"></i>
+                       etc</a>
+                    </li>
+              </ul>
+            </li>
+
+
+            <li class="list-group-item"><a href="http://yliesc.github.io/"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Categories</span></h4></a>
+                <ul class="list-group" id="categories">
+                </ul>
+            </li>
+
+
+
+    <li class="list-group-item"><h4><i class="fa fa-link fa-lg"></i><span class="icon-label">External Links</span></h4>
+      <ul class="list-group" id="links">
+        <li class="list-group-item">
+            <a href="https://example.org" target="_blank">
+                Link 1
+            </a>
+        </li>
+        <li class="list-group-item">
+            <a href="https://example.org" target="_blank">
+                Link 2
+            </a>
+        </li>
+        <li class="list-group-item">
+            <a href="/page/content" target="_blank">
+                etc
+            </a>
+        </li>
+      </ul>
+    </li>
+
+        <li class="list-group-item" id="github">
+            <ul class="list-group">
+                <li class="list-group-item"><h5>Vous voyez une erreur ?</h5></li>
+                <li class="list-group-item">
+                    <a class="btn btn-info github" target="_blank" href="https://github.com/YliesC/website/edit/master/content/pages/pdp/content/a-la-decouverte-derlang.md">
+                        <i class="fa fa-random"></i> Modifiez la page sur GitHub
+                    </a>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</section>            </aside>
+        </div>
+    </div>
+</div>
+<footer>
+   <div class="container">
+      <hr>
+      <div class="row">
+         <div class="col-xs-10">&copy;  
+            &middot; Powered by <a href="https://github.com/getpelican/pelican-themes/tree/master/pelican-bootstrap3" target="_blank">pelican-bootstrap3</a>,
+            <a href="http://docs.getpelican.com/" target="_blank">Pelican</a>,
+<a href="http://getbootstrap.com" target="_blank">Bootstrap</a>                <p><small>  <a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr"><img alt="Creative Commons License" style="border-width:0" src="//i.creativecommons.org/l/by-sa/4.0/80x15.png" /></a>
+    Content
+  licensed under a <a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">Creative Commons Attribution-ShareAlike 4.0 International License</a>, except where indicated otherwise.
+</small></p>
+         </div>
+         <div class="col-xs-2"><p class="pull-right"><i class="fa fa-arrow-up"></i> <a href="#">Back to top</a></p></div>
+      </div>
+   </div>
+</footer>
+<script src="http://yliesc.github.io/theme/js/jquery.min.js"></script>
+
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="http://yliesc.github.io/theme/js/bootstrap.min.js"></script>
+
+<!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
+<script src="http://yliesc.github.io/theme/js/respond.min.js"></script>
+
+<!--  -->
+
+
+</body>
+</html>

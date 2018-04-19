@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="fr" prefix="og: http://ogp.me/ns# fb: https://www.facebook.com/2008/fbml">
+<head>
+    <title>La règle de la "spirale horaire" (Clockwise/Spiral Rule) - The Golden Koala</title>
+    <!-- Using the latest rendering mode for IE -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <link href="http://yliesc.github.io/images/koala-ico.png" rel="icon">
+
+<link rel="canonical" href="http://yliesc.github.io/pages/pdp/content/la-regle-de-la-spirale-horaire-clockwisespiral-rule/">
+
+        <meta name="author" content="David Anderson" />
+        <meta name="description" content="Texte initialement posté par email sur comp.lang.c par son auteur, David Anderson, le 6/5/1994. Example #1 : Simple déclaration Example #2 : Déclaration d&#39;un pointeur sur fonction Exemple #3 : le &#34;Final&#34; Il existe une technique connue sous le nom de &#34;règle de la spirale horaire&#34; qui permet à …" />
+
+    <meta property="og:site_name" content="The Golden Koala" />
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="La règle de la &#34;spirale horaire&#34; (Clockwise/Spiral Rule)"/>
+    <meta property="og:url" content="http://yliesc.github.io/pages/pdp/content/la-regle-de-la-spirale-horaire-clockwisespiral-rule/"/>
+    <meta property="og:description" content="Texte initialement posté par email sur comp.lang.c par son auteur, David Anderson, le 6/5/1994. Example #1 : Simple déclaration Example #2 : Déclaration d&#39;un pointeur sur fonction Exemple #3 : le &#34;Final&#34; Il existe une technique connue sous le nom de &#34;règle de la spirale horaire&#34; qui permet à …" />
+
+
+    <!-- Bootstrap -->
+        <link rel="stylesheet" href="http://yliesc.github.io/theme/css/bootstrap.readable.min.css" type="text/css"/>
+    <link href="http://yliesc.github.io/theme/css/font-awesome.min.css" rel="stylesheet">
+
+    <link href="http://yliesc.github.io/theme/css/pygments/default.css" rel="stylesheet">
+    <link href="http://yliesc.github.io/theme/tipuesearch/tipuesearch.css" rel="stylesheet">
+    <link rel="stylesheet" href="http://yliesc.github.io/theme/css/style.css" type="text/css"/>
+        <link href="http://yliesc.github.io/css/custom.css" rel="stylesheet">
+
+        <link href="http://yliesc.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate"
+              title="The Golden Koala ATOM Feed"/>
+
+
+
+
+</head>
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+	<div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="http://yliesc.github.io/" class="navbar-brand">
+<img class="img-responsive pull-left gap-right" src="http://yliesc.github.io/images/koala-logo.svg" width="38"/> <span id="siteName">The Golden Koala</span>            </a>
+        </div>
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+
+            </ul>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+</div> <!-- /.navbar -->
+<!-- Banner -->
+<!-- End Banner -->
+<div class="container">
+    <div class="row">
+        <div class="col-sm-9">
+    <ol class="breadcrumb">
+        <li><a href="http://yliesc.github.io/" title="The Golden Koala">
+            <i class="fa fa-home fa-lg"></i>
+        </a></li>
+        <li class="active">La règle de la "spirale horaire" (Clockwise/Spiral Rule)</li>
+    </ol>
+    <section id="content" class="body">
+        <h1 class="entry-title">La règle de la "spirale horaire" (Clockwise/Spiral Rule)</h1>
+            <div class="entry-content">
+                    <div class="panel">
+                        <div class="panel-body">
+<footer class="post-info">
+    
+    <span class="published">
+        <span class="label label-default"><i class="fa fa-calendar"></i><time datetime="2014-09-27T00:00:00+02:00"> sam. 27 septembre 2014</time></span> | 
+    </span>
+        <span class="label label-default"><i class="fa fa-user-circle"></i> David Anderson, victor</span>  | 
+    <span class="label label-default">
+            <i class="fa fa-cc"></i> 
+        
+            CC-BY-SA
+    </span>
+</footer><!-- /.page-info -->                        </div>
+                    </div>
+            <p>Texte initialement posté par email sur comp.lang.c par son auteur, David
+Anderson, le 6/5/1994.</p>
+<div class="toc">
+<ul>
+<li><a href="#example-1-simple-declaration">Example #1 : Simple déclaration</a></li>
+<li><a href="#example-2-declaration-dun-pointeur-sur-fonction">Example #2 : Déclaration d'un pointeur sur fonction</a></li>
+<li><a href="#exemple-3-le-final">Exemple #3 : le "Final"</a></li>
+</ul>
+</div>
+<hr />
+<p>Il existe une technique connue sous le nom de "règle de la spirale horaire" qui
+permet à tout programmeur C de parser toute déclaration C de tête !</p>
+<p>Elle consiste à suivre trois étapes simples :</p>
+<ol>
+<li>
+<p>En partant du premier élément inconnu, se déplacer en spirale dans le sens
+  horaire; lorsqu'on rencontre l'élément suivant, le remplacer par son équivalent
+  en langue naturelle :</p>
+<p><code>[X]</code> ou <code>[]</code> → Tableau de taille X de… ou Tableau de taille indéfinie de…</p>
+<p><code>(type1, type2)</code> → fonction recevant type1 et type2 retournant…</p>
+<p><code>*</code> → pointeur(s) sur…</p>
+</li>
+<li>
+<p>Répéter l'étape 1. en spirale, dans le sens horaire, jusqu'à ce que tous les
+  jetons ont été parcourus.</p>
+</li>
+<li>
+<p>Toujours résoudre les parenthèses en premier !</p>
+</li>
+</ol>
+<h3 id="example-1-simple-declaration">Example #1 : Simple déclaration</h3>
+<div class="highlight"><pre><span></span>                 ┌───────┐
+                 │ ┌─┐   │
+                 │ ▲ │   │
+            char *str[10];
+             ▲   ▲   │   │
+             │   └───┘   │
+             └───────────┘
+</pre></div>
+
+
+<p>La question qu'on se pose :</p>
+<ul>
+<li>
+<p>Qu'est-ce que <code>str</code> ?</p>
+<p><code>str</code> est un…</p>
+</li>
+<li>
+<p>On se déplace en spirale horaire commençant par <code>str</code> et le premier caractère
+  qu'on rencontre est <code>[</code>, il s'agit donc d'un tableau, donc…</p>
+<p><code>str</code> est un tableau 10 de…</p>
+</li>
+<li>
+<p>Continuons en spirale horaire, et le prochain jeton que nous rencontrons est
+  <code>*</code>, ce qui signifie que nous avons des pointeurs, donc…</p>
+<p><code>str</code> est un tableau 10 de pointeurs sur…</p>
+</li>
+<li>
+<p>Toujours en spirale horaire, nous arrivons en fin de ligne (le <code>;</code>) et nous
+  en continuant nous arrivons sur le type <code>char</code>, donc…</p>
+<p><code>str</code> est un tableau 10 de pointeurs sur char</p>
+</li>
+<li>
+<p>Nous avons maintenant "visité" tous les jetons, nous avons donc fini !</p>
+</li>
+</ul>
+<h3 id="example-2-declaration-dun-pointeur-sur-fonction">Example #2 : Déclaration d'un pointeur sur fonction</h3>
+<div class="highlight"><pre><span></span>                 ┌────────────────────┐
+                 │ ┌───┐              │
+                 │ │┌─┐│              │
+                 │ │▲ ││              │
+            char *(*fp)( int, float *);
+             ▲   ▲ ▲  ││              │
+             │   │ └──┘│              │
+             │   └─────┘              │
+             └────────────────────────┘
+</pre></div>
+
+
+<p>La question qu'on se pose :</p>
+<ul>
+<li>
+<p>Qu'est-ce que <code>fp</code> ?</p>
+<p><code>fp</code> est un…</p>
+</li>
+<li>
+<p>En se déplaçant en spirale horaire, la première chose que l'on voit est <code>)</code>;
+  ce qui signifie que <code>fp</code> est entre parenthèses, nous continuons donc notre
+  spirale à l'intérieur de la parenthèse et le prochain caractère rencontré est <code>*</code>, donc…</p>
+<p><code>fp</code> est un pointeur sur…</p>
+</li>
+<li>
+<p>Nous sommes désormais hors des parenthèses et continuons en spirale horaire,
+  nous voyons <code>(</code>, il s'agit d'une fonction donc…</p>
+<p><code>fp</code> est un pointeur sur fonction recevant un int et un pointeur sur flottant
+retournant…</p>
+</li>
+<li>
+<p>Toujours en spirale, nous voyons <code>*</code>, donc…</p>
+<p><code>fp</code> est un pointeur sur fonction recevant un int et un pointeur sur flottant
+retournant un pointeur sur…</p>
+</li>
+<li>
+<p>Suivant encore la spirale, nous voyons <code>;</code>, mais nous n'avons pas encore
+  visité tous les jetons, nous devons continuer et finalement tombons sur char,
+  donc…</p>
+<p><code>fp</code> est un pointeur sur fonction recevant un int et un pointeur sur flottant
+retournant un pointeur sur char.</p>
+</li>
+</ul>
+<h3 id="exemple-3-le-final">Exemple #3 : le "Final"</h3>
+<div class="highlight"><pre><span></span>                  ┌─────────────────────────────┐
+                  │                  ┌───┐      │
+                  │  ┌───┐           │┌─┐│      │
+                  │  ▲   │           │▲ ││      │
+            void (*signal(int, void (*fp)(int)))(int);
+             ▲    ▲      │      ▲    ▲  ││      │
+             │    └──────┘      │    └──┘│      │
+             │                  └────────┘      │
+             └──────────────────────────────────┘
+</pre></div>
+
+
+<p>La question que nous nous posons :</p>
+<ul>
+<li>
+<p>Qu'est-ce <code>signal</code> ?</p>
+<p>Remarquez que <code>signal</code> est entre parenthèses, nous devons donc les résoudre
+en premier !</p>
+</li>
+<li>
+<p>En se déplaçant dans le sens horaire, nous voyons <code>(</code>, nous avons donc…</p>
+<p><code>signal</code> est une fonction recevant un int et un…</p>
+</li>
+<li>
+<p>Hmmm, nous pouvons appliquer la même règle à <code>fp</code>, donc… Qu'est-ce que <code>fp</code> ?
+  <code>fp</code> est aussi entre parenthèses, donc continuons et nous voyons une <code>*</code>, donc…</p>
+<p><code>fp</code> est un pointeur sur…</p>
+</li>
+<li>
+<p>Continuons en spirale horaire et nous arrivons à <code>(</code>, donc…</p>
+<p><code>fp</code> est un pointeur sur une fonction recevant un int et retournant…</p>
+</li>
+<li>
+<p>Maintenant continous hors des parenthèses de la fonction et nous obtenons
+  <code>void</code>, donc…</p>
+<p><code>fp</code> est un pointeur sur une fonction recevant un int et ne retournant
+rien (void)</p>
+</li>
+<li>
+<p>Fini avec <code>fp</code>, retournons à notre <code>signal</code>, nous avons maintenant…</p>
+<p><code>signal</code> est une fonction recevant un int et un pointeur sur une fonction
+recevant un int et ne retournant rien retournant…</p>
+</li>
+<li>
+<p>Nous sommes encore dans des parenthèses, donc le prochain caractère rencontré
+  est <code>*</code>, donc…</p>
+<p><code>signal</code> est une fonction recevant un int et un pointeur sur une fonction
+recevant un int et ne retournant rien retournant un pointeur sur…</p>
+</li>
+<li>
+<p>Nous avons maintenant résolu tous les jetons présents dans des parenthèses,
+  continuons dans le sens horaire et arrivons à <code>(</code>, donc…</p>
+<p><code>signal</code> est une fonction recevant un int et un pointeur sur une fonction
+recevant un int et ne retournant rien retournant un pointeur sur une
+fonction recevant un int et retournant…</p>
+</li>
+<li>
+<p>Finalement, nous continuons et la seule chose restante et le mot <code>void</code>, et
+  donc la définition complète de <code>signal</code> est :</p>
+<p><code>signal</code> est une fonction recevant un int et un pointeur sur une fonction
+recevant un int et ne retournant rien retournant un pointeur sur une
+fonction recevant un int et ne retournant rien (void).</p>
+</li>
+</ul>
+<p>La même règle s'applique à <code>const</code> et <code>volatile</code>. Par exemple :</p>
+<div class="highlight"><pre><span></span>const char *chptr;
+</pre></div>
+
+
+<ul>
+<li>
+<p>Qu'est-ce que <code>chptr</code> ?</p>
+<p><code>chptr</code> est un pointeur sur un char constant</p>
+</li>
+</ul>
+<p>Que dites-vous de ça :</p>
+<div class="highlight"><pre><span></span>char * const chptr;
+</pre></div>
+
+
+<ul>
+<li>
+<p>Qu'est-ce que <code>chptr</code> ?</p>
+<p><code>chptr</code> est un pointeur constant sur un char</p>
+</li>
+</ul>
+<p>Finalement :</p>
+<div class="highlight"><pre><span></span>volatile char * const chptr;
+</pre></div>
+
+
+<ul>
+<li>
+<p>Qu'est-ce que <code>chptr</code> ?</p>
+<p><code>chptr</code> est un pointeur constant sur un char volatile.</p>
+</li>
+</ul>
+<p>Vous pouvez vous entrainer en appliquant cette règle aux exemples du K&amp;R II,
+page 122.</p>
+<hr />
+<p>Copyright © 1993,1994 David Anderson</p>
+<p>Traduction © 2013 victor / <a href="http://progdupeu.pl">progdupeu.pl</a></p>
+<p>Cet article peut être librement distribué à condition que les noms des auteurs
+et cette notice soient conservés. Librement traduit sur la base de
+<a href="http://c-faq.com/decl/spiral.anderson.html">cette reproduction</a> du texte
+original.</p>
+        </div>
+    </section>
+        </div>
+        <div class="col-sm-3" id="sidebar">
+            <aside>
+
+<section class="well well-sm">
+    <ul class="list-group list-group-flush">
+
+        <!-- Search bar in low width mode -->
+        <li id="searchSideBar" class="list-group-item"><span>
+                <form class="navbar-search" action="/blog/search">
+                  <input type="text" class="search-query" placeholder="Rechercher" name="q" id="tipue_search_input" required>
+                </form></span>
+        </li>
+
+        <li class="list-group-item"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Social</span></h4>
+              <ul class="list-group" id="social">
+                    <li class="list-group-item"><a href="https://example.org">
+                        <i class="fa fa-comment fa-lg"></i>
+                       Link 1</a>
+                    </li>
+                    <li class="list-group-item"><a href="https://example.org">
+                        <i class="fa fa-comments fa-lg"></i>
+                       Link 2</a>
+                    </li>
+                    <li class="list-group-item"><a href="/page/content">
+                        <i class="fa fa-etc fa-lg"></i>
+                       etc</a>
+                    </li>
+              </ul>
+            </li>
+
+
+            <li class="list-group-item"><a href="http://yliesc.github.io/"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Categories</span></h4></a>
+                <ul class="list-group" id="categories">
+                </ul>
+            </li>
+
+
+
+    <li class="list-group-item"><h4><i class="fa fa-link fa-lg"></i><span class="icon-label">External Links</span></h4>
+      <ul class="list-group" id="links">
+        <li class="list-group-item">
+            <a href="https://example.org" target="_blank">
+                Link 1
+            </a>
+        </li>
+        <li class="list-group-item">
+            <a href="https://example.org" target="_blank">
+                Link 2
+            </a>
+        </li>
+        <li class="list-group-item">
+            <a href="/page/content" target="_blank">
+                etc
+            </a>
+        </li>
+      </ul>
+    </li>
+
+        <li class="list-group-item" id="github">
+            <ul class="list-group">
+                <li class="list-group-item"><h5>Vous voyez une erreur ?</h5></li>
+                <li class="list-group-item">
+                    <a class="btn btn-info github" target="_blank" href="https://github.com/YliesC/website/edit/master/content/pages/pdp/content/la-regle-de-la-spirale-horaire-clockwisespiral-rule.md">
+                        <i class="fa fa-random"></i> Modifiez la page sur GitHub
+                    </a>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</section>            </aside>
+        </div>
+    </div>
+</div>
+<footer>
+   <div class="container">
+      <hr>
+      <div class="row">
+         <div class="col-xs-10">&copy;  
+            &middot; Powered by <a href="https://github.com/getpelican/pelican-themes/tree/master/pelican-bootstrap3" target="_blank">pelican-bootstrap3</a>,
+            <a href="http://docs.getpelican.com/" target="_blank">Pelican</a>,
+<a href="http://getbootstrap.com" target="_blank">Bootstrap</a>                <p><small>  <a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr"><img alt="Creative Commons License" style="border-width:0" src="//i.creativecommons.org/l/by-sa/4.0/80x15.png" /></a>
+    Content
+  licensed under a <a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">Creative Commons Attribution-ShareAlike 4.0 International License</a>, except where indicated otherwise.
+</small></p>
+         </div>
+         <div class="col-xs-2"><p class="pull-right"><i class="fa fa-arrow-up"></i> <a href="#">Back to top</a></p></div>
+      </div>
+   </div>
+</footer>
+<script src="http://yliesc.github.io/theme/js/jquery.min.js"></script>
+
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="http://yliesc.github.io/theme/js/bootstrap.min.js"></script>
+
+<!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
+<script src="http://yliesc.github.io/theme/js/respond.min.js"></script>
+
+<!--  -->
+
+
+</body>
+</html>

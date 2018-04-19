@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="fr" prefix="og: http://ogp.me/ns# fb: https://www.facebook.com/2008/fbml">
+<head>
+    <title>Similarité cosinus et recherche textuelle - The Golden Koala</title>
+    <!-- Using the latest rendering mode for IE -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <link href="http://yliesc.github.io/images/koala-ico.png" rel="icon">
+
+<link rel="canonical" href="http://yliesc.github.io/pages/pdp/content/similarite-cosinus-et-recherche-textuelle/">
+
+        <meta name="author" content="Graphox" />
+        <meta name="description" content="De nombreux domaines de recherche sont sollicités par le développement d&#39;Internet, notamment l&#39;évaluation des similarités : similarité entre une requête et des documents (moteur de recherche), entre des artistes (système de recommandation), entre des utilisateurs ou produits (site marchand), entre des images… Tout l&#39;enjeu de ce pan de recherche est donc …" />
+
+    <meta property="og:site_name" content="The Golden Koala" />
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="Similarité cosinus et recherche textuelle"/>
+    <meta property="og:url" content="http://yliesc.github.io/pages/pdp/content/similarite-cosinus-et-recherche-textuelle/"/>
+    <meta property="og:description" content="De nombreux domaines de recherche sont sollicités par le développement d&#39;Internet, notamment l&#39;évaluation des similarités : similarité entre une requête et des documents (moteur de recherche), entre des artistes (système de recommandation), entre des utilisateurs ou produits (site marchand), entre des images… Tout l&#39;enjeu de ce pan de recherche est donc …" />
+
+
+    <!-- Bootstrap -->
+        <link rel="stylesheet" href="http://yliesc.github.io/theme/css/bootstrap.readable.min.css" type="text/css"/>
+    <link href="http://yliesc.github.io/theme/css/font-awesome.min.css" rel="stylesheet">
+
+    <link href="http://yliesc.github.io/theme/css/pygments/default.css" rel="stylesheet">
+    <link href="http://yliesc.github.io/theme/tipuesearch/tipuesearch.css" rel="stylesheet">
+    <link rel="stylesheet" href="http://yliesc.github.io/theme/css/style.css" type="text/css"/>
+        <link href="http://yliesc.github.io/css/custom.css" rel="stylesheet">
+
+        <link href="http://yliesc.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate"
+              title="The Golden Koala ATOM Feed"/>
+
+
+
+
+</head>
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+	<div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="http://yliesc.github.io/" class="navbar-brand">
+<img class="img-responsive pull-left gap-right" src="http://yliesc.github.io/images/koala-logo.svg" width="38"/> <span id="siteName">The Golden Koala</span>            </a>
+        </div>
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+
+            </ul>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+</div> <!-- /.navbar -->
+<!-- Banner -->
+<!-- End Banner -->
+<div class="container">
+    <div class="row">
+        <div class="col-sm-9">
+    <ol class="breadcrumb">
+        <li><a href="http://yliesc.github.io/" title="The Golden Koala">
+            <i class="fa fa-home fa-lg"></i>
+        </a></li>
+        <li class="active">Similarité cosinus et recherche textuelle</li>
+    </ol>
+    <section id="content" class="body">
+        <h1 class="entry-title">Similarité cosinus et recherche textuelle</h1>
+            <div class="entry-content">
+                    <div class="panel">
+                        <div class="panel-body">
+<footer class="post-info">
+    
+    <span class="published">
+        <span class="label label-default"><i class="fa fa-calendar"></i><time datetime="2014-09-27T00:00:00+02:00"> sam. 27 septembre 2014</time></span> | 
+    </span>
+        <span class="label label-default"><i class="fa fa-user-circle"></i> Graphox</span>  | 
+    <span class="label label-default">
+            <i class="fa fa-cc"></i> 
+        
+            CC-BY-SA
+    </span>
+</footer><!-- /.page-info -->                        </div>
+                    </div>
+            <p>De nombreux domaines de recherche sont sollicités par le développement d'Internet, notamment l'évaluation des similarités : similarité entre une requête et des documents (moteur de recherche), entre des artistes (système de recommandation), entre des utilisateurs ou produits (site marchand), entre des images… Tout l'enjeu de ce pan de recherche est donc de départager de manière pertinente le nombre toujours croissant de données qui circulent sur Internet et d'en extraire des informations utiles pour répondre à divers problèmes. L'objectif de cet article est d'amorcer la réflexion en présentant les bases de la similarité cosinus, une méthode principalement utilisée pour l'analyse de texte.</p>
+<p>Les exemples en Python qui suivent sont volontairement peu optimisés et n'utilisent pas de bibliothèques spécifiques.</p>
+<div class="toc">
+<ul>
+<li><a href="#une-approche-du-probleme-recherche-dartistes-similaires">Une approche du problème : recherche d'artistes similaires</a><ul>
+<li><a href="#le-modele-vectoriel">Le modèle vectoriel</a></li>
+<li><a href="#la-distance-euclidienne">La distance euclidienne</a><ul>
+<li><a href="#implementation-en-python">Implémentation en Python</a></li>
+</ul>
+</li>
+<li><a href="#la-similarite-cosinus">La similarité cosinus</a><ul>
+<li><a href="#implementation-en-python_1">Implémentation en Python</a></li>
+</ul>
+</li>
+<li><a href="#distances-ou-angles">Distances ou angles ?</a></li>
+<li><a href="#les-questions-a-se-poser">Les questions à se poser</a></li>
+</ul>
+</li>
+<li><a href="#recherche-de-documents-pertinents">Recherche de documents pertinents</a><ul>
+<li><a href="#une-methode-de-ponderation-le-tf-idf">Une méthode de pondération : le TF-IDF</a></li>
+<li><a href="#application">Application</a><ul>
+<li><a href="#1-calcul-des-frequences-inverses">1. Calcul des fréquences inverses</a></li>
+<li><a href="#2-calcul-des-poids-tf-idf-pour-a">2. Calcul des poids TF-IDF pour A</a></li>
+<li><a href="#3-calcul-des-poids-tf-idf-pour-b">3. Calcul des poids TF-IDF pour B</a></li>
+<li><a href="#4-calcul-des-poids-tf-idf-pour-r">4. Calcul des poids TF-IDF pour R</a></li>
+</ul>
+</li>
+<li><a href="#implementation-en-python_2">Implémentation en Python</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<h2 id="une-approche-du-probleme-recherche-dartistes-similaires">Une approche du problème : recherche d'artistes similaires</h2>
+<p>Imaginons un système comme Lastfm qui possède des tags pondérés pour décrire chaque artiste, par exemple « rock : 100, classical : 24… ». Nous héritons de toutes ces informations et notre but est de pouvoir déterminer l'artiste le plus similaire à un autre. L'application proposée ci-dessous est bien entendue limitée puisque pour augmenter nos chances d'obtenir des similarités satisfaisantes, il faudrait déjà se demander si des tags pondérés seuls peuvent décrire correctement un artiste. On admettra que c'est le cas. Pour information, Lastfm utilise également des algorithmes de recherche de <em>plus proches voisins</em> pour fournir ses recommandations, en se basant sur les statistiques de sa communauté pour établir des liens de similarité entre les utilisateurs, selon leur tendance d'écoute.</p>
+<h3 id="le-modele-vectoriel">Le modèle vectoriel</h3>
+<p>Souvent, dans le domaine de la « similarité », on aime bien représenter graphiquement nos objets et les valeurs dont on dispose. Car en faisant varier ces dernières, on peut espérer trouver un lien entre ces variations chiffrées, leur signification concrète dans le cadre de notre application (la similarité entre les deux objets augmente ou diminue) et une grandeur mathématique visible et mesurable : une distance, un angle, le coefficient d'une droite moyenne, etc. L'avantage d'une telle représentation est que, si jamais on parvient à trouver ce lien, on sait qu'il existe des formules mathématiques facilement applicables pour effectuer toutes sortes de mesures dans un repère. Dans le domaine de la  <a href="http://fr.wikipedia.org/wiki/Recherche_d'information">recherche d'information</a>, on doit ce « <a href="http://fr.wikipedia.org/wiki/Mod%C3%A8le_vectoriel">modèle vectoriel</a> » à <a href="http://fr.wikipedia.org/wiki/Gerard_Salton">Gerard Salton</a>.</p>
+<p>En se basant sur ce modèle, on pourrait matérialiser un artiste par un vecteur dont la dimension serait égale au nombre de tags étudiés et dont chaque attribut correspondrait au poids du tag associé. Si on se limite à un espace à deux dimensions, voici comment on pourrait représenter deux artistes A et B ayant respectivement pour tags (rock : 40, electro : 50) et (rock : 100, electro : 25). Par abus de langage, on appellera aussi A et B les extrémités de ces deux vecteurs.</p>
+<p><img alt="" src="http://progdupeu.pl/media/galleries/64/82544cd5-ae3b-4572-9df3-b9b6eef7deb1.png" /></p>
+<p>Plus on augmente les différences de poids pour chaque tag et plus la similarité entre les deux artistes baisse. Faites le test : il apparaît que la <strong>distance</strong> entre A et B et l'<strong>angle</strong> formé par les deux vecteurs pourraient être de bons indicateurs de la similarité existant entre les deux objets.</p>
+<p>Pour répondre à notre problème, il suffirait donc de représenter chaque artiste dans un repère et de comparer leurs positions relatives. Sur la figure ci-dessous, le vecteur R décrirait un artiste plus similaire à A qu'à C, mais plus similaire à C qu'à B. Cela peut se voir à la fois par la distance entre les différents points et les angles formés par les vecteurs.</p>
+<p><img alt="" src="http://progdupeu.pl/media/galleries/64/f0941e7b-0474-4202-8198-75026307b313.png" /></p>
+<p>Mais cela est-il toujours vrai ? Quelle méthode choisir ? Avant tout, nous allons implémenter chacune des deux mesures. Bien que cela soit difficilement représentable, on généralisera ce raisonnement à des espaces à plus de deux dimensions.</p>
+<h3 id="la-distance-euclidienne">La distance euclidienne</h3>
+<p>Dans un espace à $n$ dimensions, la distance euclidienne $AB$ est définie comme la racine carrée de la somme des différences au carré entre les attributs de même rang des deux vecteurs $A$ et $B$.</p>
+<p>$$d(A, B) = \sqrt{\sum\limits_{i=1}^{n}{(A_i - B_i)^2}}$$</p>
+<p>Pour obtenir un indice de la similarité existant entre $A$ et $B$, puisque plus la distance est faible, plus la similarité est censée augmenter, on peut prendre l'inverse de la distance euclidienne. Pour éviter d'avoir un dénominateur nul, on ajoute 1 :</p>
+<p>$$\mathrm{similarité(A, B)} = \frac{1}{1 + \sqrt{\sum\limits_{i=1}^{n}{(A_i - B_i)^2}}}$$</p>
+<p>De ce fait, on a $0 &lt; \mathrm{similarité(A, B)} \le 1$ et plus $\mathrm{similarité(A, B)}$ s'approche de 1, plus la similarité entre les objets représentés par $A$ et $B$ est grande.</p>
+<h4 id="implementation-en-python">Implémentation en Python</h4>
+<p>On a adapté la formule mathématique à notre situation où les vecteurs n'ont pas forcément tous les mêmes tags de base. Pour y remédier, on se place dans un espace comprenant le nombre de dimensions nécessaire pour que chaque tag puisse être représenté (avec <code>all_keys</code>) et si l'un des vecteurs ne possède pas d'attribut pour ce tag, alors on lui donne un poids nul par défaut (c'est le rôle des expressions <code>a.get(k, 0)</code> et <code>b.get(k, 0)</code>).</p>
+<div class="highlight"><pre><span></span><span class="c1"># coding: utf-8</span>
+
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">sqrt</span>
+
+<span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;Pink Floyd&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;progressive rock&#39;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+        <span class="s1">&#39;classic rock&#39;</span><span class="p">:</span> <span class="mi">78</span><span class="p">,</span>
+        <span class="s1">&#39;psychedelic rock&#39;</span><span class="p">:</span> <span class="mi">70</span><span class="p">,</span>
+        <span class="s1">&#39;experimental&#39;</span><span class="p">:</span> <span class="mi">5</span>
+    <span class="p">},</span>
+    <span class="s1">&#39;Alain Souchon&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;chanson française&#39;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+        <span class="s1">&#39;chanson&#39;</span><span class="p">:</span> <span class="mi">34</span><span class="p">,</span>
+        <span class="s1">&#39;pop&#39;</span><span class="p">:</span> <span class="mi">33</span><span class="p">,</span>
+        <span class="s1">&#39;singer-songwriter&#39;</span><span class="p">:</span> <span class="mi">12</span>
+    <span class="p">},</span>
+    <span class="s1">&#39;Hans Zimmer&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;soundtrack&#39;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+        <span class="s1">&#39;instrumental&#39;</span><span class="p">:</span> <span class="mi">57</span><span class="p">,</span>
+        <span class="s1">&#39;classical&#39;</span><span class="p">:</span> <span class="mi">41</span><span class="p">,</span>
+        <span class="s1">&#39;composer&#39;</span><span class="p">:</span> <span class="mi">32</span>
+    <span class="p">},</span>
+    <span class="s1">&#39;The Police&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;rock&#39;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+        <span class="s1">&#39;new wave&#39;</span><span class="p">:</span> <span class="mi">66</span><span class="p">,</span>
+        <span class="s1">&#39;classic rock&#39;</span><span class="p">:</span> <span class="mi">81</span><span class="p">,</span>
+        <span class="s1">&#39;pop&#39;</span><span class="p">:</span> <span class="mi">40</span>
+    <span class="p">},</span>
+    <span class="s1">&#39;Chopin&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;classical&#39;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+        <span class="s1">&#39;piano&#39;</span><span class="p">:</span> <span class="mi">47</span><span class="p">,</span>
+        <span class="s1">&#39;romantic&#39;</span><span class="p">:</span> <span class="mi">26</span><span class="p">,</span>
+        <span class="s1">&#39;instrumental&#39;</span><span class="p">:</span> <span class="mi">22</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+
+<span class="k">def</span> <span class="nf">similarity</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+    <span class="n">all_keys</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">b</span><span class="p">))</span>
+    <span class="n">diffs</span> <span class="o">=</span> <span class="p">((</span><span class="n">a</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-</span> <span class="n">b</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span> <span class="o">**</span> <span class="mi">2</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">all_keys</span><span class="p">)</span>
+    <span class="n">distance</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">diffs</span><span class="p">))</span>
+    <span class="k">return</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">distance</span><span class="p">)</span>
+</pre></div>
+
+
+<p>On peut maintenant calculer les scores de similarité entre tous nos artistes, effectuer un classement descendant et afficher les résultats :</p>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">operator</span> <span class="kn">import</span> <span class="n">itemgetter</span>
+
+<span class="k">for</span> <span class="n">artist</span><span class="p">,</span> <span class="n">tags</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">scores</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">artist_</span><span class="p">,</span> <span class="n">tags_</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">scores</span><span class="p">[</span><span class="n">artist_</span><span class="p">]</span> <span class="o">=</span> <span class="n">similarity</span><span class="p">(</span><span class="n">tags</span><span class="p">,</span> <span class="n">tags_</span><span class="p">)</span>
+    <span class="n">scores</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">scores</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="n">itemgetter</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">reverse</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Similar artists for {}:&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">artist</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">artist</span><span class="p">,</span> <span class="n">score</span> <span class="ow">in</span> <span class="n">scores</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">{} ({:.2})&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">artist</span><span class="p">,</span> <span class="n">score</span><span class="p">))</span>
+</pre></div>
+
+
+<p></p>
+
+<div class="highlight"><pre><span></span>Similar artists for Pink Floyd:
+     Pink Floyd (1.0)
+     The Police (0.0057)
+     Alain Souchon (0.0054)
+     Chopin (0.0054)
+     Hans Zimmer (0.0052)
+
+Similar artists for Alain Souchon:
+     Alain Souchon (1.0)
+     Chopin (0.0062)
+     Hans Zimmer (0.0059)
+     The Police (0.0055)
+     Pink Floyd (0.0054)
+
+Similar artists for Hans Zimmer:
+     Hans Zimmer (1.0)
+     Chopin (0.0073)
+     Alain Souchon (0.0059)
+     Pink Floyd (0.0052)
+     The Police (0.0051)
+
+Similar artists for Chopin:
+     Chopin (1.0)
+     Hans Zimmer (0.0073)
+     Alain Souchon (0.0062)
+     Pink Floyd (0.0054)
+     The Police (0.0053)
+
+Similar artists for The Police:
+     The Police (1.0)
+     Pink Floyd (0.0057)
+     Alain Souchon (0.0055)
+     Chopin (0.0053)
+     Hans Zimmer (0.0051)
+</pre></div>
+
+
+<p>Il faut voir la valeur numérique retournée comme un indice, un score qui est destiné à être comparé pour effectuer un classement et non pas comme un pourcentage de ressemblance entre deux objets.</p>
+<h3 id="la-similarite-cosinus">La similarité cosinus</h3>
+<p>Si on peut relier la similarité entre deux vecteurs $A$ et $B$ à la mesure de l'angle $\theta$ qu'ils forment, alors on peut l'évaluer en calculant le cosinus de cet angle : c'est ainsi qu'est définie la <em>similarité cosinus</em>. Le calcul du cosinus se base sur l'expression du <a href="https://fr.wikipedia.org/wiki/Produit_scalaire">produit scalaire</a> $A \cdot B = |A| |B| \cos(\theta)$ et implique qu'aucun des deux vecteurs ne soit nul.</p>
+<p>$$\mathrm{similarité(A, B)} = \cos(\theta) = \frac{A \cdot B}{ |A| |B|} = \frac{ \sum\limits_{i=1}^{n}{A_i \times B_i} }{ \sqrt{\sum\limits_{i=1}^{n}{{A_i}^2}} \times \sqrt{\sum\limits_{i=1}^{n}{{B_i}^2}} }$$</p>
+<p>Si nos poids ne peuvent pas être négatifs, alors on a $0 \le \mathrm{similarité(A, B)} \le 1$. Plus la mesure de l'angle est faible, plus son cosinus est élevé : avec cette formule, plus $\mathrm{similarité(A, B)}$ s'approche de 1, plus la similarité entre les objets représentés par les vecteurs $A$ et $B$ est grande.</p>
+<h4 id="implementation-en-python_1">Implémentation en Python</h4>
+<p>Comme précédemment, on considère que l'absence d'un tag est équivalente à la présence de ce tag avec un poids nul. On peut alors se contenter de calculer le produit scalaire des vecteurs $A$ et $B$ uniquement avec leurs éléments communs (car si au rang $i$ au moins l'un des deux artistes possède un tag de poids 0, on aura $A_i \times B_i = 0$, ce qui peut être ignoré dans la somme).</p>
+<p>L'interface de notre programme reste la même et il suffit alors de modifier la fonction qui calcule la similarité entre deux vecteurs. La restriction aux tags communs se fait avec l'expression <code>… for k in a if k in b</code>). On suppose que les artistes ont au moins un tag de poids non nul (dénominateur non nul).</p>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">sqrt</span>
+
+<span class="k">def</span> <span class="nf">similarity</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+    <span class="n">scalar</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="n">b</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">a</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">b</span><span class="p">)</span>
+    <span class="n">norm_a</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">v</span> <span class="o">**</span> <span class="mi">2</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">a</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+    <span class="n">norm_b</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">v</span> <span class="o">**</span> <span class="mi">2</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">b</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+    <span class="k">return</span> <span class="n">scalar</span> <span class="o">/</span> <span class="p">(</span><span class="n">norm_a</span> <span class="o">*</span> <span class="n">norm_b</span><span class="p">)</span>
+</pre></div>
+
+
+<p></p>
+
+<div class="highlight"><pre><span></span>Similar artists for Pink Floyd:
+     Pink Floyd (1.0)
+     The Police (0.29)
+     Alain Souchon (0.0)
+     Hans Zimmer (0.0)
+     Chopin (0.0)
+
+Similar artists for Alain Souchon:
+     Alain Souchon (1.0)
+     The Police (0.079)
+     Pink Floyd (0.0)
+     Hans Zimmer (0.0)
+     Chopin (0.0)
+
+Similar artists for Hans Zimmer:
+     Hans Zimmer (1.0)
+     Chopin (0.37)
+     Pink Floyd (0.0)
+     Alain Souchon (0.0)
+     The Police (0.0)
+
+Similar artists for Chopin:
+     Chopin (1.0)
+     Hans Zimmer (0.37)
+     Pink Floyd (0.0)
+     Alain Souchon (0.0)
+     The Police (0.0)
+
+Similar artists for The Police:
+     The Police (1.0)
+     Pink Floyd (0.29)
+     Alain Souchon (0.079)
+     Hans Zimmer (0.0)
+     Chopin (0.0)
+</pre></div>
+
+
+<h3 id="distances-ou-angles">Distances ou angles ?</h3>
+<p>Quelques observations, que l'on aurait pu prévoir mathématiquement :</p>
+<ul>
+<li>
+<p>La distance euclidienne, contrairement à la similarité cosinus, donne des résultats peut-être moins en phase avec ce que l'on attend de notre application (Alain Souchon plus proche de Chopin et Hans Zimmer que de The Police, bien qu'il ait avec ce dernier le tag « pop » en commun)</p>
+</li>
+<li>
+<p>L'usage seul d'un angle ou d'une distance comme métrique mène à une perte d'information de nature différente. La similarité cosinus mesurant un angle, son point de vue est centré sur l'origine, et si on « étire » les vecteurs, on ne change pas la valeur du cosinus. Mais si on adopte un point de vue plus local et que l'on s'intéresse à la distance entre les deux points, la distance euclidienne varie. Il se passe la même chose lorsque l'on regarde les étoiles : doit-on dire qu'elles sont proches (ou ici « similaires ») si elles apparaissent en effet proches l'une de l'autre depuis la Terre, même si des années-lumière les séparent en réalité ?</p>
+</li>
+</ul>
+<p><img alt="" src="http://progdupeu.pl/media/galleries/64/420dffce-6ccd-47ca-a315-b9d227c14975.png" /></p>
+<ul>
+<li>Avec la distance euclidienne, ce type de phénomène serait géométriquement limité à un cercle (puisque l'on s'intéresse aux distances) mais il y a un autre problème : pourquoi A serait-il plus similaire à C qu'à B sur la figure ci-dessous ?</li>
+</ul>
+<p><img alt="" src="http://progdupeu.pl/media/galleries/64/03bf8a08-3843-4f37-a87c-f607be4aba22.png" /></p>
+<h3 id="les-questions-a-se-poser">Les questions à se poser</h3>
+<p>Pour pouvoir trancher sur la méthode à privilégier, il faut poursuivre ces raisonnements et se demander :</p>
+<ul>
+<li>Ce qui se passerait avec des dizaines et dizaines de dimensions</li>
+<li>Si ces cas problématiques peuvent être négligés lorsque l'on a beaucoup de données à comparer</li>
+<li>Quels sont les cas de divergence les plus extrêmes entre les deux méthodes ? À quoi sont-ils dûs ? Dans ces cas-là, y a-t-il toujours une méthode plus cohérente que l'autre ?</li>
+<li>Quelle méthode donne les résultats les plus cohérents avec ce que l'on attend de <strong>notre application</strong> : certaines méthodes sont parfois appropriées pour certains problèmes et d'autres non, et vice versa</li>
+<li>Quelle méthode donne les résultats les plus cohérents avec <strong>nos données</strong> : combien a-t-on de dimensions ? Les objets sont-ils tous décrits avec la même précision (ou les textes sont-ils de taille homogène) ? Les données sont-elles toutes de qualité ? L'écart type est-il faible ou élevé ? Peut-on se contenter d'une méthode grossière ou faut-il l'affiner ?</li>
+<li>Certaines méthodes ont-elles toujours tendance à favoriser les objets décrits avec beaucoup ou au contraire peu de précision ?</li>
+<li>Les métriques mathématiques ont-elles toujours un sens lorsque l'on néglige certains termes qui, dans notre application, seraient par exemple presque tous nuls ? Dans notre cas, si les produits scalaires sont tous en moyenne très proches de zéro, on peut développer le carré de la distance euclidienne et simplifier le double produit : a-t-on toujours une métrique cohérente ?</li>
+<li>etc.</li>
+</ul>
+<p>Pour notre programme, il s'avère que c'est la similarité cosinus qui donne les résultats les plus prévisibles. Encore une fois, il n'y a pas de méthode absolue : on la choisit en fonction de nos objectifs et de nos données. D'ailleurs, on n'a fait qu'appliquer des formules « génériques » à des données brutes (nos tags) sous seul prétexte qu'elles étaient déjà numériques… n'y aurait-il pas eu d'autres façons de construire notre modèle vectoriel ?</p>
+<h2 id="recherche-de-documents-pertinents">Recherche de documents pertinents</h2>
+<p>Lorsque l'on entend parler de calcul de similarité en informatique, c'est souvent dans le cadre de données textuelles : comment classer, regrouper des documents ? Comment reconnaître un spam ? Comment, pour une requête, retourner la liste des documents les plus pertinents (dans le cas d'un moteur de recherche par exemple) ? C'est à ce dernier problème que l'on va désormais s'intéresser.</p>
+<p>On utilisera un <a href="http://paste.awesom.eu/2mH&amp;raw">corpus</a> contenant trois extraits et notre but est de déterminer quel document est le plus pertinent pour la requête R.</p>
+<ul>
+<li>un extrait A du <em>Rouge et du Noir</em></li>
+<li>un extrait B des <em>Misérables</em></li>
+<li>un extrait C de <em>Candide</em></li>
+<li>une requête R « Le crime de Julien était un crime, un crime affreux »</li>
+</ul>
+<p>Dans le domaine de la <a href="http://fr.wikipedia.org/wiki/Recherche_d'information">recherche d'information</a>, le modèle vectoriel et la similarité cosinus sont très utilisés. Les métriques comme la distance euclidienne le sont aussi, mais il faut alors normaliser les vecteurs de manière à ce que tous les documents soient comparables quelle que soit leur taille, ce qui est parfois fait de manière implicite lorsque l'on calcule des fréquences, par exemple. La similarité cosinus, entre autres, est pour cette raison parfois plus intuitive : elle vérifie que deux documents « pointent » dans la même direction sans souci de leur norme, puisqu'elle est insensible à la multiplication par un scalaire.</p>
+<p>Encore faut-il représenter nos documents dans un repère et en dégager des valeurs numériques. Le choix est assez limité. Les dimensions de notre espace vectoriel correspondront à l'ensemble du vocabulaire contenu dans nos différents documents. Ce qui va différer selon les documents, ce sont les fréquences auxquelles apparaissent ces mots.</p>
+<p>Dans un premier temps, on pourrait suggérer que le nombre d'occurrences de chaque mot dans le document constitue son « poids ». Puisque l'on ne peut pas représenter facilement un espace à plus de deux dimensions, on va s'intéresser uniquement aux mots « crime » et « julien » :</p>
+<ul>
+<li>Document A : 1 occurrence pour « crime », 1 occurrence pour « julien »</li>
+<li>Document B : 3 occurrences pour « crime », 0 occurrence pour « julien »</li>
+<li>Document C : 0 occurrence pour « crime », 0 occurrence pour « julien »</li>
+<li>Requête R : 3 occurrences pour « crime », 1 occurrence pour « julien »</li>
+</ul>
+<p><img alt="" src="http://progdupeu.pl/media/galleries/64/d6d72588-de69-42ca-bbb4-d72a59a70c0a.png" /></p>
+<p>Avec la similarité cosinus, le document B serait donc le plus pertinent pour R. Mais dans le cas d'un contenu linguistique, cet indice de similarité est-il réellement pertinent, tout comme le fait de relier proportionnellement le poids d'un terme à son nombre d’occurrences ? Est-ce que l'on peut considérer qu'un document comportant 10 occurrences d'un terme est 10 fois plus pertinent qu'un document n'en comportant qu'une ? Et que faire des mots très courants comme les articles définis ou certains verbes qui risquent, avec leur poids élevé, d'« écraser » les autres mots pourtant plus intéressants lors d'une recherche ?</p>
+<h3 id="une-methode-de-ponderation-le-tf-idf">Une méthode de pondération : le TF-IDF</h3>
+<p>Pour palier la plupart de ces défauts, on utilise souvent une méthode nommée <a href="http://fr.wikipedia.org/wiki/TF-IDF">TF-IDF</a>. Partant du constat qu'il était peu judicieux de considérer uniquement la fréquence d'un mot lors du calcul de son poids, le TF-IDF définit le poids d'un terme comme le produit de deux informations :</p>
+<ul>
+<li>
+<p>La fréquence $\mathrm{tf}(t,d)$ du terme $t$ dans le document $d$ :
+  $$\mathrm{tf}(t,d) = \frac{n_{t, d}}{N_d}$$
+  où $n_{t, d}$ est le nombre d'occurrences de $t$ dans $d$ et $N_d$ la taille du document $d$ (le nombre de mots).<br /><br />
+  Afin que les poids associés aux termes puissent être comparables quelle que soit la longueur des documents (qui est loin d'être toujours un bon critère de pertinence) et que le système ne souffre pas de failles permettant à un site d'augmenter son placement en répétant 1000 fois les mêmes mots-clés (dans le cas d'un moteur de recherche), il est nécessaire de relativiser ce nombre d'occurrences, en introduisant en quelque sorte ce que les anglais appelleraient un <em>facteur de normalisation</em>. Ici, on se contente simplement de la définition d'une fréquence en statistique : le nombre d'occurrences sur le nombre d'éléments.</p>
+</li>
+<li>
+<p>La fréquence inverse $\mathrm{idf}(t, D)$ du terme $t$ dans tout le corpus $D$ :
+  $$\mathrm{idf}(t, D) =  \log \frac{|D|}{|\{d \in D: t \in d\}|}$$
+  Il s'agit de diviser le nombre total de documents présents dans le corpus $D$ par le nombre de documents contenant le terme $t$, et d'en calculer le logarithme.<br /><br />
+  L'idée est simple : cette fréquence inverse que l'on étend à l'ensemble du corpus permet de mesurer le caractère rare ou commun des termes, qui seront alors soit plus discriminants — on cherchera à donner à un mot qui n'apparaît pas souvent un poids élevé de manière à ce que le document qui le contient soit favorisé si on effectue une recherche avec ce mot — ou soit plus anecdotiques (comme c'est le cas des articles définis qui apparaissent dans la majorité si ce n'est la totalité des documents).</p>
+</li>
+</ul>
+<p>Avec ce modèle, le poids $\mathrm{tfidf}(t, d, D)$ d'un terme $t$, qui n'est plus seulement dépendant du document $d$ étudié mais également de l'ensemble du corpus $D$, s'obtient de cette manière :</p>
+<p>$$\mathrm{tfidf}(t, d, D) = \mathrm{tf}(t, d) \times \mathrm{idf}(t, D) = \frac{n_{t, d}}{N_d} \times \log \frac{|D|}{|\{d \in D: t \in d\}|}$$</p>
+<h3 id="application">Application</h3>
+<p>Reprenons nos trois documents A, B et C et notre requête R. Voici les données dont nous avons besoin :</p>
+<ul>
+<li>Document A : 1 occurrence pour « julien », 1 occurrence pour « crime », 138 mots</li>
+<li>Document B : 0 occurrence pour « julien », 3 occurrences pour « crime », 105 mots</li>
+<li>Document C : 0 occurrence pour « julien », 0 occurrence pour « crime », 102 mots</li>
+<li>Requête R : 1 occurrence pour « julien », 3 occurrences pour « crime », 10 mots</li>
+</ul>
+<p>On va se limiter aux termes « julien » et « crime » et puisque le document C ne nous intéresse pas (à première vue, il n'a aucune similarité avec notre requête) on ne le représentera pas. Cependant, on le prendra en compte comme élément du corpus à part entière dans les calculs ci-dessous.</p>
+<h4 id="1-calcul-des-frequences-inverses">1. Calcul des fréquences inverses</h4>
+<ul>
+<li>« julien » apparaît dans 1 document sur 3 : $\mathrm{idf}(\mathrm{julien}) = \log \frac{3}{1} = 1.10$</li>
+<li>« crime » apparaît dans 2 documents sur 3 : $\mathrm{idf}(\mathrm{crime}) = \log \frac{3}{2} = 0.405$</li>
+</ul>
+<h4 id="2-calcul-des-poids-tf-idf-pour-a">2. Calcul des poids TF-IDF pour A</h4>
+<ul>
+<li>$\mathrm{tfidf}(\mathrm{julien})_A = \frac{1}{138} \times \mathrm{idf}(\mathrm{julien}) = \frac{1}{138} \times 1.10 = 0.0080$</li>
+<li>$\mathrm{tfidf}(\mathrm{crime})_A = \frac{1}{138} \times \mathrm{idf}(\mathrm{crime}) = \frac{1}{138} \times 0.405 = 0.0029$</li>
+</ul>
+<p>On représentera le document A par le vecteur $\vec{OA}(0.0080, 0.0029)$.</p>
+<h4 id="3-calcul-des-poids-tf-idf-pour-b">3. Calcul des poids TF-IDF pour B</h4>
+<ul>
+<li>$\mathrm{tfidf}(\mathrm{julien})_B = \frac{0}{105} \times \mathrm{idf}(\mathrm{julien}) = 0$</li>
+<li>$\mathrm{tfidf}(\mathrm{crime})_B = \frac{3}{105} \times \mathrm{idf}(\mathrm{crime}) = \frac{3}{105} \times 0.405 = 0.012$</li>
+</ul>
+<p>On représentera le document B par le vecteur $\vec{OB}(0, 0.012)$.</p>
+<h4 id="4-calcul-des-poids-tf-idf-pour-r">4. Calcul des poids TF-IDF pour R</h4>
+<ul>
+<li>$\mathrm{tfidf}(\mathrm{julien})_R = \frac{1}{10} \times \mathrm{idf}(\mathrm{julien}) = \frac{1}{10} \times 1.10 = 0.11$</li>
+<li>$\mathrm{tfidf}(\mathrm{crime})_R = \frac{3}{10} \times \mathrm{idf}(\mathrm{crime}) = \frac{3}{10} \times 0.405 = 0.12$</li>
+</ul>
+<p>La requête R peut donc être représentée par le vecteur $\vec{OR}(0.11, 0.12)$.</p>
+<p>Ci-dessous, je me suis permis de multiplier par 10 les proportions des vecteurs $\vec{OA}$ et $\vec{OB}$ pour qu'ils soient plus visibles, mais puisque l'on ne s'intéresse qu'aux angles dans notre raisonnement, cela n'a pas beaucoup d'importance :</p>
+<p><img alt="" src="http://progdupeu.pl/media/galleries/64/77f6f6b5-bb5f-40af-be4c-7a3c759a14c0.png" /></p>
+<p>Alors que notre première méthode donnait, pour la requête R, un indice de pertinence de 94 % pour le document B et de 89 % pour le document A, notre deuxième méthode avec pondération TF-IDF nous donne un indice de pertinence de 73 % pour le document B et de 88 % pour le document A. Autrement dit, les résultats sont inversés et cette méthode semble plus pertinente.</p>
+<p>Cela s'explique par la fréquence inverse de « julien » dans le corpus, qui apparaît seulement dans 1 document sur 3 alors que « crime » apparaît 2 fois sur 3. La proportionnalité qui existait dans notre première méthode est donc brisée et le terme « julien » est avantagé plus que ne l'est le terme « crime » car il est <em>plus rare</em>.</p>
+<p><strong>Remarque</strong> : Jusqu'ici, on s'est limité à deux termes, « crime » et « Julien », afin de représenter plus facilement le problème. En théorie, il faudrait prendre en compte tous les mots de la requête et c'est ce que nous allons implémenter ci-dessous.</p>
+<h3 id="implementation-en-python_2">Implémentation en Python</h3>
+<p>Pour des raisons pratiques, les documents du corpus et les requêtes sont déjà superficiellement traités : retrait de la ponctuation et des accents, et découpage en liste de mots.</p>
+<div class="highlight"><pre><span></span><span class="n">corpus</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;Le Rouge et le Noir&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;je&#39;</span><span class="p">,</span> <span class="s1">&#39;ne&#39;</span><span class="p">,</span> <span class="s1">&#39;vous&#39;</span><span class="p">,</span> <span class="s1">&#39;demande&#39;</span><span class="p">,</span> <span class="s1">&#39;aucune&#39;</span><span class="p">,</span> <span class="s1">&#39;grace&#39;</span><span class="p">,</span> <span class="s1">&#39;continua&#39;</span><span class="p">,</span> <span class="s1">&#39;julien&#39;</span><span class="p">,</span> <span class="s1">&#39;en&#39;</span><span class="p">,</span> <span class="s1">&#39;affermissant&#39;</span><span class="p">,</span> <span class="s1">&#39;sa&#39;</span><span class="p">,</span> <span class="s1">&#39;voix&#39;</span><span class="p">,</span> <span class="s1">&#39;je&#39;</span><span class="p">,</span> <span class="s1">&#39;ne&#39;</span><span class="p">,</span> <span class="s1">&#39;me&#39;</span><span class="p">,</span> <span class="s1">&#39;fais&#39;</span><span class="p">,</span> <span class="s1">&#39;point&#39;</span><span class="p">,</span> <span class="s1">&#39;illusion&#39;</span><span class="p">,</span> <span class="s1">&#39;la&#39;</span><span class="p">,</span> <span class="s1">&#39;mort&#39;</span><span class="p">,</span> <span class="s1">&#39;attend&#39;</span><span class="p">,</span> <span class="s1">&#39;elle&#39;</span><span class="p">,</span> <span class="s1">&#39;sera&#39;</span><span class="p">,</span> <span class="s1">&#39;juste&#39;</span><span class="p">,</span> <span class="s1">&#39;ai&#39;</span><span class="p">,</span> <span class="s1">&#39;pu&#39;</span><span class="p">,</span> <span class="s1">&#39;attenter&#39;</span><span class="p">,</span> <span class="s1">&#39;aux&#39;</span><span class="p">,</span> <span class="s1">&#39;jours&#39;</span><span class="p">,</span> <span class="s1">&#39;de&#39;</span><span class="p">,</span> <span class="s1">&#39;la&#39;</span><span class="p">,</span> <span class="s1">&#39;femme&#39;</span><span class="p">,</span> <span class="s1">&#39;la&#39;</span><span class="p">,</span> <span class="s1">&#39;plus&#39;</span><span class="p">,</span> <span class="s1">&#39;digne&#39;</span><span class="p">,</span> <span class="s1">&#39;de&#39;</span><span class="p">,</span> <span class="s1">&#39;tous&#39;</span><span class="p">,</span> <span class="s1">&#39;les&#39;</span><span class="p">,</span> <span class="s1">&#39;respects&#39;</span><span class="p">,</span> <span class="s1">&#39;de&#39;</span><span class="p">,</span> <span class="s1">&#39;tous&#39;</span><span class="p">,</span> <span class="s1">&#39;les&#39;</span><span class="p">,</span> <span class="s1">&#39;hommages&#39;</span><span class="p">,</span> <span class="s1">&#39;mme&#39;</span><span class="p">,</span> <span class="s1">&#39;de&#39;</span><span class="p">,</span> <span class="s1">&#39;renal&#39;</span><span class="p">,</span> <span class="s1">&#39;avait&#39;</span><span class="p">,</span> <span class="s1">&#39;ete&#39;</span><span class="p">,</span> <span class="s1">&#39;pour&#39;</span><span class="p">,</span> <span class="s1">&#39;moi&#39;</span><span class="p">,</span> <span class="s1">&#39;comme&#39;</span><span class="p">,</span> <span class="s1">&#39;une&#39;</span><span class="p">,</span> <span class="s1">&#39;mere&#39;</span><span class="p">,</span> <span class="s1">&#39;mon&#39;</span><span class="p">,</span> <span class="s1">&#39;crime&#39;</span><span class="p">,</span> <span class="s1">&#39;est&#39;</span><span class="p">,</span> <span class="s1">&#39;atroce&#39;</span><span class="p">,</span> <span class="s1">&#39;et&#39;</span><span class="p">,</span> <span class="s1">&#39;il&#39;</span><span class="p">,</span> <span class="s1">&#39;fut&#39;</span><span class="p">,</span> <span class="s1">&#39;premedite&#39;</span><span class="p">,</span> <span class="s1">&#39;ai&#39;</span><span class="p">,</span> <span class="s1">&#39;donc&#39;</span><span class="p">,</span> <span class="s1">&#39;merite&#39;</span><span class="p">,</span> <span class="s1">&#39;la&#39;</span><span class="p">,</span> <span class="s1">&#39;mort&#39;</span><span class="p">,</span> <span class="s1">&#39;messieurs&#39;</span><span class="p">,</span> <span class="s1">&#39;les&#39;</span><span class="p">,</span> <span class="s1">&#39;jures&#39;</span><span class="p">,</span> <span class="s1">&#39;quand&#39;</span><span class="p">,</span> <span class="s1">&#39;je&#39;</span><span class="p">,</span> <span class="s1">&#39;serais&#39;</span><span class="p">,</span> <span class="s1">&#39;moins&#39;</span><span class="p">,</span> <span class="s1">&#39;coupable&#39;</span><span class="p">,</span> <span class="s1">&#39;je&#39;</span><span class="p">,</span> <span class="s1">&#39;vois&#39;</span><span class="p">,</span> <span class="s1">&#39;des&#39;</span><span class="p">,</span> <span class="s1">&#39;hommes&#39;</span><span class="p">,</span> <span class="s1">&#39;qui&#39;</span><span class="p">,</span> <span class="s1">&#39;sans&#39;</span><span class="p">,</span> <span class="s1">&#39;arreter&#39;</span><span class="p">,</span> <span class="s1">&#39;ce&#39;</span><span class="p">,</span> <span class="s1">&#39;que&#39;</span><span class="p">,</span> <span class="s1">&#39;ma&#39;</span><span class="p">,</span> <span class="s1">&#39;jeunesse&#39;</span><span class="p">,</span> <span class="s1">&#39;peut&#39;</span><span class="p">,</span> <span class="s1">&#39;meriter&#39;</span><span class="p">,</span> <span class="s1">&#39;de&#39;</span><span class="p">,</span> <span class="s1">&#39;pitie&#39;</span><span class="p">,</span> <span class="s1">&#39;voudront&#39;</span><span class="p">,</span> <span class="s1">&#39;punir&#39;</span><span class="p">,</span> <span class="s1">&#39;en&#39;</span><span class="p">,</span> <span class="s1">&#39;moi&#39;</span><span class="p">,</span> <span class="s1">&#39;et&#39;</span><span class="p">,</span> <span class="s1">&#39;decourager&#39;</span><span class="p">,</span> <span class="s1">&#39;jamais&#39;</span><span class="p">,</span> <span class="s1">&#39;cette&#39;</span><span class="p">,</span> <span class="s1">&#39;classe&#39;</span><span class="p">,</span> <span class="s1">&#39;de&#39;</span><span class="p">,</span> <span class="s1">&#39;jeunes&#39;</span><span class="p">,</span> <span class="s1">&#39;gens&#39;</span><span class="p">,</span> <span class="s1">&#39;qui&#39;</span><span class="p">,</span> <span class="s1">&#39;nes&#39;</span><span class="p">,</span> <span class="s1">&#39;dans&#39;</span><span class="p">,</span> <span class="s1">&#39;un&#39;</span><span class="p">,</span> <span class="s1">&#39;ordre&#39;</span><span class="p">,</span> <span class="s1">&#39;inferieur&#39;</span><span class="p">,</span> <span class="s1">&#39;et&#39;</span><span class="p">,</span> <span class="s1">&#39;en&#39;</span><span class="p">,</span> <span class="s1">&#39;quelque&#39;</span><span class="p">,</span> <span class="s1">&#39;sorte&#39;</span><span class="p">,</span> <span class="s1">&#39;opprimes&#39;</span><span class="p">,</span> <span class="s1">&#39;par&#39;</span><span class="p">,</span> <span class="s1">&#39;la&#39;</span><span class="p">,</span> <span class="s1">&#39;pauvrete&#39;</span><span class="p">,</span> <span class="s1">&#39;ont&#39;</span><span class="p">,</span> <span class="s1">&#39;le&#39;</span><span class="p">,</span> <span class="s1">&#39;bonheur&#39;</span><span class="p">,</span> <span class="s1">&#39;de&#39;</span><span class="p">,</span> <span class="s1">&#39;se&#39;</span><span class="p">,</span> <span class="s1">&#39;procurer&#39;</span><span class="p">,</span> <span class="s1">&#39;une&#39;</span><span class="p">,</span> <span class="s1">&#39;bonne&#39;</span><span class="p">,</span> <span class="s1">&#39;education&#39;</span><span class="p">,</span> <span class="s1">&#39;et&#39;</span><span class="p">,</span> <span class="s1">&#39;audace&#39;</span><span class="p">,</span> <span class="s1">&#39;de&#39;</span><span class="p">,</span> <span class="s1">&#39;se&#39;</span><span class="p">,</span> <span class="s1">&#39;meler&#39;</span><span class="p">,</span> <span class="s1">&#39;ce&#39;</span><span class="p">,</span> <span class="s1">&#39;que&#39;</span><span class="p">,</span> <span class="s1">&#39;orgueil&#39;</span><span class="p">,</span> <span class="s1">&#39;des&#39;</span><span class="p">,</span> <span class="s1">&#39;gens&#39;</span><span class="p">,</span> <span class="s1">&#39;riches&#39;</span><span class="p">,</span> <span class="s1">&#39;appelle&#39;</span><span class="p">,</span> <span class="s1">&#39;la&#39;</span><span class="p">,</span> <span class="s1">&#39;societe&#39;</span><span class="p">],</span>
+    <span class="s1">&#39;Les Misérables&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;si&#39;</span><span class="p">,</span> <span class="s1">&#39;la&#39;</span><span class="p">,</span> <span class="s1">&#39;surcharge&#39;</span><span class="p">,</span> <span class="s1">&#39;de&#39;</span><span class="p">,</span> <span class="s1">&#39;la&#39;</span><span class="p">,</span> <span class="s1">&#39;peine&#39;</span><span class="p">,</span> <span class="s1">&#39;etait&#39;</span><span class="p">,</span> <span class="s1">&#39;point&#39;</span><span class="p">,</span> <span class="s1">&#39;effacement&#39;</span><span class="p">,</span> <span class="s1">&#39;du&#39;</span><span class="p">,</span> <span class="s1">&#39;delit&#39;</span><span class="p">,</span> <span class="s1">&#39;et&#39;</span><span class="p">,</span> <span class="s1">&#39;arrivait&#39;</span><span class="p">,</span> <span class="s1">&#39;pas&#39;</span><span class="p">,</span> <span class="s1">&#39;ce&#39;</span><span class="p">,</span> <span class="s1">&#39;resultat&#39;</span><span class="p">,</span> <span class="s1">&#39;de&#39;</span><span class="p">,</span> <span class="s1">&#39;retourner&#39;</span><span class="p">,</span> <span class="s1">&#39;la&#39;</span><span class="p">,</span> <span class="s1">&#39;situation&#39;</span><span class="p">,</span> <span class="s1">&#39;de&#39;</span><span class="p">,</span> <span class="s1">&#39;remplacer&#39;</span><span class="p">,</span> <span class="s1">&#39;la&#39;</span><span class="p">,</span> <span class="s1">&#39;faute&#39;</span><span class="p">,</span> <span class="s1">&#39;du&#39;</span><span class="p">,</span> <span class="s1">&#39;delinquant&#39;</span><span class="p">,</span> <span class="s1">&#39;par&#39;</span><span class="p">,</span> <span class="s1">&#39;la&#39;</span><span class="p">,</span> <span class="s1">&#39;faute&#39;</span><span class="p">,</span> <span class="s1">&#39;de&#39;</span><span class="p">,</span> <span class="s1">&#39;la&#39;</span><span class="p">,</span> <span class="s1">&#39;repression&#39;</span><span class="p">,</span> <span class="s1">&#39;de&#39;</span><span class="p">,</span> <span class="s1">&#39;faire&#39;</span><span class="p">,</span> <span class="s1">&#39;du&#39;</span><span class="p">,</span> <span class="s1">&#39;coupable&#39;</span><span class="p">,</span> <span class="s1">&#39;la&#39;</span><span class="p">,</span> <span class="s1">&#39;victime&#39;</span><span class="p">,</span> <span class="s1">&#39;et&#39;</span><span class="p">,</span> <span class="s1">&#39;du&#39;</span><span class="p">,</span> <span class="s1">&#39;debiteur&#39;</span><span class="p">,</span> <span class="s1">&#39;le&#39;</span><span class="p">,</span> <span class="s1">&#39;creancier&#39;</span><span class="p">,</span> <span class="s1">&#39;et&#39;</span><span class="p">,</span> <span class="s1">&#39;de&#39;</span><span class="p">,</span> <span class="s1">&#39;mettre&#39;</span><span class="p">,</span> <span class="s1">&#39;definitivement&#39;</span><span class="p">,</span> <span class="s1">&#39;le&#39;</span><span class="p">,</span> <span class="s1">&#39;droit&#39;</span><span class="p">,</span> <span class="s1">&#39;du&#39;</span><span class="p">,</span> <span class="s1">&#39;cote&#39;</span><span class="p">,</span> <span class="s1">&#39;de&#39;</span><span class="p">,</span> <span class="s1">&#39;celui&#39;</span><span class="p">,</span> <span class="s1">&#39;la&#39;</span><span class="p">,</span> <span class="s1">&#39;meme&#39;</span><span class="p">,</span> <span class="s1">&#39;qui&#39;</span><span class="p">,</span> <span class="s1">&#39;avait&#39;</span><span class="p">,</span> <span class="s1">&#39;viole&#39;</span><span class="p">,</span> <span class="s1">&#39;si&#39;</span><span class="p">,</span> <span class="s1">&#39;cette&#39;</span><span class="p">,</span> <span class="s1">&#39;peine&#39;</span><span class="p">,</span> <span class="s1">&#39;compliquee&#39;</span><span class="p">,</span> <span class="s1">&#39;des&#39;</span><span class="p">,</span> <span class="s1">&#39;aggravations&#39;</span><span class="p">,</span> <span class="s1">&#39;successives&#39;</span><span class="p">,</span> <span class="s1">&#39;pour&#39;</span><span class="p">,</span> <span class="s1">&#39;les&#39;</span><span class="p">,</span> <span class="s1">&#39;tentatives&#39;</span><span class="p">,</span> <span class="s1">&#39;evasion&#39;</span><span class="p">,</span> <span class="s1">&#39;ne&#39;</span><span class="p">,</span> <span class="s1">&#39;finissait&#39;</span><span class="p">,</span> <span class="s1">&#39;pas&#39;</span><span class="p">,</span> <span class="s1">&#39;par&#39;</span><span class="p">,</span> <span class="s1">&#39;etre&#39;</span><span class="p">,</span> <span class="s1">&#39;une&#39;</span><span class="p">,</span> <span class="s1">&#39;sorte&#39;</span><span class="p">,</span> <span class="s1">&#39;attentat&#39;</span><span class="p">,</span> <span class="s1">&#39;du&#39;</span><span class="p">,</span> <span class="s1">&#39;plus&#39;</span><span class="p">,</span> <span class="s1">&#39;fort&#39;</span><span class="p">,</span> <span class="s1">&#39;sur&#39;</span><span class="p">,</span> <span class="s1">&#39;le&#39;</span><span class="p">,</span> <span class="s1">&#39;plus&#39;</span><span class="p">,</span> <span class="s1">&#39;faible&#39;</span><span class="p">,</span> <span class="s1">&#39;un&#39;</span><span class="p">,</span> <span class="s1">&#39;crime&#39;</span><span class="p">,</span> <span class="s1">&#39;de&#39;</span><span class="p">,</span> <span class="s1">&#39;la&#39;</span><span class="p">,</span> <span class="s1">&#39;societe&#39;</span><span class="p">,</span> <span class="s1">&#39;sur&#39;</span><span class="p">,</span> <span class="s1">&#39;individu&#39;</span><span class="p">,</span> <span class="s1">&#39;un&#39;</span><span class="p">,</span> <span class="s1">&#39;crime&#39;</span><span class="p">,</span> <span class="s1">&#39;qui&#39;</span><span class="p">,</span> <span class="s1">&#39;recommencait&#39;</span><span class="p">,</span> <span class="s1">&#39;tous&#39;</span><span class="p">,</span> <span class="s1">&#39;les&#39;</span><span class="p">,</span> <span class="s1">&#39;jours&#39;</span><span class="p">,</span> <span class="s1">&#39;un&#39;</span><span class="p">,</span> <span class="s1">&#39;crime&#39;</span><span class="p">,</span> <span class="s1">&#39;qui&#39;</span><span class="p">,</span> <span class="s1">&#39;durait&#39;</span><span class="p">,</span> <span class="s1">&#39;dix&#39;</span><span class="p">,</span> <span class="s1">&#39;neuf&#39;</span><span class="p">,</span> <span class="s1">&#39;ans&#39;</span><span class="p">],</span>
+    <span class="s1">&#39;Candide&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;ils&#39;</span><span class="p">,</span> <span class="s1">&#39;voguerent&#39;</span><span class="p">,</span> <span class="s1">&#39;quelques&#39;</span><span class="p">,</span> <span class="s1">&#39;lieues&#39;</span><span class="p">,</span> <span class="s1">&#39;entre&#39;</span><span class="p">,</span> <span class="s1">&#39;des&#39;</span><span class="p">,</span> <span class="s1">&#39;bords&#39;</span><span class="p">,</span> <span class="s1">&#39;tantot&#39;</span><span class="p">,</span> <span class="s1">&#39;fleuris&#39;</span><span class="p">,</span> <span class="s1">&#39;tantot&#39;</span><span class="p">,</span> <span class="s1">&#39;arides&#39;</span><span class="p">,</span> <span class="s1">&#39;tantot&#39;</span><span class="p">,</span> <span class="s1">&#39;unis&#39;</span><span class="p">,</span> <span class="s1">&#39;tantot&#39;</span><span class="p">,</span> <span class="s1">&#39;escarpes&#39;</span><span class="p">,</span> <span class="s1">&#39;la&#39;</span><span class="p">,</span> <span class="s1">&#39;riviere&#39;</span><span class="p">,</span> <span class="s1">&#39;elargissait&#39;</span><span class="p">,</span> <span class="s1">&#39;toujours&#39;</span><span class="p">,</span> <span class="s1">&#39;enfin&#39;</span><span class="p">,</span> <span class="s1">&#39;elle&#39;</span><span class="p">,</span> <span class="s1">&#39;se&#39;</span><span class="p">,</span> <span class="s1">&#39;perdait&#39;</span><span class="p">,</span> <span class="s1">&#39;sous&#39;</span><span class="p">,</span> <span class="s1">&#39;une&#39;</span><span class="p">,</span> <span class="s1">&#39;voute&#39;</span><span class="p">,</span> <span class="s1">&#39;de&#39;</span><span class="p">,</span> <span class="s1">&#39;rochers&#39;</span><span class="p">,</span> <span class="s1">&#39;epouvantables&#39;</span><span class="p">,</span> <span class="s1">&#39;qui&#39;</span><span class="p">,</span> <span class="s1">&#39;elevaient&#39;</span><span class="p">,</span> <span class="s1">&#39;jusqu&#39;</span><span class="p">,</span> <span class="s1">&#39;au&#39;</span><span class="p">,</span> <span class="s1">&#39;ciel&#39;</span><span class="p">,</span> <span class="s1">&#39;les&#39;</span><span class="p">,</span> <span class="s1">&#39;deux&#39;</span><span class="p">,</span> <span class="s1">&#39;voyageurs&#39;</span><span class="p">,</span> <span class="s1">&#39;eurent&#39;</span><span class="p">,</span> <span class="s1">&#39;la&#39;</span><span class="p">,</span> <span class="s1">&#39;hardiesse&#39;</span><span class="p">,</span> <span class="s1">&#39;de&#39;</span><span class="p">,</span> <span class="s1">&#39;abandonner&#39;</span><span class="p">,</span> <span class="s1">&#39;aux&#39;</span><span class="p">,</span> <span class="s1">&#39;flots&#39;</span><span class="p">,</span> <span class="s1">&#39;sous&#39;</span><span class="p">,</span> <span class="s1">&#39;cette&#39;</span><span class="p">,</span> <span class="s1">&#39;voute&#39;</span><span class="p">,</span> <span class="s1">&#39;le&#39;</span><span class="p">,</span> <span class="s1">&#39;fleuve&#39;</span><span class="p">,</span> <span class="s1">&#39;resserre&#39;</span><span class="p">,</span> <span class="s1">&#39;en&#39;</span><span class="p">,</span> <span class="s1">&#39;cet&#39;</span><span class="p">,</span> <span class="s1">&#39;endroit&#39;</span><span class="p">,</span> <span class="s1">&#39;les&#39;</span><span class="p">,</span> <span class="s1">&#39;porta&#39;</span><span class="p">,</span> <span class="s1">&#39;avec&#39;</span><span class="p">,</span> <span class="s1">&#39;une&#39;</span><span class="p">,</span> <span class="s1">&#39;rapidite&#39;</span><span class="p">,</span> <span class="s1">&#39;et&#39;</span><span class="p">,</span> <span class="s1">&#39;un&#39;</span><span class="p">,</span> <span class="s1">&#39;bruit&#39;</span><span class="p">,</span> <span class="s1">&#39;horrible&#39;</span><span class="p">,</span> <span class="s1">&#39;au&#39;</span><span class="p">,</span> <span class="s1">&#39;bout&#39;</span><span class="p">,</span> <span class="s1">&#39;de&#39;</span><span class="p">,</span> <span class="s1">&#39;vingt&#39;</span><span class="p">,</span> <span class="s1">&#39;quatre&#39;</span><span class="p">,</span> <span class="s1">&#39;heures&#39;</span><span class="p">,</span> <span class="s1">&#39;ils&#39;</span><span class="p">,</span> <span class="s1">&#39;revirent&#39;</span><span class="p">,</span> <span class="s1">&#39;le&#39;</span><span class="p">,</span> <span class="s1">&#39;jour&#39;</span><span class="p">,</span> <span class="s1">&#39;mais&#39;</span><span class="p">,</span> <span class="s1">&#39;leur&#39;</span><span class="p">,</span> <span class="s1">&#39;canot&#39;</span><span class="p">,</span> <span class="s1">&#39;se&#39;</span><span class="p">,</span> <span class="s1">&#39;fracassa&#39;</span><span class="p">,</span> <span class="s1">&#39;contre&#39;</span><span class="p">,</span> <span class="s1">&#39;les&#39;</span><span class="p">,</span> <span class="s1">&#39;ecueils&#39;</span><span class="p">,</span> <span class="s1">&#39;il&#39;</span><span class="p">,</span> <span class="s1">&#39;fallut&#39;</span><span class="p">,</span> <span class="s1">&#39;se&#39;</span><span class="p">,</span> <span class="s1">&#39;trainer&#39;</span><span class="p">,</span> <span class="s1">&#39;de&#39;</span><span class="p">,</span> <span class="s1">&#39;rocher&#39;</span><span class="p">,</span> <span class="s1">&#39;en&#39;</span><span class="p">,</span> <span class="s1">&#39;rocher&#39;</span><span class="p">,</span> <span class="s1">&#39;pendant&#39;</span><span class="p">,</span> <span class="s1">&#39;une&#39;</span><span class="p">,</span> <span class="s1">&#39;lieue&#39;</span><span class="p">,</span> <span class="s1">&#39;entiere&#39;</span><span class="p">,</span> <span class="s1">&#39;enfin&#39;</span><span class="p">,</span> <span class="s1">&#39;ils&#39;</span><span class="p">,</span> <span class="s1">&#39;decouvrirent&#39;</span><span class="p">,</span> <span class="s1">&#39;un&#39;</span><span class="p">,</span> <span class="s1">&#39;horizon&#39;</span><span class="p">,</span> <span class="s1">&#39;immense&#39;</span><span class="p">,</span> <span class="s1">&#39;borde&#39;</span><span class="p">,</span> <span class="s1">&#39;de&#39;</span><span class="p">,</span> <span class="s1">&#39;montagnes&#39;</span><span class="p">,</span> <span class="s1">&#39;inaccessibles&#39;</span><span class="p">]</span>
+<span class="p">}</span>
+
+<span class="n">queries</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;Recherche A&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;crime&#39;</span><span class="p">],</span>
+    <span class="s1">&#39;Recherche B&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;le&#39;</span><span class="p">,</span> <span class="s1">&#39;crime&#39;</span><span class="p">,</span> <span class="s1">&#39;affreux&#39;</span><span class="p">,</span> <span class="s1">&#39;de&#39;</span><span class="p">,</span> <span class="s1">&#39;julien&#39;</span><span class="p">],</span>
+    <span class="s1">&#39;Recherche C&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;coupable&#39;</span><span class="p">,</span> <span class="s1">&#39;et&#39;</span><span class="p">,</span> <span class="s1">&#39;societe&#39;</span><span class="p">],</span>
+    <span class="s1">&#39;Recherche D&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;montagne&#39;</span><span class="p">,</span> <span class="s1">&#39;ciel&#39;</span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>On définit la fonction <code>vectorize(doc, corpus)</code> qui nous permettra d'obtenir un vecteur pour le document <code>doc</code> en attribuant à chaque terme son poids TF-IDF :</p>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">sqrt</span><span class="p">,</span> <span class="n">log</span>
+
+<span class="k">def</span> <span class="nf">tf</span><span class="p">(</span><span class="n">term</span><span class="p">,</span> <span class="n">doc</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">doc</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">term</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">idf</span><span class="p">(</span><span class="n">term</span><span class="p">,</span> <span class="n">corpus</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">log</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">corpus</span><span class="p">)</span> <span class="o">/</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">corpus</span> <span class="k">if</span> <span class="n">term</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">))</span>
+        <span class="c1"># le dénominateur équivaut à len([doc for doc in corpus if term in doc])</span>
+    <span class="k">except</span> <span class="ne">ZeroDivisionError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">0</span>
+
+<span class="k">def</span> <span class="nf">vectorize</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">corpus</span><span class="p">):</span>
+    <span class="n">vector</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">term</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">vector</span><span class="p">:</span>
+            <span class="n">vector</span><span class="p">[</span><span class="n">term</span><span class="p">]</span> <span class="o">=</span> <span class="n">tf</span><span class="p">(</span><span class="n">term</span><span class="p">,</span> <span class="n">doc</span><span class="p">)</span> <span class="o">*</span> <span class="n">idf</span><span class="p">(</span><span class="n">term</span><span class="p">,</span> <span class="n">corpus</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">vector</span>
+</pre></div>
+
+
+<p>« Vectorisons » tout de suite les documents de notre corpus et les requêtes :</p>
+<div class="highlight"><pre><span></span><span class="n">corpus_v</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">identifier</span><span class="p">,</span> <span class="n">text</span> <span class="ow">in</span> <span class="n">corpus</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">corpus_v</span><span class="p">[</span><span class="n">identifier</span><span class="p">]</span> <span class="o">=</span> <span class="n">vectorize</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">corpus</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+
+<span class="n">queries_v</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">identifier</span><span class="p">,</span> <span class="n">text</span> <span class="ow">in</span> <span class="n">queries</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">queries_v</span><span class="p">[</span><span class="n">identifier</span><span class="p">]</span> <span class="o">=</span> <span class="n">vectorize</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">corpus</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+</pre></div>
+
+
+<p>On peut valider le modèle TF-IDF en regardant si les termes les plus communs ont bien un poids plus faible que les autres termes plus rares. Pour cela, on affiche par exemple les 10 termes qui ont les poids les plus faibles pour <em>Les Misérables</em> :</p>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">operator</span> <span class="kn">import</span> <span class="n">itemgetter</span>
+
+<span class="n">weights</span> <span class="o">=</span> <span class="n">corpus_v</span><span class="p">[</span><span class="s1">&#39;Les Misérables&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">term</span><span class="p">,</span> <span class="n">weight</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">itemgetter</span><span class="p">(</span><span class="mi">1</span><span class="p">))[:</span><span class="mi">10</span><span class="p">]:</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">term</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">weight</span><span class="p">))</span>
+</pre></div>
+
+
+<p></p>
+
+<div class="highlight"><pre><span></span>les          0.0
+et           0.0
+la           0.0
+un           0.0
+de           0.0
+le           0.0
+qui          0.0
+une          0.0
+des          0.0
+cette        0.0
+</pre></div>
+
+
+<p>Le résultat parle de lui-même : puisque tous les textes possèdent au moins une occurrence de ces mots, on a dans tous les cas $\mathrm{idf} = \log 1 = 0$ et donc $\mathrm{tfidf} = \mathrm{tf} \times 0 = 0$.</p>
+<p>Maintenant, on peut calculer la similarité cosinus entre les requêtes et les documents, en reprenant la fonction <code>similarity(a, b)</code> définie précédemment et en l'appliquant aux documents vectorisés :</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">similarity</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+    <span class="n">scalar</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="n">b</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">a</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">b</span><span class="p">)</span>
+    <span class="n">norm_a</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">v</span> <span class="o">**</span> <span class="mi">2</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">a</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+    <span class="n">norm_b</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">v</span> <span class="o">**</span> <span class="mi">2</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">b</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">scalar</span> <span class="o">/</span> <span class="p">(</span><span class="n">norm_a</span> <span class="o">*</span> <span class="n">norm_b</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ZeroDivisionError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">0</span>
+
+<span class="k">for</span> <span class="n">id_q</span><span class="p">,</span> <span class="n">vector_q</span> <span class="ow">in</span> <span class="n">queries_v</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">id_c</span><span class="p">,</span> <span class="n">vector_c</span> <span class="ow">in</span> <span class="n">corpus_v</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Relevance between {} and {}:&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">id_q</span><span class="p">,</span> <span class="n">id_c</span><span class="p">))</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;{:.2%}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">similarity</span><span class="p">(</span><span class="n">vector_q</span><span class="p">,</span> <span class="n">vector_c</span><span class="p">)))</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+</pre></div>
+
+
+<p>On traite le cas où la requête contient un terme absent des documents en lui attribuant un poids de 0 et le cas où la requête ne contiendrait que des mots absents des documents (ou de poids nuls) en retournant une similarité de 0, d'où la gestion des exceptions <code>ZeroDivisionError</code> dans le programme.</p>
+<p>Voici les résultats retournés. Pour rappel :</p>
+<ul>
+<li>Recherche A : « crime »</li>
+<li>Recherche B : « le crime affreux de Julien »</li>
+<li>Recherche C : « coupable et société »</li>
+<li>Rercheche D : « montagne ciel »</li>
+</ul>
+<p></p>
+
+<div class="highlight"><pre><span></span>Relevance between Recherche A and Le Rouge et le Noir:
+3.50%
+Relevance between Recherche A and Les Misérables:
+11.20%
+Relevance between Recherche A and Candide:
+0.00%
+
+
+Relevance between Recherche B and Le Rouge et le Noir:
+10.11%
+Relevance between Recherche B and Les Misérables:
+3.88%
+Relevance between Recherche B and Candide:
+0.00%
+
+
+Relevance between Recherche C and Le Rouge et le Noir:
+4.95%
+Relevance between Recherche C and Les Misérables:
+5.28%
+Relevance between Recherche C and Candide:
+0.00%
+
+
+Relevance between Recherche D and Le Rouge et le Noir:
+0.00%
+Relevance between Recherche D and Les Misérables:
+0.00%
+Relevance between Recherche D and Candide:
+9.84%
+</pre></div>
+
+
+<p>Cet exemple est bien sûr très basique : en évaluant la similarité entre les documents, on ne prend pas en compte la place des mots dans le texte, la morphologie des phrases ni la présence éventuelle de synonymes ni même de pluriels.</p>
+<p>Il existe plusieurs méthodes de pondération, à commencer par des variantes pour le calcul du poids TF-IDF. Par exemple, au lieu de suivre la définition de la fréquence statistique, $\mathrm{tf}(t,d)$ pourrait suivre une échelle logarithmique ou être défini comme le rapport du nombre d'occurrences du terme dans le document sur le nombre maximum d'occurrences d'un même mot dans le document, pour prendre en compte la richesse du vocabulaire utilisé. Autre point intéressant à noter, on utilise souvent une méthode différente pour calculer les poids des termes de la requête et les poids des termes des documents du corpus : en quelque sorte, on construit notre vecteur requête différemment et compte tenu de sa nature (souvent moins d'une dizaine de mots-clés), c'est compréhensible.</p>
+<p>Finalement, dans ce domaine, il faut comme toujours se demander si une méthode est bien adaptée à <strong>notre application</strong> et à <strong>nos données</strong> : la réponse n'est pas absolue (cf. <em>Les questions à se poser</em>) et les deux exemples traités ci-dessus sont trop limités pour pouvoir conclure quoi que ce soit.</p>
+        </div>
+    </section>
+        </div>
+        <div class="col-sm-3" id="sidebar">
+            <aside>
+
+<section class="well well-sm">
+    <ul class="list-group list-group-flush">
+
+        <!-- Search bar in low width mode -->
+        <li id="searchSideBar" class="list-group-item"><span>
+                <form class="navbar-search" action="/blog/search">
+                  <input type="text" class="search-query" placeholder="Rechercher" name="q" id="tipue_search_input" required>
+                </form></span>
+        </li>
+
+        <li class="list-group-item"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Social</span></h4>
+              <ul class="list-group" id="social">
+                    <li class="list-group-item"><a href="https://example.org">
+                        <i class="fa fa-comment fa-lg"></i>
+                       Link 1</a>
+                    </li>
+                    <li class="list-group-item"><a href="https://example.org">
+                        <i class="fa fa-comments fa-lg"></i>
+                       Link 2</a>
+                    </li>
+                    <li class="list-group-item"><a href="/page/content">
+                        <i class="fa fa-etc fa-lg"></i>
+                       etc</a>
+                    </li>
+              </ul>
+            </li>
+
+
+            <li class="list-group-item"><a href="http://yliesc.github.io/"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Categories</span></h4></a>
+                <ul class="list-group" id="categories">
+                </ul>
+            </li>
+
+
+
+    <li class="list-group-item"><h4><i class="fa fa-link fa-lg"></i><span class="icon-label">External Links</span></h4>
+      <ul class="list-group" id="links">
+        <li class="list-group-item">
+            <a href="https://example.org" target="_blank">
+                Link 1
+            </a>
+        </li>
+        <li class="list-group-item">
+            <a href="https://example.org" target="_blank">
+                Link 2
+            </a>
+        </li>
+        <li class="list-group-item">
+            <a href="/page/content" target="_blank">
+                etc
+            </a>
+        </li>
+      </ul>
+    </li>
+
+        <li class="list-group-item" id="github">
+            <ul class="list-group">
+                <li class="list-group-item"><h5>Vous voyez une erreur ?</h5></li>
+                <li class="list-group-item">
+                    <a class="btn btn-info github" target="_blank" href="https://github.com/YliesC/website/edit/master/content/pages/pdp/content/similarite-cosinus-et-recherche-textuelle.md">
+                        <i class="fa fa-random"></i> Modifiez la page sur GitHub
+                    </a>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</section>            </aside>
+        </div>
+    </div>
+</div>
+<footer>
+   <div class="container">
+      <hr>
+      <div class="row">
+         <div class="col-xs-10">&copy;  
+            &middot; Powered by <a href="https://github.com/getpelican/pelican-themes/tree/master/pelican-bootstrap3" target="_blank">pelican-bootstrap3</a>,
+            <a href="http://docs.getpelican.com/" target="_blank">Pelican</a>,
+<a href="http://getbootstrap.com" target="_blank">Bootstrap</a>                <p><small>  <a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr"><img alt="Creative Commons License" style="border-width:0" src="//i.creativecommons.org/l/by-sa/4.0/80x15.png" /></a>
+    Content
+  licensed under a <a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">Creative Commons Attribution-ShareAlike 4.0 International License</a>, except where indicated otherwise.
+</small></p>
+         </div>
+         <div class="col-xs-2"><p class="pull-right"><i class="fa fa-arrow-up"></i> <a href="#">Back to top</a></p></div>
+      </div>
+   </div>
+</footer>
+<script src="http://yliesc.github.io/theme/js/jquery.min.js"></script>
+
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="http://yliesc.github.io/theme/js/bootstrap.min.js"></script>
+
+<!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
+<script src="http://yliesc.github.io/theme/js/respond.min.js"></script>
+
+<!--  -->
+
+
+</body>
+</html>

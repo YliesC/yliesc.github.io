@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="fr" prefix="og: http://ogp.me/ns# fb: https://www.facebook.com/2008/fbml">
+<head>
+    <title>L'assembleur avec GCC - The Golden Koala</title>
+    <!-- Using the latest rendering mode for IE -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <link href="http://yliesc.github.io/images/koala-ico.png" rel="icon">
+
+<link rel="canonical" href="http://yliesc.github.io/pages/pdp/content/lassembleur-avec-gcc/">
+
+        <meta name="author" content="informaticienzero" />
+        <meta name="description" content="Connaissez-vous les fonctions inline ? On les utilise pour optimiser un code, puisque l&#39;appel de la fonction est remplacé par le corps de la fonction elle-même. Pour ceux qui connaissent le C, c&#39;est dans le même principe que les macros. En général, on écrit des fonctions inlines dans le même langage …" />
+
+    <meta property="og:site_name" content="The Golden Koala" />
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="L&#39;assembleur avec GCC"/>
+    <meta property="og:url" content="http://yliesc.github.io/pages/pdp/content/lassembleur-avec-gcc/"/>
+    <meta property="og:description" content="Connaissez-vous les fonctions inline ? On les utilise pour optimiser un code, puisque l&#39;appel de la fonction est remplacé par le corps de la fonction elle-même. Pour ceux qui connaissent le C, c&#39;est dans le même principe que les macros. En général, on écrit des fonctions inlines dans le même langage …" />
+
+
+    <!-- Bootstrap -->
+        <link rel="stylesheet" href="http://yliesc.github.io/theme/css/bootstrap.readable.min.css" type="text/css"/>
+    <link href="http://yliesc.github.io/theme/css/font-awesome.min.css" rel="stylesheet">
+
+    <link href="http://yliesc.github.io/theme/css/pygments/default.css" rel="stylesheet">
+    <link href="http://yliesc.github.io/theme/tipuesearch/tipuesearch.css" rel="stylesheet">
+    <link rel="stylesheet" href="http://yliesc.github.io/theme/css/style.css" type="text/css"/>
+        <link href="http://yliesc.github.io/css/custom.css" rel="stylesheet">
+
+        <link href="http://yliesc.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate"
+              title="The Golden Koala ATOM Feed"/>
+
+
+
+
+</head>
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+	<div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="http://yliesc.github.io/" class="navbar-brand">
+<img class="img-responsive pull-left gap-right" src="http://yliesc.github.io/images/koala-logo.svg" width="38"/> <span id="siteName">The Golden Koala</span>            </a>
+        </div>
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+
+            </ul>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+</div> <!-- /.navbar -->
+<!-- Banner -->
+<!-- End Banner -->
+<div class="container">
+    <div class="row">
+        <div class="col-sm-9">
+    <ol class="breadcrumb">
+        <li><a href="http://yliesc.github.io/" title="The Golden Koala">
+            <i class="fa fa-home fa-lg"></i>
+        </a></li>
+        <li class="active">L'assembleur avec GCC</li>
+    </ol>
+    <section id="content" class="body">
+        <h1 class="entry-title">L'assembleur avec GCC</h1>
+            <div class="entry-content">
+                    <div class="panel">
+                        <div class="panel-body">
+<footer class="post-info">
+    
+    <span class="published">
+        <span class="label label-default"><i class="fa fa-calendar"></i><time datetime="2014-09-27T00:00:00+02:00"> sam. 27 septembre 2014</time></span> | 
+    </span>
+        <span class="label label-default"><i class="fa fa-user-circle"></i> informaticienzero</span>  | 
+    <span class="label label-default">
+            <i class="fa fa-cc"></i> 
+        
+            CC-BY-SA
+    </span>
+</footer><!-- /.page-info -->                        </div>
+                    </div>
+            <p>Connaissez-vous les fonctions <em>inline</em> ? On les utilise pour optimiser un code, puisque l'appel de la fonction est remplacé par le corps de la fonction elle-même. Pour ceux qui connaissent le C, c'est dans le même principe que les macros. En général, on écrit des fonctions inlines dans le même langage que le reste du code. En général ... car il est possible d'écrire des fonctions en assembleur depuis un code C. A quoi ça peut servir ? Allier la puissance de l'assembleur avec le côté pratique du C.</p>
+<div class="toc">
+<ul>
+<li><a href="#la-syntaxe-att">La syntaxe AT&amp;T</a></li>
+<li><a href="#assembleur-basique">Assembleur basique</a></li>
+<li><a href="#lassembleur-etendu">L'assembleur étendu</a><ul>
+<li><a href="#plus-doperandes-de-contraintes-et-de-clobber-list">Plus d'opérandes, de contraintes et de clobber list</a></li>
+<li><a href="#volatile">volatile</a></li>
+<li><a href="#goto">goto</a></li>
+<li><a href="#variables-globales-et-fonctions">Variables globales et fonctions</a></li>
+</ul>
+</li>
+<li><a href="#exemples">Exemples</a><ul>
+<li><a href="#mise-a-zero-de-bit">Mise à zéro de bit</a></li>
+<li><a href="#strcpy">strcpy</a></li>
+<li><a href="#des-instructions-inaccessibles">Des instructions inaccessibles ?</a></li>
+</ul>
+</li>
+<li><a href="#utiliser-la-syntaxe-intel">Utiliser la syntaxe Intel</a></li>
+</ul>
+</div>
+<h1 id="la-syntaxe-att">La syntaxe AT&amp;T</h1>
+<p>Avant de commencer, il est important de faire un point sur la syntaxe AT&amp;T. En effet, celle-ci est moins courante que la syntaxe Intel et diffère pas mal. Voici une liste des différences majeures entre les deux syntaxes. Sachez néanmoins que même si vous n'êtes pas familier ou à l'aise avec cette syntaxe, cela ne sera pas gênant pour comprendre la suite.</p>
+<ul>
+<li>
+<p><strong>Ordre source / destination</strong> : le premier argument d'une instruction sera toujours l'opérande source et le deuxième l'opérande destination. Ceux qui connaissent la syntaxe Intel savent que l'ordre est inversé : destination puis source.</p>
+</li>
+<li>
+<p><strong>Le nom des registres</strong> : les registres sont précédés par <code>%</code>.</p>
+</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="go">cmp eax, ecx    ; syntaxe Intel</span>
+<span class="go">cmp %eax, %ecx    ; syntaxe AT&amp;T</span>
+</pre></div>
+
+
+<ul>
+<li><strong>Opérande immédiate</strong> (c'est à dire une constante ou le résultat d'une expression constante) : une opérande immédiate est toujours précédée par <code>$</code>, ainsi que les variables statiques C. De plus, les valeurs hexadécimales qui commençaient par un <code>h</code> avec la syntaxe Intel commencent désormais par <code>0x</code>.</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="go">mov eax, 1    ; syntaxe Intel</span>
+<span class="go">movl $1, %eax     ; syntaxe AT&amp;T</span>
+
+<span class="go">mov ebx, 0ffh    ; syntaxe Intel</span>
+<span class="go">movl $0xff, %ebx    ; syntaxe AT&amp;T</span>
+</pre></div>
+
+
+<ul>
+<li><strong>Taille des opérandes</strong> : la taille d'une opérande est connue en regardant la dernière lettre d'un opérande : les suffixes sont <code>b</code> (byte - 8 bits), <code>w</code> (word - 16 bits) et <code>l</code> (double word - 32 bits). Avec la syntaxe Intel, on aurait ajouté <code>byte ptr</code>, <code>word ptr</code> et <code>dword ptr</code> devant les opérandes.</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="go">mov al, byte ptr foo    ; syntaxe Intel</span>
+<span class="go">movb foo, %al    ; syntaxe AT&amp;T</span>
+</pre></div>
+
+
+<ul>
+<li><strong>Opérande mémoire</strong> : la syntaxe Intel utilise les crochets [ et ], la syntaxe AT&amp;T utilise les parenthèses ( et ). Par conséquence, l'accès indirect à la mémoire passe de <code>section:[base + index * scale + disp]</code> à <code>section:disp(base, index, scale)</code>. Les constantes utilisées pour <em>disp</em> et <em>scale</em> ne doivent pas être préfixées de <code>$</code>.</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="go">sub     eax, [ebx + ecx * 4h - 20h]    ; syntaxe Intel</span>
+<span class="go">subl    -0x20(%ebx, %ecx, 0x4), %eax    ; syntaxe AT&amp;T</span>
+</pre></div>
+
+
+<h1 id="assembleur-basique">Assembleur basique</h1>
+<p>Un bloc de code assembleur se déclare grâce au mot-clef <code>__asm__</code> et se place entre parenthèse, avec un point-virgule après la parenthèse fermante. Il existe un autre mot-clef, <code>asm</code>, mais celui-ci peut créer des conflits avec certaines options de compilation comme <strong>-ansi</strong>.</p>
+<blockquote>
+<p>-ansi and the various -std options disable certain keywords. This causes trouble when you want to use GNU C extensions, or a general-purpose header
+file that should be usable by all programs, including ISO C programs. The keywords asm, typeof and inline are not available in programs compiled with 
+-ansi or -std (although inline can be used in a program compiled with -std=c99 or -std=c11).
+<em>-- Site de GCC</em></p>
+</blockquote>
+<p>Chaque instruction se déclare entre guillemets et doit être finie par <code>\n\t</code>. Cela permet de formater correctement les instructions pour les envoyer à <strong>Gas</strong>, l'assembleur de GCC. Voici un exemple basique.</p>
+<div class="highlight"><pre><span></span><span class="n">__asm__</span>
+<span class="p">(</span>
+    <span class="s">&quot;movl %eax, %ebx</span><span class="se">\n\t</span><span class="s">&quot;</span>
+    <span class="s">&quot;movl $56, %esi</span><span class="se">\n\t</span><span class="s">&quot;</span>
+    <span class="s">&quot;movb %ah, (%ebx)&quot;</span>
+<span class="p">);</span>
+</pre></div>
+
+
+<p>Cependant, en l'état actuel des choses, ça reste assez limité. En effet, non seulement on ne peut pas interagir avec des variables, mais si en plus on modifie des registres qui étaient utilisés par le programme avant l'appel des routines assembleur, comment le signaler au compilateur ? Heureusement, l'assembleur inline est bien plus puissant que ça.</p>
+<h1 id="lassembleur-etendu">L'assembleur étendu</h1>
+<p>L'assembleur étendu va nous permettre de spécifier des opérandes d'entrées, de sorties et les registres utilisés. On va aussi permettre à GCC de bien comprendre le code pour tenter si possible de l'optimiser. Mais commençons par le commencement, la syntaxe.</p>
+<div class="highlight"><pre><span></span><span class="go">__asm__</span>
+<span class="go">(</span>
+<span class="go">    /* instructions assembleur */</span>
+<span class="go">        : opérandes de sortie     /* optionnel */</span>
+<span class="go">        : opérandes d&#39;entrée     /* optionnel */</span>
+<span class="go">        : liste des registres &quot;pollués&quot;  ou clobber list     /* optionnel */</span>
+<span class="go">);</span>
+</pre></div>
+
+
+<p>Chaque opérande est constituée d'une <strong>contrainte d'opérande</strong> entre guillemets suivi d'une expression en C (variable, calcul, etc) entre parenthèses. Les opérandes sont séparées entre elles par des virgules. Par contre, le <strong>maximum total</strong> d'opérandes est limité à 10, ou plus si la machine le permet (voir les spécifications), mais vous n'aurez que très rarement le cas de dépasser ce nombre. </p>
+<p>Les contraintes d'opérandes sont les suivantes :</p>
+<ul>
+<li><code>"r"</code> : dans n'importe quel registre (eax, ebx, etc) ;</li>
+<li><code>"a"</code> : spécifiques aux registres eax, ax et al ;</li>
+<li><code>"b"</code> : spécifiques aux registres ebx, bx et bl ;</li>
+<li><code>"c"</code> : spécifiques aux registres ecx, cx et cl ;</li>
+<li><code>"d"</code> : spécifiques aux registres edx, dx et dl ;</li>
+<li><code>"S"</code> : pour les registres esi et si ;</li>
+<li><code>"D"</code> : pour les registres edi et di ;</li>
+<li><code>"m"</code> : lorsque l'opérateur est dans la mémoire ; on peut donc effectuer des opérations directement sur l'adresse mémoire sans avoir à passer par un registre. Cependant, il n'est recommandé d'utiliser cette contrainte que si elle est vraiment nécessaire ou si elle accélère suffisamment le processus (une donnée trop grosse pour rentrer d'un coup dans un registre). Par exemple dans un OS, l'IDT définie par le noyau peut être chargée ainsi :</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">__asm__</span> <span class="p">(</span><span class="s">&quot;lidt %0</span><span class="se">\n\t</span><span class="s">&quot;</span> <span class="o">:</span> <span class="cm">/* pas de sortie */</span> <span class="o">:</span> <span class="s">&quot;m&quot;</span><span class="p">(</span><span class="n">idt</span><span class="p">));</span>
+</pre></div>
+
+
+<ul>
+<li><code>g</code> : pour utiliser n'importe quel registre général, adresse ou entier disponible.</li>
+</ul>
+<p>Il en existe également d'autres spécifiques à l'architecture x86 :</p>
+<ul>
+<li><code>"f"</code> : pour un registre flottant ;</li>
+<li><code>"t"</code> : pour le premier registre flottant ;</li>
+<li><code>"u"</code> : pour le second registre flottant ;</li>
+<li><code>"q"</code> : registre a, b, c ou d</li>
+</ul>
+<p>En plus de ces contraintes, il existe également des <strong>modificateurs de contrainte</strong> :</p>
+<ul>
+<li><code>"="</code> : signifie que l'opérande est en écriture seule pour cette instruction, la valeur précédente est éliminée et remplacée par des données de sortie. Ce modificateur est utilisé pour les opérandes de sortie.</li>
+<li><code>"&amp;"</code> : signifie que l'opérande sera modifiée avant la fin de la lecture de toutes les opérandes d'entrées par l'instruction en cours. Si l'opérande n'est pas modifiée avant la fin de la lecture, alors le modificateur est ignoré.</li>
+<li><code>"=&amp;"</code> : c'est la combinaison des deux précédents.</li>
+</ul>
+<p>Le troisième paramètre est quant à lui la liste des registres utilisés dans le code assembleur sans compter les opérandes d'entrée et de sortie. Elle permet d'indiquer à GCC que nous gérons nous-mêmes ces registres. Ainsi, GCC ne vérifiera pas si la valeur chargée dans ces registres est valide, et il ne tentera pas non plus d'y stocker des valeurs tant que nous n'avons pas fini. Par contre, GCC connait les registres utilisés par les opérandes d'entrée et de sortie, il ne faut donc pas les préciser. </p>
+<p>Il est temps de tout récapituler par un exemple. Prenons ce code qui additionne deux variables.</p>
+<div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">foo</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">bar</span> <span class="o">=</span> <span class="mi">15</span><span class="p">;</span>
+
+    <span class="n">__asm__</span>
+    <span class="p">(</span>
+        <span class="s">&quot;addl %%ebx, %%eax&quot;</span>
+            <span class="o">:</span> <span class="s">&quot;=a&quot;</span><span class="p">(</span><span class="n">foo</span><span class="p">)</span>
+            <span class="o">:</span> <span class="s">&quot;a&quot;</span><span class="p">(</span><span class="n">foo</span><span class="p">),</span> <span class="s">&quot;b&quot;</span><span class="p">(</span><span class="n">bar</span><span class="p">)</span>
+    <span class="p">);</span>
+
+    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;foo += bar = %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">foo</span><span class="p">);</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>On demande dans cette exemple de stocker la variable <em>foo</em> dans le registre <em>eax</em> (<code>"a"(foo)</code>), et la variable <em>bar</em> dans le registre <em>ebx</em> (<code>"b"(bar)</code>), puis on demande d'additionner les deux registres et de stocker le résultat dans la variable <em>foo</em> (<code>"=a"(foo)</code>). On remarque ici que la liste des registres pollués n'est pas précisée puisque les deux registres utilisés sont déjà connus d'avance par GCC, car ils sont utilisés par les opérandes de sortie / d'entrée.</p>
+<h4 id="plus-doperandes-de-contraintes-et-de-clobber-list">Plus d'opérandes, de contraintes et de clobber list</h4>
+<p>Il faut aussi préciser que pour un nombre $x$ d'opérateurs (à la fois d'entrée et de sortie), alors le premier opérande de sortie est numéroté 0, et le dernier opérande d'entrée est numéroté $x - 1$. Cela nous permet de manipuler directement nos variables dans le code assembleur, au contraire du code précédent où nous sommes passés par des registres bien spécifiques. Illustrons ce nouveau concept par un code.</p>
+<div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+    <span class="n">__asm__</span>
+    <span class="p">(</span>
+        <span class="s">&quot;movl %1, %%eax</span><span class="se">\n\t</span><span class="s">&quot;</span>
+        <span class="s">&quot;movl %%eax, %0</span><span class="se">\n\t</span><span class="s">&quot;</span>
+            <span class="o">:</span><span class="s">&quot;=r&quot;</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+            <span class="o">:</span><span class="s">&quot;r&quot;</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+            <span class="o">:</span><span class="s">&quot;%eax&quot;</span>
+    <span class="p">);</span>
+
+    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;b = %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">b</span><span class="p">);</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Il y a deux opérandes, donc <code>"=r"(b)</code> est l'opérande 0, représentée par <code>%0</code>, et <code>"r"(a)</code> l'opérande 1, représentée par <code>%1</code>. Le code charge donc la variable <em>a</em> et stocker son contenu dans <em>eax</em>, qui est lui même copié dans la variable <em>b</em>. Ainsi à la fin de l'instruction, la variable <em>a</em> et la variable <em>b</em> valent toutes deux 10. Cela nous permet de manipuler plus précisément les opérandes d'entrées et de sorties. On l'utilise dans les cas suivants.</p>
+<ul>
+<li>Dans le cas où on lit une variable pour écrire le résultat dans cette même variable. </li>
+<li>Dans les cas où il n'est pas nécessaires de séparer les instances d'entrées et de sorties. </li>
+</ul>
+<p>Cette possibilité s'étend également aux contraintes des opérandes. En effet, pour une opérande d'entrée, une contrainte composée d'un chiffre $x$ qui signifie "cette entrée a les mêmes contraintes que la $x^{ème}$ opérande de sortie". Cette technique est utilisée si on veut que l'opérande d'entrée et l'opérande de sortie soient stockées dans le même registre. Prenons un exemple.</p>
+<div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">25</span><span class="p">;</span>
+
+    <span class="n">__asm__</span>
+    <span class="p">(</span>
+        <span class="s">&quot;addl %2, %%eax</span><span class="se">\n\t</span><span class="s">&quot;</span>
+            <span class="o">:</span> <span class="s">&quot;=a&quot;</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+            <span class="o">:</span> <span class="s">&quot;0&quot;</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="s">&quot;b&quot;</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+    <span class="p">);</span>
+
+    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;a += b = %d&quot;</span><span class="p">,</span> <span class="n">a</span><span class="p">);</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Dans ce code, on demande à ce que l'opérande d'entrée 0 ait les mêmes contraintes que la $0^{ème}$ opérande de sortie (soit <code>"=a"</code>). Ainsi, les deux variables seront stockées dans le registre <em>eax</em>. Sans cette technique, il aurait fallu préciser que l'opérande d'entrée 0 devait être stockée dans le registre <em>eax</em>. </p>
+<p>Je termine cette sous-partie en ajoutant des précisions sur la liste des registres pollués.</p>
+<ul>
+<li>Si l'instruction modifie le registre de condition de code, alors il faut rajouter <code>"cc"</code> à cette liste.</li>
+<li>Si l'instruction modifie la mémoire de manière imprévisible, il faut ajouter <code>"memory"</code> à la liste. Si la mémoire modifiée n'est pas listée dans les opérandes d'entrée ou de sortie, il faut alors rajouter le mot-clef <code>volatile</code>.</li>
+</ul>
+<h4 id="volatile">volatile</h4>
+<p>Ce mot-clef est bien connu des programmeurs systèmes. Il permet de définir une variable de façon à ce que celle-ci ne puisse pas être placée dans un registre du processeur, mais en mémoire. Dans le cas de l'assembleur inline, il sert à empêcher les optimisations que pourrait faire GCC. Pour le forcer à respecter ce qu'on a écrit à la lettre on utilise ce mot-clef, ou plutôt sa variante <code>__volatile__</code>, que l'on place juste après <code>__asm__</code>. Il est à noter que s'il n'est pas nécessaire (dans le cas de calculs, ou si le code ne produit aucun effet de bord), il ne sert à rien de le mettre : il est mieux de laisser GCC optimiser le code.</p>
+<h4 id="goto">goto</h4>
+<p>Sachez également que depuis la version 4.5 de GCC il est possible d'utiliser <code>goto</code> sur des blocs d'assembleur. La syntaxe pour les utiliser est la suivante :</p>
+<div class="highlight"><pre><span></span><span class="n">__asm__</span> <span class="nf">goto</span>
+<span class="p">(</span>
+    <span class="s">&quot;jmp %l[labelname]&quot;</span>
+        <span class="o">:</span> 
+        <span class="o">:</span> 
+        <span class="o">:</span> <span class="s">&quot;memory&quot;</span>
+        <span class="o">:</span> <span class="n">labelname</span>  <span class="cm">/* n&#39;importe quel label utilisé */</span>
+<span class="p">);</span>
+</pre></div>
+
+
+<p>Voici un exemple tiré du code source de GNU/Linux (attention les yeux, ça risque de piquer un peu).</p>
+<div class="highlight"><pre><span></span><span class="c1">// Works for both 32 and 64 bit</span>
+<span class="cp">#include</span> <span class="cpf">&lt;stdint.h&gt;</span><span class="cp"></span>
+<span class="cp">#define cmpxchg( ptr, _old, _new, fail_label ) { \</span>
+<span class="cp">  volatile uint32_t *__ptr = (volatile uint32_t *)(ptr);   \</span>
+<span class="cp">  asm goto( &quot;lock; cmpxchg %1,%0 \t\n&quot;           \</span>
+<span class="cp">    &quot;jnz %l[&quot; #fail_label &quot;] \t\n&quot;               \</span>
+<span class="cp">    : </span><span class="cm">/* empty */</span><span class="cp">                                \</span>
+<span class="cp">    : &quot;m&quot; (*__ptr), &quot;r&quot; (_new), &quot;a&quot; (_old)       \</span>
+<span class="cp">    : &quot;memory&quot;, &quot;cc&quot;                             \</span>
+<span class="cp">    : fail_label );                              \</span>
+<span class="cp">}</span>
+</pre></div>
+
+
+<h4 id="variables-globales-et-fonctions">Variables globales et fonctions</h4>
+<p>Depuis tout à l'heure, nous n'avons vu que le chargement de variables locales à une fonction. Il est pourtant possible de charger des variables globales, et c'est même encore plus facile ! En effet, il suffit d'écrire directement dans le code ceci : <code>_ID</code>, sans même passer par les opérandes d'entrées et de sortie. Exemple.</p>
+<div class="highlight"><pre><span></span><span class="kt">int</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">25</span><span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+
+    <span class="n">__asm__</span>
+    <span class="p">(</span>
+        <span class="s">&quot;addl _b, %%eax</span><span class="se">\n\t</span><span class="s">&quot;</span>
+            <span class="o">:</span> <span class="s">&quot;=a&quot;</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+            <span class="o">:</span> <span class="s">&quot;0&quot;</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="p">);</span>
+
+    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;a += b = %d&quot;</span><span class="p">,</span> <span class="n">a</span><span class="p">);</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Il est de même pour les appels de fonctions. Voici un exemple appelant la fonction <em>puts</em>.</p>
+<div class="highlight"><pre><span></span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span> <span class="n">str</span> <span class="o">=</span> <span class="s">&quot;Hello world!&quot;</span><span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">__asm__</span>
+    <span class="p">(</span>
+        <span class="s">&quot;movl _str, %eax</span><span class="se">\n\t</span><span class="s">&quot;</span>
+        <span class="s">&quot;pushl %eax</span><span class="se">\n\t</span><span class="s">&quot;</span>
+        <span class="s">&quot;call _puts</span><span class="se">\n\t</span><span class="s">&quot;</span>
+        <span class="s">&quot;add $8, %esp</span><span class="se">\n\t</span><span class="s">&quot;</span>
+        <span class="s">&quot;leave</span><span class="se">\n\t</span><span class="s">&quot;</span>
+        <span class="s">&quot;ret</span><span class="se">\n\t</span><span class="s">&quot;</span>
+    <span class="p">);</span>
+
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<h1 id="exemples">Exemples</h1>
+<p>Pour illustrer cette grosse partie théorique, je vais prendre des exemples que j'ai pu voir sur Internet, accompagnés de quelques explications.</p>
+<h4 id="mise-a-zero-de-bit">Mise à zéro de bit</h4>
+<div class="highlight"><pre><span></span><span class="n">__asm__</span>
+<span class="p">(</span>   <span class="s">&quot;btsl %1,%0&quot;</span>
+       <span class="o">:</span> <span class="s">&quot;=m&quot;</span> <span class="p">(</span><span class="n">ADDR</span><span class="p">)</span>
+       <span class="o">:</span> <span class="s">&quot;Ir&quot;</span> <span class="p">(</span><span class="n">pos</span><span class="p">)</span>
+       <span class="o">:</span> <span class="s">&quot;cc&quot;</span>
+<span class="p">);</span>
+</pre></div>
+
+
+<p>Ce code permet de mettre à 1 le bit numéro <em>pos</em> de l'adresse ADDR. Si on avait voulu mettre le bit à 0, on aurait utilisé l'instruction <em>btr</em>l.</p>
+<h4 id="strcpy">strcpy</h4>
+<p>Ce code tiré de la Glibc de Linux est celui de la fonction <em>strcpy</em>.</p>
+<div class="highlight"><pre><span></span><span class="k">static</span> <span class="kr">inline</span> <span class="kt">char</span> <span class="o">*</span> <span class="nf">strcpy</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span> <span class="n">dest</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span> <span class="n">src</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">d0</span><span class="p">,</span> <span class="n">d1</span><span class="p">,</span> <span class="n">d2</span><span class="p">;</span>
+
+    <span class="n">__asm__</span> <span class="n">__volatile__</span>
+    <span class="p">(</span>  
+        <span class="s">&quot;1:</span><span class="se">\t</span><span class="s">lodsb</span><span class="se">\n\t</span><span class="s">&quot;</span>
+        <span class="s">&quot;stosb</span><span class="se">\n\t</span><span class="s">&quot;</span>
+        <span class="s">&quot;testb %%al,%%al</span><span class="se">\n\t</span><span class="s">&quot;</span>
+        <span class="s">&quot;jne 1b&quot;</span>
+            <span class="o">:</span> <span class="s">&quot;=&amp;S&quot;</span> <span class="p">(</span><span class="n">d0</span><span class="p">),</span> <span class="s">&quot;=&amp;D&quot;</span> <span class="p">(</span><span class="n">d1</span><span class="p">),</span> <span class="s">&quot;=&amp;a&quot;</span> <span class="p">(</span><span class="n">d2</span><span class="p">)</span>
+            <span class="o">:</span> <span class="s">&quot;0&quot;</span> <span class="p">(</span><span class="n">src</span><span class="p">),</span> <span class="s">&quot;1&quot;</span> <span class="p">(</span><span class="n">dest</span><span class="p">)</span> 
+            <span class="o">:</span> <span class="s">&quot;memory&quot;</span>
+    <span class="p">);</span>
+    <span class="k">return</span> <span class="n">dest</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>L'adresse de la chaîne source est située dans <em>esi</em>, celle de la chaîne de destination dans <em>edi</em>. Dès que l'on atteint 0, la copie est terminée. Les contraintes <code>"=&amp;S"</code>, <code>"=&amp;D"</code>, <code>"=&amp;a"</code> indiquent que les registres <em>esi</em>, <em>edi</em> and <em>eax</em> seront utilisés, donc GCC ne stockera rien dedans. L'instruction <em>lodsb</em> charge dans le registre <em>al</em> l'octet adressé par <em>di:si</em>, si le flag DF vaut 0 après ça, <em>si</em> est incrémenté, sinon décrémenté. L'instruction <em>stosb</em> stocke le contenu de <em>a</em>l dans l'octet pointé par <em>es:di</em>, si le flag DF vaut 0 après ça, <em>di</em> est incrémenté, sinon décrémenté.</p>
+<h4 id="des-instructions-inaccessibles">Des instructions inaccessibles ?</h4>
+<p>Il est fréquent lors de la création d'un système d'exploitation d'écrire sur divers ports (pour s'adresser au PIC par exemple), ou bien pour activer / désactiver les interruptions. Or il n'existe pas en C de fonction pour se faire. On a donc recours à l'assembleur inline. Dans cette exemple, on utilise des <code>#define</code>, ce qui s'avère pratique quand on appelle plusieurs fois la même instruction.</p>
+<div class="highlight"><pre><span></span><span class="cm">/* désactive les interruptions */</span>
+<span class="cp">#define cli __asm__(&quot;cli&quot;::)</span>
+
+<span class="cm">/* réactive les interruptions */</span>
+<span class="cp">#define sti __asm__(&quot;sti&quot;::)</span>
+
+<span class="cm">/* écrit un octet sur un port */</span>
+<span class="cp">#define outb(port, value) \</span>
+<span class="cp">    __asm__ __volatile__ (&quot;outb %%al, %%dx&quot; :: &quot;d&quot; (port), &quot;a&quot; (value));</span>
+
+<span class="cm">/* lit un octet sur un port */</span>
+<span class="cp">#define inb(port)(    \</span>
+<span class="cp">    unsigned char _v;       \</span>
+<span class="cp">    __asm__ __volatile__ (&quot;inb %%dx, %%al&quot; : &quot;=a&quot; (_v) : &quot;d&quot; (port)); \</span>
+<span class="cp">        _v;     \</span>
+<span class="cp">})</span>
+</pre></div>
+
+
+<h1 id="utiliser-la-syntaxe-intel">Utiliser la syntaxe Intel</h1>
+<p>Pour ceux qui maitriserait mal la syntaxe AT&amp;T ou qui par gouts personnels préfèrent la syntaxe Intel, il est possible d'utiliser cette dernière. Pour cela, il suffit de rajouter deux lignes dans son code assembleur : <code>".intel_syntax noprefix\n\t"</code> au début et <code>".att_syntax"</code> à la fin. Toute instruction écrite entre ces deux lignes sera considérée comme utilisant la syntaxe Intel. Exemple.</p>
+<div class="highlight"><pre><span></span><span class="kt">int</span> <span class="n">a</span><span class="p">;</span>
+
+<span class="n">__asm__</span>
+<span class="p">(</span>
+    <span class="s">&quot;.intel_syntax noprefix</span><span class="se">\n\t</span><span class="s">&quot;</span>
+    <span class="s">&quot;mov ax, 2</span><span class="se">\n\t</span><span class="s">&quot;</span>
+    <span class="s">&quot;shl ax, 2</span><span class="se">\n\t</span><span class="s">&quot;</span>
+    <span class="s">&quot;.att_syntax&quot;</span>
+       <span class="o">:</span><span class="s">&quot;=r&quot;</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="p">);</span>
+</pre></div>
+
+
+<p>Concernant le passage en argument, la méthode est la même que pour la syntaxe AT&amp;T. Exemple avec une variable globale puis un paramètre de fonction (la méthode est identique pour les variables locales).</p>
+<div class="highlight"><pre><span></span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span> <span class="k">const</span> <span class="n">str</span> <span class="o">=</span> <span class="s">&quot;Hello world!&quot;</span><span class="p">;</span>
+
+<span class="kt">void</span> <span class="nf">asm_print</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">__asm__</span>
+    <span class="p">(</span>
+        <span class="s">&quot;.intel_syntax noprefix</span><span class="se">\n\t</span><span class="s">&quot;</span>
+        <span class="s">&quot;mov eax, _str</span><span class="se">\n\t</span><span class="s">&quot;</span>
+        <span class="s">&quot;push eax</span><span class="se">\n\t</span><span class="s">&quot;</span>
+        <span class="s">&quot;call _puts</span><span class="se">\n\t</span><span class="s">&quot;</span>
+        <span class="s">&quot;add esp, 8</span><span class="se">\n\t</span><span class="s">&quot;</span>
+        <span class="s">&quot;leave</span><span class="se">\n\t</span><span class="s">&quot;</span>
+        <span class="s">&quot;ret</span><span class="se">\n\t</span><span class="s">&quot;</span>
+        <span class="s">&quot;.att_syntax&quot;</span>
+    <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">asm_print_with_args</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span> <span class="n">s</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">__asm__</span>
+    <span class="p">(</span>
+        <span class="s">&quot;.intel_syntax noprefix</span><span class="se">\n\t</span><span class="s">&quot;</span>
+        <span class="s">&quot;push eax</span><span class="se">\n\t</span><span class="s">&quot;</span>
+        <span class="s">&quot;mov eax, %0</span><span class="se">\n\t</span><span class="s">&quot;</span>
+        <span class="s">&quot;call _puts</span><span class="se">\n\t</span><span class="s">&quot;</span>
+        <span class="s">&quot;add esp, 8</span><span class="se">\n\t</span><span class="s">&quot;</span>
+        <span class="s">&quot;leave</span><span class="se">\n\t</span><span class="s">&quot;</span>
+        <span class="s">&quot;ret</span><span class="se">\n\t</span><span class="s">&quot;</span>
+        <span class="s">&quot;.att_syntax&quot;</span>
+            <span class="o">:</span>
+            <span class="o">:</span> <span class="s">&quot;r&quot;</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+    <span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Cet article n'a pas pour but d'être exhaustif, ce qui est impossible, mais plutôt de présenter une introduction à l'assembleur inline avec GCC. Pour continuer votre route, voici le <a href="http://www.ibiblio.org/gferg/ldp/GCC-Inline-Assembly-HOWTO.html">document original</a> duquel est tiré en grande partie cet article, ainsi qu'une <a href="http://www.ibiblio.org/gferg/ldp/GCC-Inline-Assembly-HOWTO.html#s9">liste de liens</a>.</p>
+        </div>
+    </section>
+        </div>
+        <div class="col-sm-3" id="sidebar">
+            <aside>
+
+<section class="well well-sm">
+    <ul class="list-group list-group-flush">
+
+        <!-- Search bar in low width mode -->
+        <li id="searchSideBar" class="list-group-item"><span>
+                <form class="navbar-search" action="/blog/search">
+                  <input type="text" class="search-query" placeholder="Rechercher" name="q" id="tipue_search_input" required>
+                </form></span>
+        </li>
+
+        <li class="list-group-item"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Social</span></h4>
+              <ul class="list-group" id="social">
+                    <li class="list-group-item"><a href="https://example.org">
+                        <i class="fa fa-comment fa-lg"></i>
+                       Link 1</a>
+                    </li>
+                    <li class="list-group-item"><a href="https://example.org">
+                        <i class="fa fa-comments fa-lg"></i>
+                       Link 2</a>
+                    </li>
+                    <li class="list-group-item"><a href="/page/content">
+                        <i class="fa fa-etc fa-lg"></i>
+                       etc</a>
+                    </li>
+              </ul>
+            </li>
+
+
+            <li class="list-group-item"><a href="http://yliesc.github.io/"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Categories</span></h4></a>
+                <ul class="list-group" id="categories">
+                </ul>
+            </li>
+
+
+
+    <li class="list-group-item"><h4><i class="fa fa-link fa-lg"></i><span class="icon-label">External Links</span></h4>
+      <ul class="list-group" id="links">
+        <li class="list-group-item">
+            <a href="https://example.org" target="_blank">
+                Link 1
+            </a>
+        </li>
+        <li class="list-group-item">
+            <a href="https://example.org" target="_blank">
+                Link 2
+            </a>
+        </li>
+        <li class="list-group-item">
+            <a href="/page/content" target="_blank">
+                etc
+            </a>
+        </li>
+      </ul>
+    </li>
+
+        <li class="list-group-item" id="github">
+            <ul class="list-group">
+                <li class="list-group-item"><h5>Vous voyez une erreur ?</h5></li>
+                <li class="list-group-item">
+                    <a class="btn btn-info github" target="_blank" href="https://github.com/YliesC/website/edit/master/content/pages/pdp/content/lassembleur-avec-gcc.md">
+                        <i class="fa fa-random"></i> Modifiez la page sur GitHub
+                    </a>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</section>            </aside>
+        </div>
+    </div>
+</div>
+<footer>
+   <div class="container">
+      <hr>
+      <div class="row">
+         <div class="col-xs-10">&copy;  
+            &middot; Powered by <a href="https://github.com/getpelican/pelican-themes/tree/master/pelican-bootstrap3" target="_blank">pelican-bootstrap3</a>,
+            <a href="http://docs.getpelican.com/" target="_blank">Pelican</a>,
+<a href="http://getbootstrap.com" target="_blank">Bootstrap</a>                <p><small>  <a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr"><img alt="Creative Commons License" style="border-width:0" src="//i.creativecommons.org/l/by-sa/4.0/80x15.png" /></a>
+    Content
+  licensed under a <a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">Creative Commons Attribution-ShareAlike 4.0 International License</a>, except where indicated otherwise.
+</small></p>
+         </div>
+         <div class="col-xs-2"><p class="pull-right"><i class="fa fa-arrow-up"></i> <a href="#">Back to top</a></p></div>
+      </div>
+   </div>
+</footer>
+<script src="http://yliesc.github.io/theme/js/jquery.min.js"></script>
+
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="http://yliesc.github.io/theme/js/bootstrap.min.js"></script>
+
+<!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
+<script src="http://yliesc.github.io/theme/js/respond.min.js"></script>
+
+<!--  -->
+
+
+</body>
+</html>

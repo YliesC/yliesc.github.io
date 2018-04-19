@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="fr" prefix="og: http://ogp.me/ns# fb: https://www.facebook.com/2008/fbml">
+<head>
+    <title>Les identificateurs en langage C - The Golden Koala</title>
+    <!-- Using the latest rendering mode for IE -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <link href="http://yliesc.github.io/images/koala-ico.png" rel="icon">
+
+<link rel="canonical" href="http://yliesc.github.io/pages/pdp/content/les-identificateurs-en-langage-c/">
+
+        <meta name="author" content="Taurre" />
+        <meta name="description" content="Un identificateur peut être défini comme un nom permettant de désigner, de faire référence à une entité du langage. Un exemple d&#39;identificateur bien connu est le nom d&#39;une variable ou d&#39;une fonction. Toutefois, un identificateur est plus qu&#39;un simple nom et c&#39;est ce qui est exposé dans ce cours. Remerciements …" />
+
+    <meta property="og:site_name" content="The Golden Koala" />
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="Les identificateurs en langage C"/>
+    <meta property="og:url" content="http://yliesc.github.io/pages/pdp/content/les-identificateurs-en-langage-c/"/>
+    <meta property="og:description" content="Un identificateur peut être défini comme un nom permettant de désigner, de faire référence à une entité du langage. Un exemple d&#39;identificateur bien connu est le nom d&#39;une variable ou d&#39;une fonction. Toutefois, un identificateur est plus qu&#39;un simple nom et c&#39;est ce qui est exposé dans ce cours. Remerciements …" />
+
+
+    <!-- Bootstrap -->
+        <link rel="stylesheet" href="http://yliesc.github.io/theme/css/bootstrap.readable.min.css" type="text/css"/>
+    <link href="http://yliesc.github.io/theme/css/font-awesome.min.css" rel="stylesheet">
+
+    <link href="http://yliesc.github.io/theme/css/pygments/default.css" rel="stylesheet">
+    <link href="http://yliesc.github.io/theme/tipuesearch/tipuesearch.css" rel="stylesheet">
+    <link rel="stylesheet" href="http://yliesc.github.io/theme/css/style.css" type="text/css"/>
+        <link href="http://yliesc.github.io/css/custom.css" rel="stylesheet">
+
+        <link href="http://yliesc.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate"
+              title="The Golden Koala ATOM Feed"/>
+
+
+
+
+</head>
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+	<div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="http://yliesc.github.io/" class="navbar-brand">
+<img class="img-responsive pull-left gap-right" src="http://yliesc.github.io/images/koala-logo.svg" width="38"/> <span id="siteName">The Golden Koala</span>            </a>
+        </div>
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+
+            </ul>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+</div> <!-- /.navbar -->
+<!-- Banner -->
+<!-- End Banner -->
+<div class="container">
+    <div class="row">
+        <div class="col-sm-9">
+    <ol class="breadcrumb">
+        <li><a href="http://yliesc.github.io/" title="The Golden Koala">
+            <i class="fa fa-home fa-lg"></i>
+        </a></li>
+        <li class="active">Les identificateurs en langage C</li>
+    </ol>
+    <section id="content" class="body">
+        <h1 class="entry-title">Les identificateurs en langage C</h1>
+            <div class="entry-content">
+                    <div class="panel">
+                        <div class="panel-body">
+<footer class="post-info">
+    
+    <span class="published">
+        <span class="label label-default"><i class="fa fa-calendar"></i><time datetime="2014-09-27T00:00:00+02:00"> sam. 27 septembre 2014</time></span> | 
+    </span>
+        <span class="label label-default"><i class="fa fa-user-circle"></i> Taurre</span>  | 
+    <span class="label label-default">
+            <i class="fa fa-cc"></i> 
+        
+            CC-BY-SA
+    </span>
+</footer><!-- /.page-info -->                        </div>
+                    </div>
+            <p>Un identificateur peut être défini comme un nom permettant de désigner, de faire référence à une entité du langage. Un exemple d'identificateur bien connu est le nom d'une variable ou d'une fonction. Toutefois, un identificateur est plus qu'un simple nom et c'est ce qui est exposé dans ce cours.</p>
+<p><strong>Remerciements :</strong></p>
+<ol>
+<li>Je tiens à remercier Maëlan et Marc Mongenet pour leur relecture attentive de ce cours et leur aide dans son amélioration.</li>
+</ol>
+<h1 id="premiere-approche">Première approche</h1>
+<p>Un identificateur est un nom qui permet de désigner une entité du langage. Oui, mais quelles entités ? La norme C11 en différencie huit types [1] (en comptant les membres de structures/unions/énumérations à part), à savoir les identificateurs :</p>
+<ul>
+<li>d'objet ;</li>
+<li>de fonction ;</li>
+<li>d'étiquette de structure/union/énumération, qui correspond au nom que vous donnez à votre structure/union/énumération ;</li>
+<li>de membre de structure/union/énumération ;</li>
+<li>de définition de type (<strong>typedef</strong>) ;</li>
+<li>d'étiquette, utilisée pour l'instruction de saut <strong>goto</strong> ;</li>
+<li>de macro ;</li>
+<li>de paramètre de macro.</li>
+</ul>
+<p><strong>Note :</strong></p>
+<ol>
+<li>En C, un objet est une zone mémoire pouvant contenir des données [2].</li>
+</ol>
+<p>Afin d'illustrer cette énumération, voici un code déclarant un identificateur pour chacune des entités présentées ci‐dessus.</p>
+<div class="highlight"><pre><span></span><span class="cp">#define identificateur_de_macro(identificateur_de_parametre_de_macro)</span>
+
+<span class="k">struct</span> <span class="n">identificateur_d_etiquette_de_structure</span> <span class="p">{</span>
+        <span class="kt">int</span> <span class="n">identificateur_de_membre_de_structure</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="k">typedef</span> <span class="kt">int</span> <span class="n">identificateur_de_definition_de_type</span><span class="p">;</span>
+
+<span class="kt">void</span>
+<span class="nf">identificateur_de_fonction</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="kt">int</span> <span class="n">identificateur_d_objet</span><span class="p">;</span>
+
+<span class="nl">identificateur_d_etiquette</span><span class="p">:</span>
+        <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p><strong>Note :</strong></p>
+<ol>
+<li>Je ne parlerai pas des identificateurs de macro et de paramètre de macro dans la suite du tutoriel, ces derniers n'existant plus après traitement du code par le préprocesseur.</li>
+</ol>
+<hr />
+<p>[1] ISO/IEC JTC1/SC22/WG14, Doc. N1570, avril 2011, p. 35, § 6.2.1, al. 1.<br />
+[2] <em>Ibid.</em>, p. 6, § 3.15, al. 1.</p>
+<h1 id="portee-espaces-de-noms-et-masquage">Portée, espaces de noms et masquage</h1>
+<p>Vous avez peut‐être remarqué que j'ai utilisé le terme <em>déclaration</em> dans la présentation, ce n'est pas anodin, il s'agit d'un concept fondamental du langage C permettant la création d'identificateurs.</p>
+<h3 id="la-notion-de-portee">La notion de portée</h3>
+<p>Une déclaration déclare un identificateur, c'est à dire qu'elle le rend utilisable, visible pour la suite du programme. On dit qu'une déclaration confère une <em>portée</em> à l'identificateur, c'est à dire une portion du programme où il sera utilisable. Il existe quatre types de portée [3] :</p>
+<ul>
+<li>au niveau d'un bloc ;</li>
+<li>au niveau d'un fichier ;</li>
+<li>au niveau d'une fonction ;</li>
+<li>au niveau d'un prototype.</li>
+</ul>
+<p>Cependant, je n'aborderai pas la portée au niveau d'un prototype dans la suite de ce cours, étant donné le peu d'intérêt de cette dernière.</p>
+<h4 id="au-niveau-dun-bloc">Au niveau d'un bloc</h4>
+<p>Une portée au niveau d'un bloc signifie qu'un identificateur est utilisable, visible de sa déclaration jusqu'à la fin du bloc dans lequel il est déclaré.  Ainsi, dans le code suivant :</p>
+<div class="highlight"><pre><span></span><span class="kt">void</span>
+<span class="nf">f</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="kt">int</span> <span class="n">n</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+<span class="p">}</span>
+
+
+<span class="kt">void</span> <span class="nf">g</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="mi">20</span><span class="p">;</span> <span class="cm">/* Incorrect */</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>L'identificateur <em>n</em> ne peut pas être utilisé dans le bloc de la fonction <em>g</em>() car il a une portée limitée au bloc de la fonction <em>f</em>().
+De même, le code suivant est erroné :</p>
+<div class="highlight"><pre><span></span><span class="kt">int</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">a</span><span class="p">;</span> <span class="cm">/* Incorrect */</span>
+<span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+</pre></div>
+
+
+<p>car au moment de la déclaration de l'identificateur <em>p</em>, l'identificateur <em>a</em> n'est pas encore déclaré, il est donc utilisé en dehors de sa portée.</p>
+<h4 id="au-niveau-dun-fichier">Au niveau d'un fichier</h4>
+<p>Une portée au niveau d'un fichier signifie qu'un identificateur est utilisable, visible de sa déclaration jusqu'à la fin du fichier dans lequel il est déclaré.  Pour obtenir un identificateur ayant une portée au niveau d'un fichier, il est nécessaire de le déclarer en dehors de tout bloc, par exemple comme ceci :</p>
+<div class="highlight"><pre><span></span><span class="kt">int</span> <span class="n">n</span><span class="p">;</span>
+
+<span class="kt">void</span>
+<span class="nf">f</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span>
+<span class="nf">g</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="mi">20</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Dans ce code, l'identificateur <em>n</em> a une portée au niveau du fichier et peut par conséquent être aussi bien utilisé dans la fonction <em>f</em>() que dans la fonction <em>g</em>().</p>
+<h4 id="au-niveau-dune-fonction">Au niveau d'une fonction</h4>
+<p>Une portée au niveau d'une fonction signifie qu'un identificateur est utilisable, visible dans toute la fonction où il est déclaré et ce, peu importe la position de sa déclaration. Cette portée est propre aux identificateurs d'étiquette, utilisés par l'instruction de saut <strong>goto</strong>.</p>
+<div class="highlight"><pre><span></span><span class="kt">int</span>
+<span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="kt">int</span> <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+<span class="nl">test</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">n</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">goto</span> <span class="n">dix</span><span class="p">;</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                <span class="k">goto</span> <span class="n">fin</span><span class="p">;</span>
+        <span class="p">}</span>
+<span class="nl">dix</span><span class="p">:</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+        <span class="k">goto</span> <span class="n">test</span><span class="p">;</span>
+<span class="nl">fin</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Comme vous le voyez, les identificateurs <em>dix</em> et <em>fin</em> peuvent être utilisés avant leur déclaration car ils ont une portée au niveau
+de la fonction <em>main</em>().</p>
+<h3 id="la-notion-despace-de-noms">La notion d'espace de noms</h3>
+<p>Le concept d'<em>espace de noms</em> n'est pas évident à définir, mais est par contre très facile à comprendre à l'aide d'un exemple. Sachez tout d'abord qu'il existe quatre espaces de noms [4] :</p>
+<ul>
+<li>un dédié aux identificateurs d'étiquettes ;</li>
+<li>un dédié aux identificateurs d'étiquettes de structures/unions/énumérations ;</li>
+<li>un dédié aux identificateurs de membres de structures ou unions ;</li>
+<li>un dédié à tous les autres identificateurs.</li>
+</ul>
+<p><strong>Note :</strong></p>
+<ol>
+<li>Avant la normalisation du langage en 1989, les champs de structures ou d'unions ne disposaient pas forcément d'un espace de noms distinct. Cela explique pourquoi certaines structures de la bibliothèque standard préfixent le nom de leur champ (c'est le cas de la structure <strong>tm</strong> par exemple).</li>
+</ol>
+<p>Ensuite, comme convenu, voici un exemple.</p>
+<div class="highlight"><pre><span></span><span class="kt">int</span>
+<span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="k">struct</span> <span class="n">test</span> <span class="p">{</span>
+                <span class="kt">int</span> <span class="n">test</span><span class="p">;</span>
+        <span class="p">};</span>
+        <span class="k">struct</span> <span class="n">test</span> <span class="n">test</span><span class="p">;</span>
+
+        <span class="k">goto</span> <span class="n">test</span><span class="p">;</span>
+<span class="nl">test</span><span class="p">:</span>
+        <span class="n">test</span><span class="p">.</span><span class="n">test</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Comme vous le voyez, il y a quatre identificateurs déclarés avec le nom <em>test</em> :</p>
+<ul>
+<li>un identificateur d'étiquette de structure (<strong>struct test</strong>, ligne 4) ;</li>
+<li>un identificateur de membre de structure (<strong>int test</strong>, ligne 5) ;</li>
+<li>un identificateur d'objet (<strong>struct test test</strong>, ligne 8) ;</li>
+<li>un identificateur d'étiquette (<strong>test:</strong>, ligne 11).</li>
+</ul>
+<p>Ces quatre identificateurs ont tous une portée au niveau du bloc de la fonction <em>main</em>(). Ce code ne pose pourtant aucun problème,
+tout simplement parce que ces derniers appartiennent à quatre espaces de noms différents. Tout risque de confusion est évité de par :</p>
+<ul>
+<li>le contexte d'utilisation de l'identificateur (l'instruction <strong>goto</strong> attend un identificateur d'étiquette) ;</li>
+<li>l'utilisation de mots‐clés (<strong>struct</strong>/<strong>union</strong>/<strong>enum</strong> pour désigner l'identificateur d'étiquette d'une structure/union/énumération) ;</li>
+<li>l'utilisation d'opérateurs (l'opérateur <strong>.</strong> ou <strong>‐&gt;</strong> pour accéder aux membres d'une structure/union) ;</li>
+<li>la syntaxe de la déclaration (par exemple les deux points suivant la déclaration d'un identificateur d'étiquette).</li>
+</ul>
+<h3 id="la-notion-de-masquage">La notion de masquage</h3>
+<p>Une règle importante à retenir est qu'il n'est pas possible de déclarer deux identificateurs de même nom et de même espace de noms dans la même portée [5]. Ainsi, le code suivant est incorrect car il déclare deux identificateurs d'objet <em>x</em> dans le même espace de noms et dans la même portée.</p>
+<div class="highlight"><pre><span></span><span class="kt">int</span>
+<span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="kt">int</span> <span class="n">x</span><span class="p">;</span>
+        <span class="kt">int</span> <span class="n">x</span><span class="p">;</span> <span class="cm">/* Incorrect */</span>
+
+        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Maintenant, que se passe-t-il lorsque l'on déclare deux identificateurs de même nom et de même espace de noms, mais dans des portées différentes ? Autrement dit, que se passe‐t‐il dans ce cas ci ?</p>
+<div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+
+<span class="kt">int</span> <span class="n">n</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+
+<span class="kt">int</span>
+<span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="kt">int</span> <span class="n">n</span> <span class="o">=</span> <span class="mi">20</span><span class="p">;</span>
+
+        <span class="n">printf</span><span class="p">(</span><span class="s">&quot;%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">n</span><span class="p">);</span>
+        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>En fait, dans une telle hypothèse, c'est l'identificateur ayant la portée la plus faible qui sera privilégié. On dit qu'il <em>masque</em> celui ou ceux ayant une portée plus élevée [6] (en l'occurrence celui ayant une portée au niveau d'un fichier). Je dis : « celui ou ceux », car les identificateurs déclarés dans un sous‐bloc ont une portée plus faible que ceux déclarés dans le bloc supérieur.</p>
+<div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+
+<span class="kt">int</span> <span class="n">n</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+
+
+<span class="kt">int</span>
+<span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="kt">int</span> <span class="n">n</span> <span class="o">=</span> <span class="mi">20</span><span class="p">;</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">n</span> <span class="o">==</span> <span class="mi">20</span><span class="p">)</span> <span class="p">{</span>
+                <span class="kt">int</span> <span class="n">n</span> <span class="o">=</span> <span class="mi">30</span><span class="p">;</span>
+                <span class="n">printf</span><span class="p">(</span><span class="s">&quot;%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">n</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Dans cet exemple, il y a trois identificateurs d'objet portant tous les trois le nom <em>n</em> :</p>
+<ul>
+<li>le premier a une portée au niveau du fichier ;</li>
+<li>le second au niveau du bloc de la fonction <em>main</em>() ;</li>
+<li>et le troisième au niveau du bloc du <strong>if</strong>.</li>
+</ul>
+<p>L'identificateur ayant une portée au niveau du fichier est donc masqué par celui ayant une portée au niveau du bloc de la fonction <em>main</em>(), qui est lui‐même masqué par celui ayant une portée au niveau du bloc du <strong>if</strong>. Si l'on exécute ce petit programme, il affichera donc 30.</p>
+<p>Notez que le masquage n'opère qu'une fois l'identificateur de portée plus faible déclaré. Ainsi, dans cet exemple :</p>
+<div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;stddef.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+
+<span class="kt">int</span> <span class="n">x</span><span class="p">;</span>
+
+
+<span class="kt">int</span>
+<span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="kt">size_t</span> <span class="n">x</span><span class="p">[</span><span class="k">sizeof</span> <span class="n">x</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span> <span class="k">sizeof</span> <span class="n">x</span> <span class="p">};</span>
+
+        <span class="n">printf</span><span class="p">(</span><span class="s">&quot;%zu %zu</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="k">sizeof</span> <span class="n">x</span><span class="p">);</span>
+        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>L'expression <code>sizeof x</code> utilisée pour déterminer la taille du tableau <em>x</em> va être évaluée en utilisant l'identificateur ayant une portée au niveau du fichier, le tableau n'étant pas encore déclaré à ce moment. Toutefois, la seconde expression <code>sizeof x</code>, utilisée pour initialiser le premier membre du tableau va, elle, utiliser l'identificateur ayant une portée au niveau du bloc de la fonction <em>main</em>() ce dernier étant désormais déclaré.</p>
+<hr />
+<p>[3] ISO/IEC JTC1/SC22/WG14, Doc. N1570, avril 2011, p. 35, § 6.2.1, al. 2.<br />
+[4] <em>Ibid.</em>, p. 37, § 6.2.3, al. 1.<br />
+[5] <em>Ibid.</em>, p. 35, § 6.2.1, al. 2.<br />
+[6] <em>Ibid.</em>, p. 36, § 6.2.1, al. 4.</p>
+<h1 id="liaisons-et-definitions">Liaisons et définitions</h1>
+<p>Dans le chapitre précédent, nous avons entre autres vu que les identificateurs étaient confinés à une portée et que cette dernière ne pouvait s'étendre au delà d'un fichier. Cependant, si cela s'arrêtait là, il ne serait pas possible d'utiliser des objets ou des fonctions d'autres fichiers. Autrement dit, l'exemple ci‐dessous serait incorrect et il serait nécessaire de n'utiliser qu'un seul fichier source, ce qui serait assez peu commode.</p>
+<p>— <strong>autre.c</strong></p>
+<div class="highlight"><pre><span></span><span class="kt">int</span>
+<span class="nf">f</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>— <strong>main.c</strong></p>
+<div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">f</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+
+<span class="kt">int</span>
+<span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="n">f</span><span class="p">();</span>
+        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<h3 id="la-notion-de-liaison">La notion de liaison</h3>
+<p>Heureusement, il existe une solution : la notion de <em>liaison</em>. Chaque identificateur peut disposer d'une liaison qui peut être de deux types : externe ou interne [7]. Grâce à cette notion, il est possible de considéré un groupe d'identificateurs comme faisant référence à un même objet ou à une même fonction. En fait, elle permet de préciser que :</p>
+<ul>
+<li>tous les identificateurs avec liaison externe d'un même programme font référence au même objet ou à la même fonction [8] ;</li>
+<li>tous les identificateurs avec liaison interne d'un même fichier font référence au même objet ou à la même fonction [8].</li>
+</ul>
+<p>Ainsi, si je reprends l'exemple donné au début de ce chapitre et que l'on considère que tous les identificateurs de fonction <em>f</em>() ont une liaison externe, on peut en déduire qu'en fait, ils font tous référence à la même fonction : celle du fichier <strong>autre.c</strong>.</p>
+<p>— <strong>autre.c</strong></p>
+<div class="highlight"><pre><span></span><span class="kt">int</span>
+<span class="nf">f</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>— <strong>main.c</strong></p>
+<div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">f</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+
+<span class="kt">int</span>
+<span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="n">f</span><span class="p">();</span> <span class="cm">/* Retournera 1 */</span>
+        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>La même logique peut être appliquée pour une liaison interne, mis à part que le regroupement se limite à un fichier. En conséquence, dans l'exemple ci‐dessous, si l'on considère tous les identificateurs de fonction <em>f</em>() comme ayant une liaison interne, tous ceux situés dans le fichier <strong>main.c</strong> font référence à la fonction de ce fichier, alors que celui du fichier <strong>autre.c</strong> fait référence à celle située en son sein.</p>
+<p>— <strong>autre.c</strong></p>
+<div class="highlight"><pre><span></span><span class="kt">int</span>
+<span class="nf">f</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>— <strong>main.c</strong></p>
+<div class="highlight"><pre><span></span><span class="kt">int</span>
+<span class="nf">f</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="k">return</span> <span class="mi">2</span><span class="p">;</span>
+<span class="p">}</span>
+
+
+<span class="kt">int</span>
+<span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="n">f</span><span class="p">();</span> <span class="cm">/* Retournera 2 */</span>
+        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<h3 id="conditions-dattribution">Conditions d'attribution</h3>
+<p>Maintenant que vous connaissez la notion de liaison, il reste encore à déterminer dans quelles conditions cette dernière est attribuée à un identificateur. En fait, la présence d'une liaison et son type sont déterminés par la position de la déclaration de l'identificateur ainsi que par l'utilisation des mots‐clés <strong>extern</strong> et <strong>static</strong>. Concrètement, cela se détermine suivant les règles exposées ci‐dessous.</p>
+<p>Un identificateur de fonction ou d'objet ayant une portée au niveau d'un fichier a une liaison externe [9] [10], sauf si sa
+déclaration est précédée du mot‐clé <strong>static</strong>, auquel cas il a une liaison interne [11].</p>
+<div class="highlight"><pre><span></span><span class="kt">int</span> <span class="n">a</span><span class="p">;</span>         <span class="cm">/* Liaison externe */</span>
+<span class="k">static</span> <span class="kt">int</span> <span class="n">b</span><span class="p">;</span>  <span class="cm">/* Liaison interne */</span>
+
+<span class="kt">void</span> <span class="nf">f</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>         <span class="cm">/* Liaison externe */</span>
+<span class="k">static</span> <span class="kt">void</span> <span class="nf">g</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>  <span class="cm">/* Liaison interne */</span>
+</pre></div>
+
+
+<p>Un identificateur d'objet déclaré à l'intérieur d'un bloc n'a pas de liaison sauf s'il est précédé du mot‐clé <strong>extern</strong> (voyez la règle suivante) [12].</p>
+<div class="highlight"><pre><span></span><span class="p">{</span>
+        <span class="kt">int</span> <span class="n">a</span><span class="p">;</span>  <span class="cm">/* Pas de liaison */</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Un identificateur d'objet ou de fonction dont la déclaration est précédée du mot‐clé <strong>extern</strong> a une liaison externe sauf si une déclaration du même identificateur la précède, auquel cas il a la même liaison que ce dernier [13].</p>
+<p><strong>Note :</strong></p>
+<ol>
+<li>Dans le cas où une déclaration d'un identificateur de fonction n'est précédée, ni du mot‐clé <strong>static</strong>, ni du mot‐clé <strong>extern</strong>, le mot‐clé <strong>extern</strong> est implicitement ajouté [14].</li>
+</ol>
+<p>Ces règles peuvent paraître quelque peu indigestes, aussi, voici un exemple illustrant chacune de ces dernières.</p>
+<div class="highlight"><pre><span></span><span class="cm">/*</span>
+<span class="cm"> * « a » est un identificateur d&#39;objet déclaré en dehors de tout bloc.</span>
+<span class="cm"> * Il a donc une liaison externe.</span>
+<span class="cm"> */</span>
+<span class="kt">int</span> <span class="n">a</span><span class="p">;</span>
+
+<span class="cm">/*</span>
+<span class="cm"> * « b » est un identificateur d&#39;objet déclaré en dehors de tout bloc.</span>
+<span class="cm"> * Sa déclaration est précédée du mot‐clé « static ».</span>
+<span class="cm"> * Il a donc une liaison interne.</span>
+<span class="cm"> */</span>
+<span class="k">static</span> <span class="kt">int</span> <span class="n">b</span><span class="p">;</span>
+
+<span class="cm">/*</span>
+<span class="cm"> * « c » est un identificateur d&#39;objet déclaré en dehors de tout bloc.</span>
+<span class="cm"> * Sa déclaration est précédée du mot‐clé « extern ».</span>
+<span class="cm"> * Aucune déclaration du même identificateur ne le précède.</span>
+<span class="cm"> * Il a donc une liaison externe.</span>
+<span class="cm"> */</span>
+<span class="k">extern</span> <span class="kt">int</span> <span class="n">c</span><span class="p">;</span>
+
+<span class="cm">/*</span>
+<span class="cm"> * « f » est un identificateur de fonction.</span>
+<span class="cm"> * Sa déclaration n&#39;est pas précédée du mot‐clé « extern » ou « static ».</span>
+<span class="cm"> * Dès lors, il faut faire comme si elle était précédée du mot‐clé « extern ».</span>
+<span class="cm"> * Aucune déclaration du même identificateur ne le précède.</span>
+<span class="cm"> * Il a donc une liaison externe.</span>
+<span class="cm"> */</span>
+<span class="kt">void</span> <span class="nf">f</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+
+<span class="cm">/*</span>
+<span class="cm"> * « g » est un identificateur de fonction.</span>
+<span class="cm"> * Sa déclaration est précédée du mot‐clé « static ».</span>
+<span class="cm"> * Il a donc une liaison interne.</span>
+<span class="cm"> */</span>
+<span class="k">static</span> <span class="kt">void</span> <span class="nf">g</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+
+<span class="cm">/*</span>
+<span class="cm"> * « h » est un identificateur de fonction.</span>
+<span class="cm"> * Sa déclaration est précédée du mot‐clé « extern ».</span>
+<span class="cm"> * Aucune déclaration du même identificateur ne le précède.</span>
+<span class="cm"> * Il a donc une liaison externe.</span>
+<span class="cm"> */</span>
+<span class="k">extern</span> <span class="kt">void</span> <span class="nf">h</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+
+
+<span class="kt">int</span>
+<span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="cm">/*</span>
+<span class="cm">         * « a » est un identificateur d&#39;objet déclaré à l&#39;intérieur d&#39;un bloc.</span>
+<span class="cm">         * Sa déclaration est précédée du mot‐clé « extern ».</span>
+<span class="cm">         * Il existe déjà une autre déclaration de celui‐ci avec liaison externe.</span>
+<span class="cm">         * Il a donc une liaison externe.</span>
+<span class="cm">         */</span>
+        <span class="k">extern</span> <span class="kt">int</span> <span class="n">a</span><span class="p">;</span>
+
+        <span class="cm">/*</span>
+<span class="cm">         * « b » est un identificateur d&#39;objet déclaré à l&#39;intérieur d&#39;un bloc.</span>
+<span class="cm">         * Sa déclaration est précédée du mot‐clé « extern ».</span>
+<span class="cm">         * Il existe déjà une autre déclaration de celui‐ci avec liaison interne.</span>
+<span class="cm">         * Il a donc une liaison interne.</span>
+<span class="cm">         */</span>
+        <span class="k">extern</span> <span class="kt">int</span> <span class="n">b</span><span class="p">;</span>
+
+        <span class="cm">/*</span>
+<span class="cm">         * « c » est un identificateur d&#39;objet déclaré à l&#39;intérieur d&#39;un bloc.</span>
+<span class="cm">         * Sa déclaration n&#39;est pas précédé du mot‐clé « extern ».</span>
+<span class="cm">         * Il n&#39;a donc pas de liaison.</span>
+<span class="cm">         */</span>
+        <span class="kt">int</span> <span class="n">c</span><span class="p">;</span>
+
+        <span class="cm">/*</span>
+<span class="cm">         * « d » est un identificateur d&#39;objet déclaré à l&#39;intérieur d&#39;un bloc.</span>
+<span class="cm">         * Sa déclaration est précédée du mot‐clé « extern ».</span>
+<span class="cm">         * Aucune déclaration du même identificateur ne le précède.</span>
+<span class="cm">         * Il a donc une liaison externe.</span>
+<span class="cm">         */</span>
+        <span class="k">extern</span> <span class="kt">int</span> <span class="n">d</span><span class="p">;</span>
+
+        <span class="cm">/*</span>
+<span class="cm">         * « g » est un identificateur de fonction.</span>
+<span class="cm">         * Sa déclaration n&#39;est pas précédée du mot‐clé « extern ».</span>
+<span class="cm">         * Dès lors, il faut faire comme si elle était précédée du mot‐clé « extern ».</span>
+<span class="cm">         * Il existe déjà une autre déclaration de celui‐ci avec liaison interne.</span>
+<span class="cm">         * Il a donc une liaison interne.</span>
+<span class="cm">         */</span>
+        <span class="kt">void</span> <span class="n">g</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+
+        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p><strong>Note :</strong> </p>
+<ol>
+<li>Le mot‐clé <strong>static</strong> ne peut être utilisé, pour modifier la liaison d'un identificateur, qu'en dehors de tout bloc et ce, aussi bien pour les identificateurs d'objet que les identificateurs de fonction [15] [16].</li>
+</ol>
+<h3 id="la-notion-de-definition">La notion de définition</h3>
+<p>Je vous ai dit que la notion de liaison permettait de grouper des identificateurs et de les considérer comme faisant référence au même objet ou à la même fonction. Je vous ai également dit que tous les identificateurs avec liaison <em>externe</em> d'un <em>même programme</em> font référence au même objet ou à la même fonction et que tous les identificateurs avec liaison <em>interne</em> d'un <em>même fichier</em> font référence au même objet ou à la même fonction. Cependant, il y a un corollaire qui découle de ces deux règles : il ne peut exister qu'<em>un seul objet</em> ou qu'<em>une seule fonction</em> qui puisse être référencé par le groupe d'identificateurs.</p>
+<p>Au fond, c'est assez logique. Prenez l'exemple ci‐dessous, l'identificateur de fonction <em>f</em> déclaré dans le bloc de la fonction <em>main</em>() a une liaison interne. Cependant, laquelle des deux fonctions désigne‐t‐il ? La première ? La deuxième ? Les deux ?</p>
+<div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">int</span>
+<span class="nf">f</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">static</span> <span class="kt">int</span>
+<span class="nf">f</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="k">return</span> <span class="mi">2</span><span class="p">;</span>
+<span class="p">}</span>
+
+
+<span class="kt">int</span>
+<span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="k">static</span> <span class="kt">int</span> <span class="n">f</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+
+        <span class="n">f</span><span class="p">();</span>
+        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Il est impossible de le dire, il faudrait qu'il n'existe qu'une seule fonction ou, dit plus formellement, qu'il n'y ait qu'une seule <em>définition</em> de la fonction <em>f</em>(). Qu'est‐ce qu'une définition ? C'est ce que nous allons voir tout de suite.</p>
+<h4 id="les-identificateurs-de-fonction">Les identificateurs de fonction</h4>
+<p>Une définition d'un identificateur de fonction est une déclaration qui comporte le corps de la fonction [17]. Autrement dit, dans le code ci‐dessous, le premier élément est une déclaration de l'identificateur de fonction <em>f</em> alors que le deuxième est une définition de l'identificateur de fonction <em>f</em> (car il comporte le corps de celle-ci) .</p>
+<div class="highlight"><pre><span></span><span class="cm">/* Déclaration */</span>
+<span class="kt">int</span> <span class="nf">f</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>    
+
+<span class="cm">/* Définition */</span>
+<span class="kt">int</span>
+<span class="nf">f</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<h4 id="les-identificateurs-dobjet">Les identificateurs d'objet</h4>
+<p>Une définition d'un identificateur d'objet est une déclaration qui alloue l'objet qu'il référence [17]. Vous voilà bien peu avancé...  Heureusement, il y a une règle simple et absolue pour différencier une déclaration et une définition d'un identificateur d'objet : une déclaration d'un identificateur d'objet, en dehors de tout bloc, comportant une initialisation est une définition [18]. Dans tous les autres cas, il s'agit d'une déclaration.</p>
+<div class="highlight"><pre><span></span><span class="kt">int</span> <span class="n">a</span><span class="p">;</span>          <span class="cm">/* Déclaration */</span>
+<span class="k">static</span> <span class="kt">int</span> <span class="n">b</span><span class="p">;</span>   <span class="cm">/* Déclaration */</span>
+<span class="k">extern</span> <span class="kt">int</span> <span class="n">c</span><span class="p">;</span>   <span class="cm">/* Déclaration */</span>
+<span class="kt">int</span> <span class="n">d</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>     <span class="cm">/* Définition */</span>
+</pre></div>
+
+
+<p>Cependant, il y a une (petite) subtilité : les déclarations d'identificateurs d'objet, en dehors de tout bloc, à l'exception de celles précédées du mot‐clé <strong>extern</strong>, sont appelées des <em>définitions potentielles</em>. Et, dans le cas où un fichier comprend une ou plusieurs définitions potentielles d'un identificateur d'objet mais aucune définition de cet identificateur, une définition est implicitement incluse au début du fichier avec un initialiseur valant zéro [19].</p>
+<p>Rassurez-vous, nous allons revoir cela en douceur. Avant toute chose, il est nécessaire de bien différencier une déclaration, une définition potentielle et une définition d'un identificateur d'objet. Pour ce faire, voici un exemple simple.</p>
+<div class="highlight"><pre><span></span><span class="cm">/*</span>
+<span class="cm"> * Cette déclaration ne comporte pas d&#39;initialisation.</span>
+<span class="cm"> * Elle n&#39;est pas précédée du mot‐clé « extern ».</span>
+<span class="cm"> * Il s&#39;agit donc d&#39;une définition potentielle.</span>
+<span class="cm"> */</span>
+<span class="kt">int</span> <span class="n">n</span><span class="p">;</span>
+
+<span class="cm">/*</span>
+<span class="cm"> * Cette déclaration comporte une initialisation.</span>
+<span class="cm"> * Il s&#39;agit donc d&#39;une définition.</span>
+<span class="cm"> */</span>
+<span class="k">extern</span> <span class="kt">int</span> <span class="n">n</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+
+<span class="cm">/*</span>
+<span class="cm"> * Cette déclaration ne comporte pas d&#39;initialisation.</span>
+<span class="cm"> * Elle n&#39;est pas précédée du mot‐clé « extern ».</span>
+<span class="cm"> * Il s&#39;agit donc d&#39;une définition potentielle.</span>
+<span class="cm"> */</span>
+<span class="k">static</span> <span class="kt">int</span> <span class="n">n</span><span class="p">;</span>
+
+<span class="cm">/*</span>
+<span class="cm"> * Cette déclaration ne comporte pas d&#39;initialisation.</span>
+<span class="cm"> * Elle est précédée du mot‐clé « extern ».</span>
+<span class="cm"> * Il s&#39;agit donc d&#39;une déclaration.</span>
+<span class="cm"> */</span>
+<span class="k">extern</span> <span class="kt">int</span> <span class="n">n</span><span class="p">;</span>
+</pre></div>
+
+
+<p>Ensuite, reprenons cette règle pas à pas à l'aide du code ci‐dessous.</p>
+<div class="highlight"><pre><span></span><span class="kt">int</span> <span class="n">n</span><span class="p">;</span>
+
+<span class="kt">int</span>
+<span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="k">return</span> <span class="n">n</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Comme vous le voyez, nous avons un fichier comprenant une définition potentielle de l'identificateur d'objet <em>n</em>, mais aucune
+définition de cet identificateur. Ce que dit l'obscure règle que je vous ai présentée auparavant, c'est que dans le cas où un fichier comprend une ou plusieurs définitions potentielles d'un identificateur mais aucune définition de cet identificateur (ce qui est le cas de notre fichier), une définition est implicitement inclue au début de ce fichier avec un initialiseur valant zéro. Autrement dit, appliquée à notre exemple, cela donne ceci :</p>
+<div class="highlight"><pre><span></span><span class="cm">/* Définition implicite */</span>
+<span class="kt">int</span> <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="kt">int</span> <span class="n">n</span><span class="p">;</span>
+
+<span class="kt">int</span>
+<span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="k">return</span> <span class="n">n</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<h4 id="formalisation-de-linterdiction">Formalisation de l'interdiction</h4>
+<p>Maintenant que nous avons vu la notion de définition, il m'est possible de formaliser ce que je vous ai dit au début de la présentation de cette notion : il ne peut exister qu'un seul objet ou qu'une seule fonction qui puisse être référencée par un groupe d'identificateur. Ou, dit de manière plus formelle :</p>
+<ul>
+<li>il ne peut y avoir qu'une seule définition d'un même identificateur avec liaison externe dans tout le programme [20] ;</li>
+<li>il ne peut y avoir qu'une seule définition d'un même identificateur avec liaison interne dans un même fichier [21] ;</li>
+</ul>
+<p><strong>Note :</strong></p>
+<ol>
+<li>Certains compilateurs (gcc pour ne citer que lui) sont par défaut capables de gérer certains cas de définitions multiples. Sachez cependant qu'il s'agit d'une extension non standard. Dans le cas de gcc, il est possible de désactiver cette extension en utilisant l'option <strong>‐fno‐common</strong>.</li>
+</ol>
+<p>Le code ci‐dessous est donc incorrect car il comporte plus d'une définition avec liaison interne de l'identificateur <em>n</em>.</p>
+<div class="highlight"><pre><span></span><span class="k">static</span> <span class="kt">int</span> <span class="n">n</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+<span class="k">static</span> <span class="kt">int</span> <span class="n">n</span> <span class="o">=</span> <span class="mi">20</span><span class="p">;</span>
+
+
+<span class="kt">int</span>
+<span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="k">return</span> <span class="n">n</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>De même, le code qui suit est faux car il existe plus d'une définition avec liaison externe de l'identificateur <em>n</em> dans tout le programme (n'oubliez pas la définition implicite !).</p>
+<p>— <strong>autre.c</strong></p>
+<div class="highlight"><pre><span></span><span class="kt">int</span> <span class="n">n</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+</pre></div>
+
+
+<p>— <strong>main.c</strong></p>
+<div class="highlight"><pre><span></span><span class="kt">int</span> <span class="n">n</span><span class="p">;</span>
+
+<span class="kt">int</span>
+<span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="k">return</span> <span class="n">n</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Notez enfin que si un identificateur apparaît dans un fichier avec à la fois une liaison externe et interne, le résultat est indéterminé [22].</p>
+<p>— <strong>autre.c</strong></p>
+<div class="highlight"><pre><span></span><span class="kt">int</span>
+<span class="nf">f</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>— <strong>main.c</strong></p>
+<div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">f</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+
+<span class="k">static</span> <span class="kt">int</span>
+<span class="nf">f</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="k">return</span> <span class="mi">2</span><span class="p">;</span>
+<span class="p">}</span>
+
+
+<span class="kt">int</span>
+<span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="n">f</span><span class="p">();</span>
+        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Dans cet exemple, l'identificateur <em>f</em>() du fichier <strong>main.c</strong> a à la fois une liaison externe et interne. Il est donc impossible de dire à quelle fonction il fait référence.</p>
+<h3 id="en-bref">En Bref</h3>
+<p>Que retenir de ce chapitre si ce n'est qu'il est affreusement théorique et complexe ? En fait, il est possible d'en déduire une méthode générale afin de partager des variables ou des fonctions entre plusieurs fichiers source.</p>
+<p>Étant donné que les fichiers d'en‐têtes sont très souvent inclus dans plusieurs fichiers (pensez à ceux de la bibliothèque standard par exemple), ces derniers ne doivent contenir que des déclarations. En effet, si ce n'est pas le cas, vous allez vous retrouver avec des définitions multiples (explicites ou implicites) et, dès lors, rencontrer des erreurs lors de la compilation.</p>
+<p>Les fichiers source, quant à eux, recueillent donc les définitions. Ainsi, lorsque vous souhaitez utiliser une ou plusieurs variables ou fonctions définies dans un autre fichier, vous incluez le ou les fichiers d'en‐tête comprenant leur déclarations dans les fichiers source où vous souhaitez les utiliser. Cette méthode a l'avantage d'éviter d'avoir à réécrire toutes les déclarations dans chaque fichier.</p>
+<p>L'exemple ci‐dessous illustre ce qui vient d'être exposé.</p>
+<p>— <strong>autre.h</strong></p>
+<div class="highlight"><pre><span></span><span class="cp">#ifndef AUTRE_H</span>
+<span class="cp">#define AUTRE_H</span>
+
+<span class="k">extern</span> <span class="kt">int</span> <span class="n">n</span><span class="p">;</span>           <span class="cm">/* Déclaration */</span>
+<span class="k">extern</span> <span class="kt">void</span> <span class="nf">setn</span><span class="p">(</span><span class="kt">int</span><span class="p">);</span>  <span class="cm">/* Déclaration */</span>
+
+<span class="cp">#endif </span><span class="cm">/* !AUTRE_H */</span><span class="cp"></span>
+</pre></div>
+
+
+<p>— <strong>autre.c</strong></p>
+<div class="highlight"><pre><span></span><span class="cm">/* Inclusion des déclarations */</span>
+<span class="cp">#include</span> <span class="cpf">&quot;autre.h&quot;  </span><span class="cp"></span>
+
+<span class="cm">/* Définition potentielle */</span>
+<span class="kt">int</span> <span class="n">n</span><span class="p">;</span>
+
+<span class="cm">/* Définition */</span>
+<span class="kt">void</span>
+<span class="nf">setn</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">a</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>— <strong>main.c</strong></p>
+<div class="highlight"><pre><span></span><span class="cm">/* Inclusion des déclarations */</span>
+<span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+
+<span class="cp">#include</span> <span class="cpf">&quot;autre.h&quot;</span><span class="cp"></span>
+
+<span class="kt">int</span>
+<span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">&quot;%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">n</span><span class="p">);</span> <span class="cm">/* 0 */</span>
+        <span class="n">setn</span><span class="p">(</span><span class="mi">99</span><span class="p">);</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">&quot;%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">n</span><span class="p">);</span> <span class="cm">/* 99 */</span>
+        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<hr />
+<p>[7] ISO/IEC JTC1/SC22/WG14, Doc. N1570, avril 2011, p. 36, § 6.2.2, al. 1.<br />
+[8] <em>Ibid.</em>, p. 36, § 6.2.2, al. 2.<br />
+[9] <em>Ibid.</em>, p. 37, § 6.2.2, al. 5.<br />
+[10] <em>Ibid.</em>, p. 37, § 6.2.2, al. 5.<br />
+[11] <em>Ibid.</em>, p. 36, § 6.2.2, al. 3.<br />
+[12] <em>Ibid.</em>, p. 37, § 6.2.2, al. 6.<br />
+[13] <em>Ibid.</em>, p. 37, § 6.2.2, al. 4.<br />
+[14] <em>Ibid.</em>, p. 37, § 6.2.2, al. 5.<br />
+[15] <em>Ibid.</em>, p. 38, § 6.2.4, al. 3.<br />
+[16] <em>Ibid.</em>, p. 110, § 6.7.1, al. 7.<br />
+[17] <em>Ibid.</em>, p. 108, § 6.7, al. 5.<br />
+[18] <em>Ibid.</em>, p. 158, § 6.9.2, al. 1.<br />
+[19] <em>Ibid.</em>, p. 158, § 6.9.2, al. 2.<br />
+[20] <em>Ibid.</em>, p. 155, § 6.9, al. 5.<br />
+[21] <em>Ibid.</em>, p. 155, § 6.9, al. 3.<br />
+[22] <em>Ibid.</em>, p. 37, § 6.2.2, al. 7.</p>
+<h1 id="les-noms">Les noms</h1>
+<p>Nous allons à présent terminer notre tour d'horizon des identificateurs avec un sujet plus léger et plus simple : le nom des identificateurs.</p>
+<h3 id="caracteres-utilisables">Caractères utilisables</h3>
+<p>Un nom est composé d'une suite de lettres et de chiffres. Oui, mais quelles lettres et quels chiffres ? La liste exhaustive nous est donnée par la norme [23].</p>
+<div class="highlight"><pre><span></span>a b c d e f g h i j k l m n o p q r s t u v w x y z
+A B C D E F G H I J K L M N O P Q R S T U V W X Y Z
+0 1 2 3 4 5 6 7 8 9 _
+</pre></div>
+
+
+<p>Sachez qu'un nom ne peut pas commencer par un chiffre, il doit obligatoirement débuter par une lettre ou par un <em>underscore</em> [24].</p>
+<h3 id="noms-reserves-par-le-langage">Noms réservés par le langage</h3>
+<p>Nous savons désormais de quels caractères peuvent être composés nos noms.  Cependant, tous les noms ne sont pas utilisables. En
+effet, certains sont réservés par le langage C lui‐même et ne sont donc pas disponibles [25].</p>
+<div class="highlight"><pre><span></span><span class="k">auto</span>            <span class="k">if</span>              <span class="kt">unsigned</span>
+<span class="k">break</span>           <span class="kr">inline</span>          <span class="kt">void</span>
+<span class="k">case</span>            <span class="kt">int</span>             <span class="k">volatile</span>
+<span class="kt">char</span>            <span class="kt">long</span>            <span class="k">while</span>
+<span class="k">const</span>           <span class="k">register</span>        <span class="n">_Alignas</span>
+<span class="k">continue</span>        <span class="kr">restrict</span>        <span class="n">_Alignof</span>
+<span class="k">default</span>         <span class="k">return</span>          <span class="n">_Atomic</span>
+<span class="k">do</span>              <span class="kt">short</span>           <span class="kt">_Bool</span>
+<span class="kt">double</span>          <span class="kt">signed</span>          <span class="kt">_Complex</span>
+<span class="k">else</span>            <span class="k">sizeof</span>          <span class="n">_Generic</span>
+<span class="k">enum</span>            <span class="k">static</span>          <span class="n">_Imaginary</span>
+<span class="k">extern</span>          <span class="k">struct</span>          <span class="n">_Noreturn</span>
+<span class="kt">float</span>           <span class="k">switch</span>          <span class="n">_Static_assert</span>
+<span class="k">for</span>             <span class="k">typedef</span>         <span class="n">_Thread_local</span>
+<span class="k">goto</span>            <span class="k">union</span>
+</pre></div>
+
+
+<p>Il est à noter que certaines implémentations réservent aussi les mots <strong>asm</strong> et <strong>fortran</strong>. Il est donc également préférable de les éviter.</p>
+<h3 id="noms-reserves-par-la-bibliotheque-standard">Noms réservés par la bibliothèque standard</h3>
+<p>À côté des noms réservés par le langage lui‐même, il y a ceux réservés par la bibliothèque standard. En fait, tous les noms de fonctions (par exemple <em>printf</em>()) ou de variables (par exemple <em>errno</em>) utilisés par celle‐ci sont à éviter, même si vous n'incluez pas l'en‐tête les utilisant.  Renseignez‐vous sur les différents en‐têtes pour obtenir les noms qu'ils emploient.</p>
+<p>En plus de cela, la bibliothèque standard réserve certains types de noms dans des portées particulières. Ainsi, sont interdits :</p>
+<ul>
+<li>les noms commençant par un <em>underscore</em> et une lettre majuscule ou commençant par deux <em>underscores</em> et ce, peu importe leur portée [26] ;</li>
+<li>les noms commençant par un <em>underscore</em> et ayant une portée au niveau d'un fichier [26].</li>
+</ul>
+<p>Afin de bien cerner cette interdiction, voici un petit code d'exemple.</p>
+<div class="highlight"><pre><span></span><span class="cm">/* Interdit */</span>
+<span class="cp">#define _HELLO</span>
+
+<span class="cm">/* Interdit */</span>
+<span class="cp">#define __HELLO</span>
+
+<span class="cm">/* Interdit */</span>
+<span class="cp">#define __hello </span>
+
+<span class="cm">/* Interdit car il a une portée au niveau d&#39;un fichier */</span>
+<span class="cp">#define _hello</span>
+
+<span class="cm">/* Interdit pour les même motifs */</span>
+<span class="k">struct</span> <span class="n">_structure</span> <span class="p">{</span>
+        <span class="cm">/* Permis car il s&#39;agit d&#39;un membre de structure */</span>
+        <span class="kt">int</span> <span class="n">_membre</span><span class="p">;</span> 
+<span class="p">};</span>
+
+
+<span class="kt">int</span>
+<span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="cm">/* Permis car il a une portée au niveau d&#39;un bloc */</span>
+        <span class="kt">int</span> <span class="n">_variable</span><span class="p">;</span>
+
+        <span class="cm">/* Interdit car « auto » est un mot-clé réservé du langage */</span>
+        <span class="kt">int</span> <span class="k">auto</span><span class="p">;</span> 
+
+        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Remarquez enfin que dans le cas de l'en‐tête <strong>&lt;errno.h></strong>, les noms de macro commençant par un « E » et un chiffre ou une lettre
+majuscule ne doivent pas non plus être employés [27] de même pour l'en‐tête <strong>&lt;signal.h></strong> et les noms de macro commençant par « SIG » ou « SIG_ » et une lettre majuscule [28].</p>
+<hr />
+<p>[23] ISO/IEC JTC1/SC22/WG14, Doc. N1570, avril 2011, p. 59, § 6.4.2.1, al. 1.<br />
+[24] <em>Ibid.</em>, p. 59, § 6.4.2.1, al. 2.<br />
+[25] <em>Ibid.</em>, p. 58, § 6.4.1, al. 1.<br />
+[26] <em>Ibid.</em>, p. 182, § 7.1.3, al. 1.<br />
+[27] <em>Ibid.</em>, p. 205, § 7.5, al. 4.<br />
+[28] <em>Ibid.</em>, p. 265, § 7.14, al. 4.</p>
+<p>Voilà qui termine mon exposé sur les identificateurs. J'espère que vous y voyez désormais plus clair et que vous jonglez avec les portées et les liaisons.</p>
+        </div>
+    </section>
+        </div>
+        <div class="col-sm-3" id="sidebar">
+            <aside>
+
+<section class="well well-sm">
+    <ul class="list-group list-group-flush">
+
+        <!-- Search bar in low width mode -->
+        <li id="searchSideBar" class="list-group-item"><span>
+                <form class="navbar-search" action="/blog/search">
+                  <input type="text" class="search-query" placeholder="Rechercher" name="q" id="tipue_search_input" required>
+                </form></span>
+        </li>
+
+        <li class="list-group-item"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Social</span></h4>
+              <ul class="list-group" id="social">
+                    <li class="list-group-item"><a href="https://example.org">
+                        <i class="fa fa-comment fa-lg"></i>
+                       Link 1</a>
+                    </li>
+                    <li class="list-group-item"><a href="https://example.org">
+                        <i class="fa fa-comments fa-lg"></i>
+                       Link 2</a>
+                    </li>
+                    <li class="list-group-item"><a href="/page/content">
+                        <i class="fa fa-etc fa-lg"></i>
+                       etc</a>
+                    </li>
+              </ul>
+            </li>
+
+
+            <li class="list-group-item"><a href="http://yliesc.github.io/"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Categories</span></h4></a>
+                <ul class="list-group" id="categories">
+                </ul>
+            </li>
+
+
+
+    <li class="list-group-item"><h4><i class="fa fa-link fa-lg"></i><span class="icon-label">External Links</span></h4>
+      <ul class="list-group" id="links">
+        <li class="list-group-item">
+            <a href="https://example.org" target="_blank">
+                Link 1
+            </a>
+        </li>
+        <li class="list-group-item">
+            <a href="https://example.org" target="_blank">
+                Link 2
+            </a>
+        </li>
+        <li class="list-group-item">
+            <a href="/page/content" target="_blank">
+                etc
+            </a>
+        </li>
+      </ul>
+    </li>
+
+        <li class="list-group-item" id="github">
+            <ul class="list-group">
+                <li class="list-group-item"><h5>Vous voyez une erreur ?</h5></li>
+                <li class="list-group-item">
+                    <a class="btn btn-info github" target="_blank" href="https://github.com/YliesC/website/edit/master/content/pages/pdp/content/les-identificateurs-en-langage-c.md">
+                        <i class="fa fa-random"></i> Modifiez la page sur GitHub
+                    </a>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</section>            </aside>
+        </div>
+    </div>
+</div>
+<footer>
+   <div class="container">
+      <hr>
+      <div class="row">
+         <div class="col-xs-10">&copy;  
+            &middot; Powered by <a href="https://github.com/getpelican/pelican-themes/tree/master/pelican-bootstrap3" target="_blank">pelican-bootstrap3</a>,
+            <a href="http://docs.getpelican.com/" target="_blank">Pelican</a>,
+<a href="http://getbootstrap.com" target="_blank">Bootstrap</a>                <p><small>  <a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr"><img alt="Creative Commons License" style="border-width:0" src="//i.creativecommons.org/l/by-sa/4.0/80x15.png" /></a>
+    Content
+  licensed under a <a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">Creative Commons Attribution-ShareAlike 4.0 International License</a>, except where indicated otherwise.
+</small></p>
+         </div>
+         <div class="col-xs-2"><p class="pull-right"><i class="fa fa-arrow-up"></i> <a href="#">Back to top</a></p></div>
+      </div>
+   </div>
+</footer>
+<script src="http://yliesc.github.io/theme/js/jquery.min.js"></script>
+
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="http://yliesc.github.io/theme/js/bootstrap.min.js"></script>
+
+<!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
+<script src="http://yliesc.github.io/theme/js/respond.min.js"></script>
+
+<!--  -->
+
+
+</body>
+</html>

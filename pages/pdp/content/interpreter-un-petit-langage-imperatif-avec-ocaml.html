@@ -1,0 +1,1954 @@
+<!DOCTYPE html>
+<html lang="fr" prefix="og: http://ogp.me/ns# fb: https://www.facebook.com/2008/fbml">
+<head>
+    <title>Interpréter un petit langage impératif avec OCaml - The Golden Koala</title>
+    <!-- Using the latest rendering mode for IE -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <link href="http://yliesc.github.io/images/koala-ico.png" rel="icon">
+
+<link rel="canonical" href="http://yliesc.github.io/pages/pdp/content/interpreter-un-petit-langage-imperatif-avec-ocaml/">
+
+        <meta name="author" content="thizanne" />
+        <meta name="description" content="Vous avez appris un langage de programmation, vous avez écrit plein de jolies choses avec. Une fois vos codes écrits, vous utilisiez un programme externe pour les exécuter (ou les compiler puis les exécuter). Vous avez même peut-être travaillé avec succès sur des gros projets qui ont fait appel à …" />
+
+    <meta property="og:site_name" content="The Golden Koala" />
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="Interpréter un petit langage impératif avec OCaml"/>
+    <meta property="og:url" content="http://yliesc.github.io/pages/pdp/content/interpreter-un-petit-langage-imperatif-avec-ocaml/"/>
+    <meta property="og:description" content="Vous avez appris un langage de programmation, vous avez écrit plein de jolies choses avec. Une fois vos codes écrits, vous utilisiez un programme externe pour les exécuter (ou les compiler puis les exécuter). Vous avez même peut-être travaillé avec succès sur des gros projets qui ont fait appel à …" />
+
+
+    <!-- Bootstrap -->
+        <link rel="stylesheet" href="http://yliesc.github.io/theme/css/bootstrap.readable.min.css" type="text/css"/>
+    <link href="http://yliesc.github.io/theme/css/font-awesome.min.css" rel="stylesheet">
+
+    <link href="http://yliesc.github.io/theme/css/pygments/default.css" rel="stylesheet">
+    <link href="http://yliesc.github.io/theme/tipuesearch/tipuesearch.css" rel="stylesheet">
+    <link rel="stylesheet" href="http://yliesc.github.io/theme/css/style.css" type="text/css"/>
+        <link href="http://yliesc.github.io/css/custom.css" rel="stylesheet">
+
+        <link href="http://yliesc.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate"
+              title="The Golden Koala ATOM Feed"/>
+
+
+
+
+</head>
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+	<div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="http://yliesc.github.io/" class="navbar-brand">
+<img class="img-responsive pull-left gap-right" src="http://yliesc.github.io/images/koala-logo.svg" width="38"/> <span id="siteName">The Golden Koala</span>            </a>
+        </div>
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+
+            </ul>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+</div> <!-- /.navbar -->
+<!-- Banner -->
+<!-- End Banner -->
+<div class="container">
+    <div class="row">
+        <div class="col-sm-9">
+    <ol class="breadcrumb">
+        <li><a href="http://yliesc.github.io/" title="The Golden Koala">
+            <i class="fa fa-home fa-lg"></i>
+        </a></li>
+        <li class="active">Interpréter un petit langage impératif avec OCaml</li>
+    </ol>
+    <section id="content" class="body">
+        <h1 class="entry-title">Interpréter un petit langage impératif avec OCaml</h1>
+            <div class="entry-content">
+                    <div class="panel">
+                        <div class="panel-body">
+<footer class="post-info">
+    
+    <span class="published">
+        <span class="label label-default"><i class="fa fa-calendar"></i><time datetime="2014-09-27T00:00:00+02:00"> sam. 27 septembre 2014</time></span> | 
+    </span>
+        <span class="label label-default"><i class="fa fa-user-circle"></i> thizanne</span>  | 
+    <span class="label label-default">
+            <i class="fa fa-cc"></i> 
+        
+            CC-BY-SA
+    </span>
+</footer><!-- /.page-info -->                        </div>
+                    </div>
+            <p>Vous avez appris un langage de programmation, vous avez écrit plein de
+jolies choses avec. Une fois vos codes écrits, vous utilisiez un
+programme externe pour les exécuter (ou les compiler puis les
+exécuter). Vous avez même peut-être travaillé avec succès sur des gros
+projets qui ont fait appel à toutes vos connaissances de votre langage
+favori. Tout cela est très bien. Mais savez-vous comment ce programme
+externe avait lui-même été créé ?</p>
+<p>Si vous n'en avez aucune idée, ou que vous êtes tout simplement
+curieux de le savoir, vous êtes au bon endroit. Cet article vous
+montrera en détail comment interpréter un petit langage impératif,
+sous forme de cours-TP où nous mettrons cela en place ensemble.</p>
+<div class="toc">
+<ul>
+<li><a href="#commencons">Commençons !</a><ul>
+<li><a href="#comment-nous-fonctionnerons">Comment nous fonctionnerons</a></li>
+<li><a href="#prerequis">Prérequis</a></li>
+<li><a href="#notre-langage">Notre langage</a></li>
+<li><a href="#les-differentes-etapes-de-linterpretation">Les différentes étapes de l'interprétation</a></li>
+</ul>
+</li>
+<li><a href="#lanalyse-lexicale">L'analyse lexicale</a><ul>
+<li><a href="#mots-lexemes-et-decoupage">Mots, lexèmes et découpage</a></li>
+<li><a href="#les-expressions-rationnelles">Les expressions rationnelles</a></li>
+<li><a href="#ocamllex">Ocamllex</a><ul>
+<li><a href="#le-commencement">Le commencement</a></li>
+<li><a href="#les-mots-clefs">Les mots-clefs</a></li>
+<li><a href="#les-nombres-la-premiere-loi-et-les-alias">Les nombres, la première loi et les alias</a></li>
+<li><a href="#les-variables-et-la-deuxieme-loi">Les variables et la deuxième loi</a></li>
+<li><a href="#les-caracteres-blancs">Les caractères blancs</a></li>
+<li><a href="#les-commentaires-une-nouvelle-regle">Les commentaires : une nouvelle règle</a></li>
+<li><a href="#utilisation-pratique-de-notre-analyseur">Utilisation pratique de notre analyseur</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#lanalyse-syntaxique">L'analyse syntaxique</a><ul>
+<li><a href="#arbres-syntaxiques">Arbres syntaxiques</a></li>
+<li><a href="#les-grammaires-hors-contexte">Les grammaires hors-contexte</a></li>
+<li><a href="#menhir">Menhir</a><ul>
+<li><a href="#presentation">Présentation</a></li>
+<li><a href="#installation">Installation</a></li>
+<li><a href="#redefinissons-nos-lexemes">Redéfinissons nos lexèmes</a></li>
+<li><a href="#passons-aux-choses-serieuses">Passons aux choses sérieuses</a></li>
+<li><a href="#ou-lon-termine-lecriture-de-notre-ast-avec-les-commandes-du-langage">Où l'on termine l'écriture de notre AST avec les « commandes » du langage</a></li>
+<li><a href="#compilons">Compilons !</a></li>
+<li><a href="#au-secours-ca-ne-marche-pas">Au secours, ça ne marche pas !</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#linterpretation">L'interprétation</a></li>
+</ul>
+</div>
+<h1 id="commencons">Commençons !</h1>
+<h2 id="comment-nous-fonctionnerons">Comment nous fonctionnerons</h2>
+<p>Ce « cours » est écrit sous la forme d'un TP : en le parcourant, nous
+construirons progressivement notre interpréteur. Les explications
+pratiques du fonctionnement des outils se font beaucoup à partir du
+code, et vous avez à la fin de chaque partie la source complète du
+fichier final que nous aurons écrit. Cela veut dire que, bien sûr,
+vous pouvez vous contenter de faire un copier-coller des différents
+fichiers et des commandes pour arriver à obtenir un interpréteur qui
+fonctionne. Ce serait cependant dommage pour vous : je vous encourage
+à essayer au maximum de coder par vous-mêmes, et à vous servir du
+corrigé quand vous n'arrivez pas à comprendre quelque chose ou que
+vous voulez comparer votre solution. Bref, il est là volontairement,
+mais vous apprendrez plus si vous le copiez le moins possible.</p>
+<h2 id="prerequis">Prérequis</h2>
+<p>Interpréter un langage n'est pas quelque chose de très compliqué
+(surtout si le langage est suffisamment simple), mais vous devez tout
+de même savoir certaines choses. Concrètement, vous serez capable de
+lire et de comprendre ce cours si vous maîtrisez un minimum le langage
+OCaml. Notamment, vous devez être bien à l'aise avec les types
+récursifs (définition et utilisation), et savoir appliquer ces
+connaissances à la manipulation d'arbres. Vous devez également
+connaître les bases des entrées/sorties (notamment la lecture dans un
+fichier) et la programmation dans plusieurs fichiers. Enfin, il est
+plus que recommandé de connaître les bases d'un langage impératif, par
+exemple le C ou le Python.</p>
+<h2 id="notre-langage">Notre langage</h2>
+<p>Avant de commencer à implémenter notre langage, nous allons choisir à
+quoi il va ressembler. Nous ferons quelque chose de simple :
+nous allons écrire un interpréteur pour un langage impératif
+minimaliste.</p>
+<p>Voici donc les éléments de base de notre langage :</p>
+<ul>
+<li>les entiers, qui seront soit écrits directement, soit contenus dans
+    des variables</li>
+<li>les opérations <code>+</code>, <code>-</code> et <code>*</code> sur les entiers</li>
+<li>les booléens, incluant <code>true</code>, <code>false</code> et la comparaison <code>&gt;</code> sur les
+    entiers</li>
+<li>les opérations <code>and</code>, <code>or</code> et <code>not</code> sur les booléens</li>
+<li>les boucles <code>while</code></li>
+<li>les conditions <code>if</code></li>
+<li>une instruction <code>print</code> pour afficher un entier</li>
+</ul>
+<p>Les opérations sur les entiers et les booléens seront régies par les
+règles de priorité usuelles. Pour agir sur ces priorités, on pourra
+utiliser les parenthèses. Pour affecter une valeur à une variable, on
+utilisera <code>:=</code> (la création de la variable sera effectuée à sa
+première affectation, comme en Python par exemple).</p>
+<p>Et, comme tout langage qui se respecte (et le nôtre se respecte
+particulièrement, s'il vous plaît !), nous aurons des commentaires :
+<code>//</code> pour un commentaire sur une ligne, et <code>/* ... */</code> pour des
+commentaires multi-lignes.</p>
+<p>Voilà un exemple de code pour que vous visualisiez bien la syntaxe
+(qui est très simple) :</p>
+<div class="highlight"><pre><span></span>// On initialise les variables
+n := 5
+f := 1
+
+/*
+  boucle principale
+  /* commentaire imbriqué */
+*/
+
+while n &gt; 0 {
+    f := f * n
+    n := n - 1
+    }
+
+
+print f
+/* On peut même print-er des expressions numériques */
+print 3 + 4 * 5
+</pre></div>
+
+
+<h2 id="les-differentes-etapes-de-linterpretation">Les différentes étapes de l'interprétation</h2>
+<p>Pour comprendre les différentes étapes de l'interprétation d'un
+programme, il est souvent pratique de faire la comparaison avec la
+langue que vous parlez tous les jours. Imaginez que vous discutiez
+avec un ami, et qu'il vous dise « Le français est une belle langue
+». Si vous, vous comprenez tout de suite cette phrase, ce n'est pas le
+cas de votre ordinateur. Voilà les étapes qu'il suivra pour en
+déchiffrer le sens :</p>
+<ul>
+<li>
+<p>Initialement, il ne connaît qu'une suite de
+    caractères. Parallèlement, c'est comme si vous en étiez au stade où
+    vous avez compris : « leufranssèhètunebèlelang ».</p>
+</li>
+<li>
+<p>La première étape est <strong>l'analyse lexicale</strong> : la phrase sera découpée
+    en une suite de mots connus. Vous savez alors que votre ami a
+    prononcé successivement les mots « le », « français », « est », «
+    une », « belle » et « langue ». Vous connaissez alors la nature de
+    chaque mot individuellement (« le » est un article défini, «
+    français » est un substantif&#x2026;), mais vous ne savez pas encore
+    comment ils sont reliés entre eux.</p>
+</li>
+<li>
+<p>La deuxième étape est <strong>l'analyse syntaxique</strong>. À partir de votre
+    suite de mots, vous construisez des phrases. Vous savez maintenant
+    que « le français » est un groupe nominal, et qu'il est sujet du
+    verbe « est ». Mais vous ne savez toujours pas quel sens a cette
+    phrase.</p>
+</li>
+<li>
+<p>La dernière étape est <strong>l'analyse sémantique</strong>. Maintenant que vous
+    connaissez la structure de la phrase, vous pouvez comprendre ce
+    qu'elle veut dire. En puisant dans votre vocabulaire, vous savez
+    maintenant que votre ami vous a indiqué que la langue que vous
+    parlez, le français, a des caractéristiques qui la rendent
+    tout à fait intéressante.</p>
+</li>
+</ul>
+<p>Votre interpréteur fonctionnera (presque) exactement de cette
+façon. Si vous ne voyez pas encore parfaitement comment tout cela va
+s'agencer, ce n'est pas grave : vous comprendrez vraiment une fois
+quue nous aurons réalisé chacune de ces composantes. Il est simplement
+important de retenir que l'interprétation se fera en 3 étapes, qui ont
+chacune un rôle bien précis et qui agissent sur le résultat de l'étape
+précédente.</p>
+<h1 id="lanalyse-lexicale">L'analyse lexicale</h1>
+<h2 id="mots-lexemes-et-decoupage">Mots, lexèmes et découpage</h2>
+<p>Il est maintenant temps de commencer la réalisation de notre
+interpréteur. Comme nous l'avons vu plus haut, la première étape est
+celle de l'analyse lexicale, qui consiste à découper notre code source
+en « mots » de notre langage.</p>
+<p>Plus exactement, l'analyseur lexical (on entend souvent le terme
+anglais <em>lexer</em>) va prendre en entrée une chaîne de caractères, qui
+sera notre code source, et produire en sortie une suite de « lexèmes »
+(les anglophones vous parleront de <em>tokens</em>), qui seront les « mots »
+ou « unités lexicales » de notre langage.</p>
+<p>Les lexèmes seront tout simplement définis par un type énuméré :</p>
+<div class="highlight"><pre><span></span>type token =
+  | True
+  | False
+  | Not
+  | And
+  | Or
+  | Greater
+  | Equal
+  | LeftPar
+  | RightPar
+  | LeftCurly   (* { *)
+  | RightCurly  (* } *)
+  | Affect      (* := *)
+  | If
+  | While
+  | Print
+  | Plus
+  | Times
+  | Minus
+  | Int of int
+  | Var of string
+  | Eof         (* Fin de fichier *)
+</pre></div>
+
+
+<p>Par exemple, au code suivant :</p>
+<div class="highlight"><pre><span></span>while n &gt; 0 {
+    n := n - 1
+    }
+</pre></div>
+
+
+<p>Correspondra la liste de lexèmes suivantes :</p>
+<div class="highlight"><pre><span></span>[While; Var &quot;n&quot;; Greater; Int 0; LeftCurly; Var &quot;n&quot;; Affect; Var &quot;n&quot;; Minus; Int 1; RightCurly; Eof]
+</pre></div>
+
+
+<p>Remarquez qu'on n'a pas défini de lexème pour nos commentaires : en
+effet, on les retirera du code à traiter dès l'analyse lexicale, pour
+ne plus avoir à s'en préoccuper après.</p>
+<p>Nous connaissons donc l'ensemble de nos lexèmes. Il nous faut
+maintenant écrire les correspondances avec les chaînes de caractères
+de notre code source. On pourrait imaginer écrire une simple fonction,
+prenant comme argument un chaîne de caractères, et renvoyant le lexème
+correspondant. Pour certains, ça fonctionnerait très bien : par
+exemple <code>​"while"​</code> se convertit très simplement en <code>While</code>. Mais
+comment ferait-on pour les variables par exemple ? On ne peut
+évidemment pas écrire un cas pour chaque nom de variable possible,
+puisqu'il y en a une infinité&#x2026; En fait, il faut trouver un moyen de
+décrire les chaînes de caractères « qui sont une suite de lettres ou
+de chiffres commençant par une lettre ». Idem pour les nombres : un
+entier, c'est « une suite de chiffres ».</p>
+<p>Alors bien sûr, on pourrait encore une fois écrire une fonction qui
+indique si une chaîne de caractère correspond bien au motif d'une
+variable. Ça marcherait plus ou moins, et on pourrait s'en tirer
+honorablement pour trouver le lexème correspondant à un bout de chaîne
+donné. Mais on n'est pas plus avancé : comment savoir quelle partie du
+code source fournir à cette fonction pour déterminer le lexème en
+question ? Si mon code est <code>resultat := resultat + 4</code>, comment décider
+si le prochain lexème à analyser correspondra à <code>resultat</code>, <code>r</code> ou
+<code>resultat :</code> ?</p>
+<h2 id="les-expressions-rationnelles">Les expressions rationnelles</h2>
+<p>La solution à ce double problème existe environ depuis les années 1940
+(!!), et elle s'appelle « expressions rationnelles ». Vous en avez
+peut-être déjà entendu parler (on les appelle parfois « expressions
+régulières », ou « regex » en anglais) : c'est à la fois un objet
+théorique intéressant à étudier, et un outil pratique qui est très
+puissant lorsqu'on s'en sert correctement mais que les programmeurs
+d'aujourd'hui ont tendance à utiliser pour tout et n'importe quoi. Du
+coup, on en retrouve beaucoup de versions mutantes à des endroits où
+elles ne devraient pas être et où elles compliquent beaucoup le code
+et sa maintenance, et c'est probablement ce à quoi elles doivent leur
+réputation assez sulfureuse auprès de nombreux programmeurs.</p>
+<p>La théorie des expressions rationnelles n'est pas spécialement
+compliquée mais est trop longue pour entrer entièrement dans cet
+article. J'en ferai tout de même une présentation rapide, mais je vous
+encourage vivement à vous renseigner dessus par vous-mêmes, ne
+serait-ce que parce que ça fait partie du bagage culturel que vous
+devriez posséder.</p>
+<p>Pour ceux qui connaissent déjà les expressions régulières, il est
+important que vous lisiez quand même cette partie : la syntaxe que
+nous utiliserons diffère légèrement des syntaxes « classiques » que
+vous connaissez peut-être (qu'on rencontre par exemple avec Python,
+Perl ou sed).</p>
+<p>La première chose que vous devrez retenir concernant les expressions
+régulières, c'est qu'une expression régulière est un « objet »
+informatique (dans le sens « un truc », ça n'a pas de rapport direct
+avec la programmation objet) qui va servir à « décrire » des chaînes
+de caractères qui correspondent à un certain « motif ».</p>
+<p>L'expression régulière la plus simple a justement la forme d'une
+chaîne de caractères, et elle décrit la chaîne correspondante. Par
+exemple, l'expression régulière <code>​"we don't need no thought control"​</code>
+décrira la chaîne de caractères <code>​"we don't need no thought control"​</code>.</p>
+<p>Ces expressions-chaînes de caractères suivent les mêmes règles que les
+chaînes de caractères d'OCaml. Par exemple, l'expression <code>​"\n"​</code>
+décrira une chaîne de caractères ne contenant qu'un retour à la
+ligne. J'attire ici l'attention de ceux qui ont déjà joué avec des
+expressions régulières : <code>​"a*"​</code>, par exemple, décrira la chaîne de
+caractères <code>​"a*"​</code>, et pas par exemple la chaîne <code>​"aaaaa"​</code> (si vous ne
+comprenez pas pourquoi je dis ça, ignorez simplement cette phrase pour
+l'instant).</p>
+<p>Si votre expression régulière-chaîne de caractères ne contient qu'un
+seul caractère, vous pouvez l'écrire en suivant la syntaxe du type
+<code>char</code> d'OCaml : ainsi, <code>​'a'​</code> décrira la chaîne <code>​"a"​</code>.</p>
+<p>Si vous souhaitez décrire plusieurs chaînes différentes, vous pourrez
+utiliser un caractère spécial des expressions régulières : le tube
+<code>|</code>. Il s'interpose simplement entre deux expressions régulières, et
+l'expression globale obtenue décrit toutes les chaînes décrites soit
+par la première, soit par la seconde sous-expression. Ainsi,
+l'expression régulière <code>​"mer" | "montagne"​</code> décrira les chaînes de
+caractères <code>​"mer"​</code> et <code>​"montagne"​</code>. Vous pouvez regrouper ainsi
+plusieurs expressions : <code>​"mer" | "montagne" | "lagon"​</code> décrira les 3
+chaînes de caractères que vous devinez.</p>
+<p>Vous pouvez coller deux expression régulières l'une après l'autre :
+<code>​"côté " ("mer" | "montagne")</code> décrira les deux chaînes <code>​"côté mer"​</code>
+et <code>​"côté montagne"​</code>. Vous aurez remarqué l'usage des parenthèses pour
+gérer les priorités : la concaténation de deux expressions régulières
+est prioritaire sur l'union <code>|</code>.</p>
+<p>Le deuxième caractère spécial est l'étoile <code>*</code> (non, elle ne s'appelle
+pas astérisque quand on parle d'expressions rationnelles). Elle
+s'appose après une expression régulière, pour décrire 0 ou plusieurs
+occurrences de cette expression. Ainsi, <code>​"na"*</code> décrira les chaînes
+<code>​""​</code>, <code>​"na"​</code>, <code>​"nananana"​</code>&#x2026; Vous pouvez bien sûr combiner plusieurs
+des constructions que nous avons vues : <code>​"na"* " "("bat" | "spider")
+"man"​</code> décrira les chaînes <code>​"nanananana batman"​</code>, <code>​"na spiderman"​</code>&#x2026;</p>
+<p>Le caractère spécial <code>+</code> fonctionne de la même façon que l'étoile,
+mais sert à faire correspondre une ou plusieurs occurrences de
+l'expression à laquelle il est appliqué (autrement dit, il ne permet
+pas de décrire la chaîne vide <code>​""​</code>). Le caractère <code>?</code> fait lui
+correspondre 0 ou 1 occurrence.</p>
+<p>Un concept important pour nos expressions régulières est celui de «
+classe ». Une classe est un ensemble d'expressions-caractères (par
+exemple, <code>​'a'​</code>) entre crochets, éventuellement composée aussi de
+nouveaux symboles spéciaux. Sans ceux-ci, c'est une autre façon
+d'écrire une union : <code>['a' 'e' 'i' 'o' 'u' 'y']</code> est équivalent à
+<code>("a" | "e" | "i" | "o" | "u" | "y")</code>.</p>
+<p>On peut utiliser le caractère spécial <code>^</code> juste après le crochet
+ouvrant pour faire la négation d'une classe : <code>[^ '\n']</code> décrira
+toutes les chaînes, sauf celles composées uniquement d'un retour à la
+ligne.</p>
+<p>Enfin, on peut utiliser le caractère tiret <code>-</code> pour décrire une série
+de caractères « compris » entre deux : <code>['a' - 'e']</code> décrira <code>​"a"​</code>,
+<code>​"b"​</code>, <code>​"c"​</code>, <code>​"d"​</code> et <code>​"e"​</code>.</p>
+<p>Une fois que vous saurez que le caractère spécial <code>_</code> peut servir, un
+peu comme dans les <code>match</code> d'OCaml, à décrire n'importe quelle chaîne,
+vous connaîtrez tout des expressions régulières (enfin, non, ce n'est
+pas vrai. Mais vous en connaîtrez suffisamment pour ce qui nous
+concerne. Je vous engage toutefois vivement à vous renseigner un peu
+plus en détail dessus).</p>
+<h2 id="ocamllex">Ocamllex</h2>
+<h4 id="le-commencement">Le commencement</h4>
+<p>Nous avons maintenant notre outil théorique qui nous permettra de
+découper notre code en unités lexicales. Reste à savoir comment
+l'utiliser en pratique. Bien sûr, nous pourrions implémenter
+nous-mêmes notre moteur d'expressions régulières et l'analyseur
+syntaxique qui va avec. C'est d'ailleurs un travail intéressant que je
+vous encourage à faire quand vous maîtriserez le sujet.</p>
+<p>L'ennui, c'est que ça demande beaucoup de travail alors qu'il y a des
+outils tout prêts. Celui que nous utiliserons pour nous simplifier la
+vie s'appelle <strong>ocamllex</strong>.</p>
+<p>C'est un « générateur d'analyseur lexical » : à partir d'un
+ensemble de règles associant des expressions régulières aux lexèmes
+qu'ils décrivent, il génère une fonction OCaml qui permet, à partir
+d'un code source, de générer la suite de lexèmes correspondant.</p>
+<p>Ocamllex est fourni avec l'installation standard d'OCaml, pas besoin
+donc d'installation supplémentaire. Vous pouvez vérifier qu'il est
+bien disponible sur votre machine en tapant la commande <code>ocamllex</code>,
+qui devrait vous afficher la liste des options disponibles.</p>
+<p>Avant de commencer, reprenez le type énuméré des lexèmes que nous
+avons défini plus haut, et écrivez-le dans un fichier
+<code>tokens.ml</code>. Pour rappel, ce type était :</p>
+<div class="highlight"><pre><span></span>type token =
+  | True
+  | False
+  | Not
+  | And
+  | Or
+  | Greater
+  | Equal
+  | LeftPar
+  | RightPar
+  | LeftCurly   (* { *)
+  | RightCurly  (* } *)
+  | Affect      (* := *)
+  | If
+  | While
+  | Print
+  | Plus
+  | Times
+  | Minus
+  | Int of int
+  | Var of string
+  | Eof         (* Fin de fichier *)
+</pre></div>
+
+
+<p>Notre analyseur lexical se servira de ce fichier pour connaître les
+différents lexèmes qu'il est susceptible de produire. Par convention,
+notre code ocamllex s'écrit dans un fichier *.mll. Créez donc un
+fichier que vous appellerez par exemple « lexer.mll ».</p>
+<p>Il est maintenant temps d'écrire notre analyseur. Quand vous écrivez
+du code OCaml, l'élément principal est une fonction :</p>
+<div class="highlight"><pre><span></span>let ma_fonction = function
+  | antécédent1 -&gt; résultat1
+  | antécédent2 -&gt; résultat2
+</pre></div>
+
+
+<p>Le code Ocamllex ressemble un peu à ça. L'élément principal s'appelle
+une règle, les antécédents sont des expressions régulières et les
+résultats sont les lexèmes correspondants. La syntaxe est la suivante :</p>
+<div class="highlight"><pre><span></span>rule ma_règle = parse
+  | expression1 { Lexeme1 }
+  | expression2 { Lexeme2 }
+</pre></div>
+
+
+<p>À partir de ces différentes correspondances, ocamllex construira une
+fonction OCaml (dont nous verrons le type exact plus tard) qui, à
+partir d'un code donné, renvoie le lexème suivant (et retire les
+caractères correspondants du code). Pour qu'il puisse connaître les
+lexèmes, il faut que le type ait été déclaré quelque part, comme dans
+un fichier OCaml classique. Pour cela, OCamllex permet d'écrire du
+code OCaml en tête de fichier, entre accolades.</p>
+<h4 id="les-mots-clefs">Les mots-clefs</h4>
+<p>Voyons ça tout de suite en pratique avec la règle qui analyse tous les
+mots réservés de notre langage :</p>
+<div class="highlight"><pre><span></span>{
+  open Tokens
+  exception LexingError
+}
+
+rule lexer = parse
+  | eof { Eof }
+  | &quot;true&quot; { True }
+  | &quot;false&quot; { False }
+  | &quot;not&quot; { Not }
+  | &quot;and&quot; { And }
+  | &quot;or&quot; { Or }
+  | &quot;if&quot; { If }
+  | &quot;while&quot; { While }
+  | &quot;print&quot; { Print }
+  | &quot;(&quot; { LeftPar }
+  | &quot;)&quot; { RightPar }
+  | &quot;{&quot; { LeftCurly }
+  | &quot;}&quot; { RightCurly }
+  | &quot;+&quot; { Plus }
+  | &quot;*&quot; { Times }
+  | &quot;-&quot; { Minus }
+  | &quot;&gt;&quot; { Greater }
+  | &quot;​=​&quot; { Equal }
+  | &quot;:=​&quot; { Affect }
+</pre></div>
+
+
+<p>Vous remarquerez qu'on ouvre en tête le fichier le module Tokens, qui
+correspond donc au fichier <code>tokens.ml</code> écrit plus haut. On définit
+également une exception <code>LexingError</code> qui nous servira plus tard en
+cas d'erreur lexicale.</p>
+<p>En plus des quelques mots réservés de notre langage, vous avez
+remarqué la présence de l'antécédent <code>eof</code>. C'est un mot-clef OCamllex
+qui indique la fin de fichier : il est important de renvoyer le lexème
+correspondant, que nous avons appelé <code>Eof</code>, sinon vous aurez des
+problèmes lors de la phase d'analyse syntaxique (qui ne saura pas bien
+s'arrêter). Le reste du code est assez simple pour être compris sans
+commentaires.</p>
+<h4 id="les-nombres-la-premiere-loi-et-les-alias">Les nombres, la première loi et les alias</h4>
+<p>Passons maintenant aux nombres. Comme nous l'avons vu plus haut, nous
+ne gèrerons que des nombres entiers, qui seront donc une suite d'un ou
+plusieurs chiffres, un chiffre étant compris entre <code>​'0'​</code> et <code>​'9'​</code> pour
+l'ordre des caractères. Ça tombe bien, nous savons décrire ces
+caractères, et nous savons aussi comment exprimer "1 ou
+plusieurs". L'expression régulière permettant de décrire nos nombres
+est donc, si vous avez bien suivi, <code>['0' - '9']+</code>. Il nous reste donc
+à écrire le lexème produit. Pour cela, OCamllex nous permet de
+désigner la chaîne de caractères correspondante à l'aide du mot-clef
+<code>as</code>. Nous écrirons donc :</p>
+<div class="highlight"><pre><span></span>rule lexer = parse
+  | ...
+  | [&#39;0&#39; - &#39;9&#39;]+ as n { Int (int_of_string n) }
+</pre></div>
+
+
+<p>Notez donc l'utilisation du <code>as</code>, et n'oubliez pas de convertir la
+chaîne <code>n</code> en entier : notre lexème <code>Int</code> attend en effet un paramètre
+de type <code>int</code>.</p>
+<p>Un premier problème se pose ici : notre analyseur reconnaît, pour les
+nombres, une suite de 1 ou plusieurs chiffres. Comment savoir où il va
+s'arrêter ? Par exemple, si notre code contient <code>a := 123</code> et qu'il en
+est au <code>123</code>, comment saura-t-il s'il doit traduire <code>1</code>, <code>12</code> ou <code>123</code> ?</p>
+<p>La solution à ce problème est apportée par la loi de la plus longue
+correspondance. C'est la première loi que suivra notre analyseur en
+cas d'ambiguité : comme son nom l'indique, elle précise que la chaîne
+de caractères correspondant au lexème produit à une certaine étape est
+toujours la plus longue que l'anayseur lexical peut reconnaître à
+cette étape. Ainsi, dans l'exemple précédent, la chaîne reconnue était
+<code>123</code>.</p>
+<p>Cette loi est l'occasion pour nous de parler un (tout) petit peu du
+fonctionnement interne de notre analyse lexicale. À l'aide d'objets
+informatiques appelés automates finis, qui sont très fortement liés
+aux expressions rationnelles, l'analyseur parcourt chaque caractère de
+la chaîne jusqu'à ce que la sous-chaîne entre le début de la chaîne
+principale et le caractère courant ne puisse plus constituer le début
+d'une chaîne reconnue par l'automate. L'analyseur renvoie alors la
+dernière chaîne rencontrée qu'il reconnaissait comme correspondant à
+un lexème.</p>
+<p>Nous allons maintenant introduire une autre possibilité offerte par
+OCamllex : les alias. Ils permettent de nommer des expressions
+régulières afin de s'en resservir par la suite sans avoir à les
+réécrire à chaque fois. En plus du gain de place pour des grosses
+expressions souvent réutilisées, ils permettent souvent d'améliorer la
+lisibilité. Ici, nous allons définir un alias « chiffre ». On utilise
+pour cela le mot-clef <code>let</code>, comme en OCaml, et on déclare l'alias
+avant son utilisation (donc ici entre le code OCaml initial et notre
+règle). Voilà donc l'état actuel de notre fichier :</p>
+<div class="highlight"><pre><span></span>{
+  open Parser
+  exception LexingError
+}
+
+let digits = [&#39;0&#39; - &#39;9&#39;]
+
+rule lexer = parse
+  | eof { Eof }
+  | &quot;true&quot; { True }
+  | &quot;false&quot; { False }
+  | &quot;not&quot; { Not }
+  | &quot;and&quot; { And }
+  | &quot;or&quot; { Or }
+  | &quot;if&quot; { If }
+  | &quot;while&quot; { While }
+  | &quot;print&quot; { Print }
+  | &quot;(&quot; { LeftPar }
+  | &quot;)&quot; { RightPar }
+  | &quot;{&quot; { LeftCurly }
+  | &quot;}&quot; { RightCurly }
+  | &quot;+&quot; { Plus }
+  | &quot;*&quot; { Times }
+  | &quot;-&quot; { Minus }
+  | &quot;&gt;&quot; { Greater }
+  | &quot;​=​&quot; { Equal }
+  | &quot;:=​&quot; { Affect }
+  | digits+ as n { Int (int_of_string n) }
+</pre></div>
+
+
+<p>Rien de très compliqué.</p>
+<h4 id="les-variables-et-la-deuxieme-loi">Les variables et la deuxième loi</h4>
+<p>Nous allons maintenant passer aux
+variables. Elles doivent commencer par une lettre (pour faire pompeux,
+on peut dire un « caractère alphabétique »), éventuellement suivie
+d'un ou plusieurs « caractères alphanumériques » (des chiffres ou des
+lettres, appellation qu'on rencontre plus souvent). Les lettres
+peuvent être en majuscule. Comme tout à l'heure, nous définissons un
+nouvel alias avant d'écrire notre expression régulière :</p>
+<div class="highlight"><pre><span></span>let digits = [&#39;0&#39; - &#39;9&#39;]
+let alpha = [&#39;a&#39; - &#39;z&#39; &#39;A&#39; - &#39;Z&#39;]
+
+rule lexer = parse
+  | &quot;true&quot; { True }
+  | alpha (alpha | digits)* as v { Var v }
+</pre></div>
+
+
+<p>Les plus malins auront remarqué que nous avons ici un deuxième
+problème. En effet, le mot <code>​"true"​</code> est lui-même reconnu à la fois par
+l'expression régulière <code>​"true"​</code>, afin de produire le lexème attendu
+<code>True</code> des booléens, mais aussi par l'expression décrivant les
+variables.</p>
+<p>On pourrait se débrouiller pour que l'expression des variables ne
+décrive pas <code>​"true"​</code>, mais on serait obligés de faire ça pour chaque
+mot-clef : ce serait un travail long, compliqué, délicat, stupide,
+<em>bogue-amical</em> et déraisonnable. Si vous n'êtes pas convaincus,
+essayez vous-mêmes, et une semaine après, rajoutez un mot-clef à votre
+langage.</p>
+<p>Comme tout-à-l'heure avec la plus longue correspondance, une deuxième
+loi existe pour régler ce problème : la priorité à l'expression la
+plus haute. Elle indique qu'en cas de conflit pour une chaîne donnée,
+éventuellement après application de la loi de la plus longue
+correspondance, qui permettra par exemple de ne pas avoir de conflit
+sur la variable <code>​"truefalse"​</code>, le lexème produit est le premier placé
+dans la liste des correspondances du fichier OCamllex. Ainsi, en
+plaçant les mots-clefs avant les variables dans ce fichier, on est
+assuré qu'ils seront bien reconnus comme tels.</p>
+<h4 id="les-caracteres-blancs">Les caractères blancs</h4>
+<p>La prochaine étape est la lecture des caractères blancs. Comme le
+montre le code-exemple du début de ce tutoriel, l'utilisateur de notre
+langage a la possibilité d'utiliser des caractères tels que l'espace,
+la tabulation ou le saut de ligne pour rendre son code plus agréable à
+la lecture. Même s'ils ne correspondent à aucun lexème, nous sommes
+obligés de les noter quelque part dans notre code OCamllex, sinon il
+s'arrêterait dès qu'il en rencontre un avec une erreur lexicale.</p>
+<p>Pour cela, nous utiliserons le mot clef <code>lexbuf</code>. Il désigne, après
+reconnaissance d'un mot dans le code (correspondant donc à une
+expression régulière), la suite des caractères de ce code. Lorsque
+nous rencontrons un caractère blanc, il nous suffit donc de réappeler
+notre lexer (qui, rappelez-vous, doit renvoyer à chaque appel le
+prochain lexème du code) sur ce <code>lexbuf</code> afin qu'il y trouve le lexème
+suivant. Les règles écrites en OCamllex sont automatiquement
+récursives, nous écrirons donc :</p>
+<div class="highlight"><pre><span></span><span class="c">(* On ne prendra en compte que les sauts de lignes, les tabulations et</span>
+<span class="c">les espaces *)</span>
+
+<span class="k">let</span> <span class="n">empty</span> <span class="o">=</span> <span class="o">[</span><span class="sc">&#39;\n&#39;</span> <span class="sc">&#39;\t&#39;</span> <span class="sc">&#39; &#39;</span><span class="o">]</span>
+
+<span class="n">rule</span> <span class="n">lexer</span> <span class="o">=</span> <span class="n">parse</span>
+  <span class="o">|</span> <span class="n">empty</span><span class="o">+</span> <span class="o">{</span> <span class="n">lexer</span> <span class="n">lexbuf</span> <span class="o">}</span>
+  <span class="o">|</span> <span class="o">...</span>
+</pre></div>
+
+
+<p>Notez que nous avons choisi de sauter d'un coup tous les caractères
+blancs consécutifs (à l'aide du signe <code>+</code>), mais qu'on aurait très
+bien pu le faire un par un.</p>
+<h4 id="les-commentaires-une-nouvelle-regle">Les commentaires : une nouvelle règle</h4>
+<p>Avant d'avoir un analyseur lexical complet, il ne nous reste plus qu'à
+gérer les commentaires. Rappelez-vous qu'ils ont la syntaxe des
+commentaires C : <code>//</code> pour commenter sur une ligne (ou une fin de
+ligne), et <code>/* ... */</code> pour délimiter des commentaires pouvant
+s'étendre sur plusieurs lignes.</p>
+<p>Pour les premiers, c'est relativement simple : il nous suffit
+d'ignorer (comme avec les blancs) tous les caractères compris entre
+<code>//</code> et la fin de ligne <code>​'\n'​</code>. Ces caractères peuvent être n'importe
+quoi&#x2026; sauf eux-mêmes des sauts de lignes ! (Un bonbon pour ceux qui
+avaient deviné.) Je vous laisse écrire l'expression correspondante par
+vous-mêmes, la solution viendra plus bas avec le code OCamllex complet.</p>
+<p>Pour les commentaires multilignes, c'est un peu plus compliqué. En
+effet, nous ne pouvons pas nous contenter de faire correspondre un
+<code>/*</code> avec le <code>*/</code> suivant : nous voulons pouvoir imbriquer des
+commentaires, et ce à n'importe quel niveau. Par exemple, on veut
+pouvoir écrire :</p>
+<div class="highlight"><pre><span></span><span class="cm">/*</span>
+<span class="cm">  Premier niveau de commentaires</span>
+<span class="cm">  /*</span>
+<span class="cm">    Deuxième niveau</span>
+<span class="cm">    /* Troisième niveau */</span><span class="w"></span>
+<span class="w">  </span><span class="o">*/</span><span class="w"></span>
+<span class="o">*/</span><span class="w"></span>
+</pre></div>
+
+
+<p>Inutile d'essayer d'écrire l'expression régulière permettant de
+décrire ces commentaires imbriqués, vous n'y arriverez pas pour la
+bonne et simple raison qu'elle n'existe pas. Si vous voulez connaître
+le mot pour briller en société, on dit que ce langage des commentaires
+imbriqués est « non-régulier » (ce qui correspond exactement à « non
+reconnaissable par une expression rationnelle/un automate » - les deux
+revenant au même). Nous allons donc devoir tricher un peu pour
+reconnaître plus de choses qu'il n'en est théoriquement possible avec
+nos expressions régulières.</p>
+<p>Pour cela, nous allons écrire une deuxième règle, qui sera appelée dès
+que l'on rencontrera un début de commentaire multiligne <code>/*</code>. Elle
+s'occupera d'ignorer tous les caractères jusqu'au <code>*/</code> correspondant,
+puis repassera la main à notre règle <code>lexer</code>. Afin de trouver la
+fermeture de commentaire correspondante, elle devra connaître le
+niveau de commentaire dans lequel on se trouve : si on en est au
+niveau (n) et qu'on arrive à un mot <code>/*</code>, on passe au niveau (n +
+1). Si on trouve <code>*/</code>, on passe au niveau (n - 1). Si on était alors
+au premier niveau, il suffit d'appeler la règle <code>lexer</code> sur la suite
+du code : on a alors ignoré le commentaire comme prévu.</p>
+<p>La définition de cette nouvelle règle se fera avec le mot-clef <code>and</code>,
+qui encore une fois ressemble beaucoup dans son fonctionnement à celui
+d'OCaml. La mémorisation du niveau de commentaire pourrait se faire
+avec une référence utilisée dans le code OCaml des résultats (et
+correctement définie en tête de fichier), je vous invite d'ailleurs à
+le faire à titre d'exercice. Pour ce projet, j'utiliserai plutôt un
+argument supplémentaire passé à la règle, correspondant à la
+profondeur des imbrications au moment où cette règle est
+appelée. Lorsqu'on rencontre un <code>/*</code> dans <code>lexer</code>, on appelle donc la
+règle <code>comment</code> avec l'argument <code>1</code> (sans oublier l'argument <code>lexbuf</code>).</p>
+<p>Le corps de cette règle devrait être assez simple pour vous : si on
+croise une ouverture ou une fermeture, on réagit comme expliqué plus
+haut. Si on croise une fin de fichier (<code>eof</code>), on renvoie
+<code>LexingError</code> : les commentaires multilignes devront obligatoirement
+être fermés correctement (on évite ainsi les erreurs étranges qui
+viennent d'un commentaire qu'on croyait qu'il n'était pas fermé mais
+qu'en fait il n'est fermé). Si on rencontre n'importe quoi d'autre
+(rappelez-vous de <code>_</code>&#x2026;), on rappelle notre règle sur la suite du
+code.</p>
+<p>Sans plus tarder, voilà donc le code complet de notre analyseur lexical :</p>
+<div class="highlight"><pre><span></span>{
+  open Parser
+  exception LexingError
+}
+
+let digits = [&#39;0&#39; - &#39;9&#39;]
+let alpha = [&#39;a&#39; - &#39;z&#39; &#39;A&#39; - &#39;Z&#39;]
+let empty = [&#39;\n&#39; &#39;\t&#39; &#39; &#39;]
+
+rule lexer = parse
+  | &quot;//&quot; [^&#39;\n&#39;]* &#39;\n&#39;? { lexer lexbuf }
+  | &quot;/*&quot; { comment 1 lexbuf }
+  | eof { Eof }
+  | empty+ { lexer lexbuf }
+  | &quot;true&quot; { True }
+  | &quot;false&quot; { False }
+  | &quot;not&quot; { Not }
+  | &quot;and&quot; { And }
+  | &quot;or&quot; { Or }
+  | &quot;if&quot; { If }
+  | &quot;while&quot; { While }
+  | &quot;print&quot; { Print }
+  | &quot;(&quot; { LeftPar }
+  | &quot;)&quot; { RightPar }
+  | &quot;{&quot; { LeftCurly }
+  | &quot;}&quot; { RightCurly }
+  | &quot;+&quot; { Plus }
+  | &quot;*&quot; { Times }
+  | &quot;-&quot; { Minus }
+  | &quot;&gt;&quot; { Greater }
+  | &quot;​=​&quot; { Equal }
+  | &quot;:=​&quot; { Affect }
+  | digits+ as n { Int (int_of_string n) }
+  | alpha (alpha | digits)* as v { Var v }
+
+and comment depth = parse
+  | &quot;/*&quot; { comment (depth + 1) lexbuf }
+  | &quot;*/&quot; {
+    if depth = 1 then lexer lexbuf
+    else comment (depth - 1) lexbuf
+  }
+  | eof { raise LexingError }
+  | _ { comment depth lexbuf }
+</pre></div>
+
+
+<p>Vous avez donc la solution complète de la gestion des
+commentaires. Vous aurez peut-être remarqué la petite subtilité sur
+les commentaires unilignes : le saut de ligne final est
+facultatif. C'est pour permettre à l'utilisateur d'écrire un
+commentaire uniligne en fin de fichier sans avoir à terminer sa ligne
+finale par un saut de ligne (notez que bon, en vrai il devrait de
+toute façon le faire, mais ne soyons pas plus royalistes que le roy).</p>
+<h4 id="utilisation-pratique-de-notre-analyseur">Utilisation pratique de notre analyseur</h4>
+<p>Félicitations, vous avez maintenant un analyseur lexical complet ! Il
+ne nous reste plus qu'à voir son utilisation pratique, et nous
+pourrons passer au gros mais intéressant morceau de l'analyse
+syntaxique.</p>
+<p>La distribution standard d'OCaml fournit un module <code>Lexing</code>, dédié
+comme son nom l'indique à l'analyse lexicale. Il fournit entre autres
+quelques fonctions de base permettant de construire des lexers, que
+vous devriez regarder un jour où vous avez un peu de temps, au moins
+pour la culture. Il nous intéresse parce qu'il fournit également un
+type <code>lexbuf</code>, qui doit maintenant vous dire quelque chose : il
+correspond à un « buffer » (un tampon en français) lexical. Ce type a
+un comportement ressemblant aux flux (<em>stream</em> en anglais) pour ceux
+qui connaissent : il s'agit pour simplifier d'une liste dont la tête
+n'est calculée que quand on la demande explicitement (on dit que la
+liste est <strong>paresseuse</strong>), et est supprimée de la liste une fois qu'on
+l'a produite (la liste est <strong>destructive</strong>). Rappelez-vous, le mot-clef
+<code>lexbuf</code> d'OCamllex fonctionnait exactement de cette façon : nos
+règles le prenaient en argument, renvoyant le lexème correspondant au
+premier mot rencontré, et ce mot était retiré du « code ». Il s'agit
+donc d'un flux de caractères.</p>
+<p>Notre analyseur lexical produira des fonctions dont le paramètre aura
+ce type (en plus des éventuels paramètres supplémentaires de nos
+règles). Il faudra donc, à partir de notre code (qui sera contenu soit
+dans un fichier, soit dans une chaîne de caractères), produire une
+valeur de type <code>Lexing.lexbuf</code>. Vous vous en doutez, le module
+<code>Lexing</code> propose plusieurs fonctions pour faire ça : vous avez par
+exemple <code>Lexing.from_string</code> pour convertir une valeur de type
+<code>string</code>, ou <code>Lexing.from_channel</code> pour convertir une valeur de type
+<code>in_channel</code>.</p>
+<p>Pour qu'il génère ces fonctions, exécutez la commande suivante :</p>
+<div class="highlight"><pre><span></span>$ ocamllex lexer.mll
+</pre></div>
+
+
+<p>Ocamllex créera alors un fichier <code>lexer.ml</code> (vous pouvez changer le
+nom à l'aide de l'option <code>-o</code>), qui contiendra les fonctions <code>lexer</code>
+et <code>comment</code>. <code>Lexer.lexer</code> sera donc de type <code>Lexing.lexbuf -&gt;
+Tokens.token</code>, ce que vous aurez compris tout seul si vous avez bien
+suivi.</p>
+<p>En bonus, voilà un petit programme qui vous permettra de tester votre
+analyseur lexical (appelez-le <code>test_lexer.ml</code>) :</p>
+<div class="highlight"><pre><span></span>open Tokens
+
+let string_of_token = function
+  | True -&gt; &quot;True&quot;
+  | False -&gt; &quot;False&quot;
+  | Not -&gt; &quot;Not&quot;
+  | And -&gt; &quot;And&quot;
+  | Or -&gt; &quot;Or&quot;
+  | Greater -&gt; &quot;Greater&quot;
+  | Equal -&gt; &quot;Equal&quot;
+  | LeftPar -&gt; &quot;LeftPar&quot;
+  | RightPar -&gt; &quot;RightPar&quot;
+  | LeftCurly -&gt; &quot;LeftCurly&quot;
+  | RightCurly -&gt; &quot;RightCurly&quot;
+  | Affect -&gt; &quot;Affect&quot;
+  | If -&gt; &quot;If&quot;
+  | While -&gt; &quot;While&quot;
+  | Print -&gt; &quot;Print&quot;
+  | Plus -&gt; &quot;Plus&quot;
+  | Times -&gt; &quot;Times&quot;
+  | Minus -&gt; &quot;Minus&quot;
+  | Int n -&gt; &quot;Int &quot; ^ string_of_int n
+  | Var v -&gt; &quot;Var &quot; ^ v
+  | Eof -&gt; &quot;Eof&quot;
+
+let lexbuf = Lexing.from_channel (open_in Sys.argv.(1))
+
+let rec print_code lexbuf =
+  let t = Lexer.lexer lexbuf in
+    print_endline (string_of_token t);
+    if t &lt;&gt; Eof then print_code lexbuf
+
+let () =  print_code lexbuf
+</pre></div>
+
+
+<p>Compilez ce code avec :</p>
+<div class="highlight"><pre><span></span>$ ocamlbuild test_lexer.native
+</pre></div>
+
+
+<p>Si votre analyseur lexical a été correctement écrit, vous devriez
+avoir un message sans erreur. Vous pouvez ensuite le tester avec :</p>
+<div class="highlight"><pre><span></span>$ ./test_lexer.native test.imp
+Var n
+Affect
+Int <span class="m">5</span>
+Var f
+Affect
+Int <span class="m">1</span>
+While
+Var n
+Greater
+Int <span class="m">0</span>
+LeftCurly
+Var f
+Affect
+Var f
+Times
+Var n
+Var n
+Affect
+Var n
+Minus
+Int <span class="m">1</span>
+RightCurly
+Print
+Var f
+Print
+Int <span class="m">3</span>
+Plus
+Int <span class="m">4</span>
+Times
+Int <span class="m">5</span>
+Eof
+</pre></div>
+
+
+<p>Ce résultat ayant été obtenu à partir du fichier <code>test.imp</code> suivant :</p>
+<div class="highlight"><pre><span></span>// On initialise les variables
+n := 5
+f := 1
+
+/*
+  boucle principale
+  /* commentaire imbriqué */
+*/
+
+while n &gt; 0 {
+    f := f * n
+    n := n - 1
+    }
+
+
+print f
+/* On peut même print-er des expressions numériques */
+print 3 + 4 * 5
+</pre></div>
+
+
+<p>Si vous n'avez pas ce résultat, il y a un problème chez vous. Si vous
+ne trouvez pas, vous avez tout le corrigé du code, profitez-en
+maintenant pour regarder ce qui ne va pas et régler ce problème.</p>
+<p>Et voilà, nous en avons terminé avec l'analyse lexicale ! Maintenant
+que vous n'avez plus de problème avec cette partie, nous allons
+pouvoir passer à l'analyse syntaxique. N'hésitez pas, comme je l'ai
+dit plusieurs fois, à aller regarder plus en détail la théorie des
+expressions rationnelles et des automates finis : c'est relativement
+simple, et c'est toujours intéressant (et vous comprendrez
+probablement mieux ce qui va suivre).</p>
+<h1 id="lanalyse-syntaxique">L'analyse syntaxique</h1>
+<h2 id="arbres-syntaxiques">Arbres syntaxiques</h2>
+<p>Lors de la première étape, l'analyse lexicale, nous avons transformé
+le code source initial en une suite de lexèmes connus de notre
+langage. Si vous vous souvenez bien, nous allons maintenant lier ces
+lexèmes entre eux : nous allons former des phrases avec les mots que
+nous avons obtenu.</p>
+<p>Prenons un exemple simple avec le code suivant :</p>
+<div class="highlight"><pre><span></span>if f &gt; 0 {
+    print 2 * f + 5
+}
+</pre></div>
+
+
+<p>En oubliant pour l'instant les lexèmes, analysons donc les rapports
+entre les différents mots. Intéressons-nous d'abord à l'intérieur de
+la condition. Nous avons un <code>print</code>, suivi d'une opération
+arithmétique. <code>print</code> étant un mot-clef connu de notre langage, nous
+savons que cette ligne sera un appel à notre fonction <code>print</code>, avec
+comme paramètre <code>2 * f + 5</code>. Notons-le de cette façon : <code>Print
+("2 * f + 5")</code>. Il nous faut maintenant analyser ce paramètre pour
+compléter le découpage de la ligne. Il s'agit d'une opération à deux
+opérateurs, <code>*</code> et <code>+</code>. Nous ne pouvons donc a priori pas faire comme
+<code>print</code>, à savoir décomposer directement en une opération et son ou
+ses opérandes. Sauf que&#x2026; nous avons les règles de priorité ! Ces
+règles nous disent qu'on commence par calculer <code>2 * f</code>, puis qu'on
+ajoute <code>5</code>. Donc nous avons bien une opération, <code>+</code>, dont les
+opérandes sont <code>2 * 5</code> et <code>f</code>. Autrement dit, quand on a une opération
+faisant intervenir des <code>*</code> et des <code>+</code>, on commence par analyser
+l'expression <code>*</code> puis on prend son résultat comme opérande de <code>+</code>. Le
+résultat final de cette ligne est donc : <code>Print(Add(Mul(2, "f"),
+5))</code>. On fait pareil avec le <code>if</code> : on peut dire que <code>If</code> a deux
+arguments, <code>​"f &gt; 0"​</code> et la ligne que nous venons d'analyser, ce qui
+nous donne finalement une décomposition qui, au lieu de s'écrire
+linéairement, se représente plus intuitivement comme l'arbre suivant :</p>
+<p><img alt="img" src="../../../progdupeupl//galleries/98/b5b7038c-e43d-416f-b333-d9bb32cb7fa9.png" /></p>
+<p>Comme vous pouvez le constater, c'est un arbre <em>n-aire</em> (le nombre de
+fils de chaque noeud n'est pas fixé - en pratique il ne dépassera pas
+2 dans notre cas), où chaque « mot » de notre langage représente un
+noeud (ou une feuille). Il montre bien la relation entre nos mots : la
+portée de chacun, ses paramètres&#x2026; Cet arbre particulier est appelé
+<strong>arbre syntaxique abstrait</strong>, qu'on abrège presque tout le temps en AST
+(<em>abstract syntax tree</em>). Et comme vous l'avez remarqué, à chaque
+noeud ou feuille de notre arbre, on trouve un mot correspondant
+exactement à un lexème du langage : on a donc complètement décomposé
+notre liste de lexèmes dans notre AST.</p>
+<p>Afin de vous assurez que vous maîtrisez le concept d'arbre syntaxique,
+vous avez ci-dessous l'arbre syntaxique correspondant au code de test
+de notre analyseur lexical (redonné pour mémoire). Assurez-vous de
+bien comprendre comment il est construit (ce n'est pas très compliqué,
+mais c'est important). Notez que Seq désigne la suite de deux
+instructions.</p>
+<p>Voici donc la source :</p>
+<div class="highlight"><pre><span></span>// On initialise les variables
+n := 5
+f := 1
+
+/*
+  boucle principale
+  /* commentaire imbriqué */
+*/
+
+while n &gt; 0 {
+    f := f * n
+    n := n - 1
+    }
+
+
+print f
+/* On peut même print-er des expressions numériques */
+print 3 + 4 * 5
+</pre></div>
+
+
+<p>Et l'arbre qui en découle :</p>
+<p><img alt="img" src="../../../progdupeupl//galleries/98/ab717a0a-da40-401f-b6fd-1ceaf5133333.png" /></p>
+<p>Vous pouvez remarquer que le constructeur <code>Seq</code> prend deux sous-AST en
+paramètre. On aurait aussi pu lui en faire prendre un nombre
+quelconque (donc une liste d'AST) : les deux solutions sont en fait à
+peu près équivalentes, celle que nous avons choisi revenant en fait à
+construire des listes avec <code>Seq</code> au lieu de <code>Cons</code> (ou <code>::</code>, comme
+vous voulez).</p>
+<p>Il ne nous reste plus qu'à définir notre AST dans un fichier
+<code>ast.ml</code> :</p>
+<div class="highlight"><pre><span></span>type command =
+  | Affect of string * aexp
+  | Print of aexp
+  | If of bexp * command
+  | While of bexp * command
+  | Seq of command * command
+
+and aexp =
+  | Int of int
+  | Var of string
+  | Minus of aexp * aexp
+  | Neg of aexp
+  | Plus of aexp * aexp
+  | Times of aexp * aexp
+
+
+and bexp =
+  | And of bexp * bexp
+  | Equal of aexp * aexp
+  | False
+  | Greater of aexp * aexp
+  | Not of bexp
+  | Or of bexp * bexp
+  | True
+</pre></div>
+
+
+<p>Vous aurez remarqué qu'il est composé de 3 différents types : nous
+reviendrons dessus plus tard. Ils sont a priori assez explicites pour
+que vous n'ayiez pas besoin de plus d'explications.</p>
+<h2 id="les-grammaires-hors-contexte">Les grammaires hors-contexte</h2>
+<p>Maintenant que nous connaissons la forme de la sortie de notre
+analyseur syntaxique, il nous faut transformer notre liste de lexèmes
+en AST. Pour faire simple, commençons par les expressions
+arithmétiques. Nous allons les redéfinir plus formellement, de la
+façon suivante :
+1.  Les entiers sont des expressions arithmétiques ;
+2.  Les variables sont des expressions arithmétiques ;
+3.  Si <code>A</code> et <code>B</code> sont des expressions arithmétiques, alors <code>A + B</code>,
+    <code>A * B</code> et <code>A - B</code> sont des expressions arithmétiques, avec les
+    priorités usuelles ;
+4.  Si <code>A</code> est une expressions arithmétique, alors <code>- A</code> et <code>(A)</code> sont
+    des expressions arithmétiques.</p>
+<p>Vous aurez remarqué que je note <code>+</code> pour avoir des formules plus
+lisibles, mais en réalité il s'agit bien du lexème <code>Plus</code>.</p>
+<p>Pour l'analyse lexicale, nous avons utilisé les expressions
+rationnelles. Comme il s'agit toujours de reconnaître certains motifs,
+nous pourrions être tentés de recommencer, en remplaçant les
+caractères par des lexèmes. Seulement, ça ne marchera pas. En effet,
+le langage des expressions arithmétiques est <em>non-régulier</em> : on ne
+peut pas le décrire à l'aide d'une expression régulière. En fait, on
+ne peut même pas écrire d'expression régulière qui décrive un mot
+composé de <code>n</code> parenthèses ouvrantes suivi de <code>n</code> parenthèses
+fermantes. Une explication « avec les mains » à cette contrainte est
+liée aux automates finis, qui, rappelez-vous, sont les objets
+permettant de faire « fonctionner » les expressions régulières. Un
+automate fini est composé d'un certain nombre <code>N</code> d'états, et il ne
+peut pas « retenir » plus de <code>N</code> caractères. Or ici, on veut pouvoir
+retenir un nombre arbitrairement grand de parenthèses gauches pour
+savoir si on a bien le bon nombre de parenthèses droites pour les
+fermer : il faudrait donc un automate <em>infini</em>, qui n'est donc associé
+à aucune expression rationnelle.</p>
+<p>Il nous faut donc trouver une autre forme de description de notre
+langage. Elle découle en fait directement de notre définition
+précédente : comme vous l'avez constaté, cette définition est
+récursive, et c'est précisément cette récursivité qui va nous
+permettre de nous en sortir. Écrivons donc :</p>
+<div class="highlight"><pre><span></span>A:
+  | Int
+  | Var
+  | A + A
+  | A - A
+  | A * A
+  | - A
+  | (A)
+</pre></div>
+
+
+<p>Cette écriture, qui n'est autre que notre définition avec une syntaxe
+un peu plus formelle (<code>A</code> désignant les expressions arithmétiques),
+est celle des <strong>grammaires hors-contexte</strong>. <code>A</code> est appelé <strong>terme</strong> de la
+grammaire, et les différents « cas » (<code>Int</code>, <code>A + A</code>&#x2026;) des
+<strong>productions</strong>.</p>
+<p>On peut comparer les grammaires hors-contexte aux expressions
+rationnelles, mais en plus expressif : on peut décrire (strictement)
+plus de choses à l'aide d'une grammaire hors-contexte qu'en utilisant
+des expressions rationnelles. D'ailleurs, nous allons voir que les
+grammaires hors-contexte « incluent » les expressions
+rationnelles. Pour avoir ces dernières sur un alphabet (tout à l'heure
+les caractères des <code>String</code>, ici les lexèmes), il faut avoir, en plus
+de ces caractères et de ε qui désigne le mot vide, 3 choses : la
+concaténation, l'union <code>|</code> et l'étoile <code>*</code>. Tout le reste n'est que du
+« sucre » : par exemple, <code>s+</code> peut s'écrire comme <code>ss*</code>, et <code>s?</code> peut
+s'écrire comme <code>s|ε</code>.</p>
+<p>Sans reconstruire rigoureusement les expressions rationnelles, voyons
+comment nous pouvons écrire un terme qui décrit la même chose que
+<code>(a|b)*ba</code> :</p>
+<div class="highlight"><pre><span></span>A:
+  | a
+
+B:
+  | b
+
+AorB:
+  | A
+  | B
+
+AorBstar:
+  | ε
+  | AorB AorBstar
+
+Final:
+  | AorBstar B A
+</pre></div>
+
+
+<p>Comme vous pouvez le voir, nous avons un terme (<code>Final</code>) qui décrit la
+même chose que notre expression rationnelle initiale. Ce qui est
+intéressant ici, c'est de voir comment nous avons redéfini l'étoile et
+le tube. Les grammaires hors-contexte permettent donc de faire plus de
+choses que les expressions rationnelles. On pourrait donc les utiliser
+aussi pour l'analyse lexicale&#x2026; Sauf que, comme vous pouvez le voir
+sur l'exemple précédent, les expressions rationnelles permettent en
+général une écriture beaucoup plus concise (et l'implémentation
+derrière est moins lourde).</p>
+<p>Nous allons nous arrêter ici pour la théorie et passer à l'utilisation
+pratique de ce nouvel outil. Comme pour les expressions rationnelles,
+j'invite le lecteur curieux à se renseigner plus en détail sur les
+grammaires hors-contexte : il reste pas mal de choses à dire
+dessus. Vous apprendrez ainsi la signification de termes comme <em>LL(*)</em>
+ou <em>LR(1)</em>, vous découvrirez l'analyse descendante et les automates à
+pile. En poussant un peu plus loin vous entendrez parler de
+classification des langages, et de tout un tas de choses intéressantes
+qui vous permettront de briller dans les dîners de la haute société.</p>
+<h2 id="menhir">Menhir</h2>
+<h4 id="presentation">Présentation</h4>
+<p>L'outil que nous allons utiliser pour l'analyse syntaxique s'appelle
+Menhir. Tout comme Ocamllex pour l'analyse lexicale, il s'agit d'un
+<em>générateur d'analyseur syntaxique</em> : à partir de la description des
+termes d'une grammaire, il génère un fichier OCaml qui prendra en
+entrée un flot de lexèmes (sortant d'Ocamllex) et produira en sortie
+notre AST.</p>
+<p>Il s'agit d'une adaptation pour OCaml d'un outil conçu à l'origine
+pour le langage C, appelé Bison (qui est lui-même une alternative
+libre au logiciel Yacc). Il existe également un outil appelé Ocamlyacc
+dont vous entendrez certainement parler : ils se ressemblent beaucoup,
+mais Menhir est strictement meilleur, c'est pourquoi je vous conseille
+de l'utiliser dès que vous en avez la possibilité. Pour la petite
+histoire, Ocamlyacc est l'outil utilisé pour l'analyse syntaxique du
+langage OCaml (tout comme Ocamllex est utilisé pour son analyse
+lexicale), car il a l'avantage dans ce cas précis de simplifier le
+<em>bootstrap</em> du langage, étant écrit en C (et non pas en OCaml comme
+Menhir).</p>
+<p>Cette partie vous apprendra ce qu'il faut de Menhir pour interpréter
+notre petit langage, mais il restera encore beaucoup de choses à dire
+dessus. Je vous encourage à en lire la documentation pour en savoir
+plus (par exemple sur le traitement des erreurs et sur la librairie
+standard, que nous n'abordons pas du tout ici).</p>
+<h4 id="installation">Installation</h4>
+<p>Menhir n'est pas fourni de base avec l'installation d'OCaml, il faudra
+donc l'installer explicitement vous-mêmes.</p>
+<p>Si vous êtes sous Windows, je ne sais pas comment l'installer, mais je
+suis à peu près persuadé que c'est possible (si quelqu'un l'a fait et
+peut écrire quelques lignes expliquant la manipulation, je serais ravi
+de les inclure ici).</p>
+<p>Plusieurs distributions Linux l'incluent dans leurs paquets. Pour les
+utilisateurs d'Archlinux, il existe un paquet <code>ocaml-menhir</code> dans
+l'AUR. Pour les autres distributions, je vous laisse chercher par
+vous-mêmes, ça ne devrait pas être très compliqué.</p>
+<p>Si vous êtes sur un unixoïde ne comprenant pas Menhir dans ses
+paquets, ou que vous préférez installer vos logiciels à la main,
+rendez-vous à <a href="http://cristal.inria.fr/~fpottier/menhir/">cette adresse</a>. Téléchargez les sources de Menhir,
+décompressez-les (<code>tar -xvf le_fichier.tar.gz</code>), placez-vous dans le
+répertoire qui les contient et lancez les commandes (vous avez besoin
+de l'outil <code>Make</code>, qui est de toute façon un indispensable que vous
+avez certainement déjà) :</p>
+<div class="highlight"><pre><span></span>$ make
+$ make install
+</pre></div>
+
+
+<p>Si tout s'est passé sans erreur, vous disposez maintenant de Menhir
+sur votre machine. Vous pouvez le vérifier en observant le résultat de
+la commande suivante :</p>
+<div class="highlight"><pre><span></span>$ menhir
+Usage: menhir &lt;options&gt; &lt;filenames&gt;
+</pre></div>
+
+
+<h4 id="redefinissons-nos-lexemes">Redéfinissons nos lexèmes</h4>
+<p>Notre analyseur lexical prendra en entrée un flux de lexèmes, il faut
+donc qu'il les connaisse d'une façon ou d'une autre. Pour cela, nous
+allons écrire les lignes suivantes, dans un fichier que vous
+appellerez <code>parser.mly</code>, afin de tous les redéfinir :</p>
+<div class="highlight"><pre><span></span><span class="nf">%token</span> <span class="n">True</span> <span class="n">False</span> <span class="n">Not</span> <span class="n">And</span> <span class="n">Or</span>
+<span class="nf">%token</span> <span class="n">Greater</span> <span class="n">Equal</span>
+<span class="nf">%token</span> <span class="n">LeftPar</span> <span class="n">RightPar</span> <span class="n">LeftCurly</span> <span class="n">RightCurly</span>
+<span class="nf">%token</span> <span class="n">Affect</span>
+<span class="nf">%token</span> <span class="n">If</span> <span class="n">While</span> <span class="n">Print</span>
+<span class="nf">%token</span> <span class="n">Plus</span> <span class="n">Times</span> <span class="n">Minus</span>
+<span class="nf">%token</span> <span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">Int</span>
+<span class="nf">%token</span> <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span> <span class="n">Var</span>
+<span class="nf">%token</span> <span class="n">Eof</span>
+</pre></div>
+
+
+<p>Chaque ligne commence par <code>%token</code>, suivi d'un ou plusieurs lexèmes
+(nous les avons ici regroupés dans un ordre plus ou moins
+« thématique »). Certains lexèmes peuvent prendre un paramètre : c'est
+le cas pour nous de <code>Int</code> et <code>Var</code>. Le type de ce paramètre est alors
+spécifié avant le token, entre chevrons : <code>&lt; ... &gt;</code>.</p>
+<p>Notez qu'une fois que nous aurons terminé l'écriture de notre
+analyseur syntaxique, nous n'aurons plus besoin du fichier
+<code>tokens.ml</code> : le type qu'il définit sera contenu dans le code OCaml
+produit par Menhir.</p>
+<p>Après ces lignes, ajoutez un séparateur <code>%%</code> sur une ligne. Il servira
+à différencier le <em>header</em> du fichier (le terme anglais est
+systématiquement utilisé) des termes et productions les utilisant, que
+nous placerons après.</p>
+<h4 id="passons-aux-choses-serieuses">Passons aux choses sérieuses</h4>
+<p>Commençons par écrire les productions des expressions
+arithmétiques. Notre terme s'appellera <code>aexp</code>. Nous commençons par sa
+définition structurelle :</p>
+<div class="highlight"><pre><span></span>aexp:
+| Int
+| Var
+| aexp Plus aexp
+| aexp Minus aexp
+| aexp Times aexp
+| Minus aexp
+| LeftPar aexp RightPar
+</pre></div>
+
+
+<p>Le terme est maintenant défini, mais tel quel, il ne nous servira pas
+beaucoup pour la création de l'AST. Il faut pouvoir récupérer les
+informations qu'il contient et en faire quelque chose.</p>
+<p>Pour cela, chaque production sera suivie, entre accolades <code>{...}</code>,
+d'un code OCaml qui construira l'AST correspondant. Pour récupérer la
+valeur associée à un élément de production, vous pouvez le nommer,
+comme le montre la ligne suivante :</p>
+<div class="highlight"><pre><span></span>aexp:
+| x = Int { Ast.Int x }
+</pre></div>
+
+
+<p>Rappelez-vous que nous avons défini le token <code>Int</code> comme prenant un
+paramètre de type <code>int</code>. <code>x</code> désigne ce paramètre dans la ligne que
+nous venons d'écrire. Pour les éléments étant eux-mêmes des termes de
+la grammaire, la valeur ainsi capturée correspond à la valeur renvoyée
+par l'analyseur syntaxique lorsqu'il analyse la phrase
+correspondante. C'est donc la valeur que vous écrivez entre
+accolades. On peut donc se servir de ces valeurs pour construire
+récursivement notre ast :</p>
+<div class="highlight"><pre><span></span>aexp:
+| x = Int { Ast.Int x }
+| v = Var { Ast.Var v }
+| x = aexp Plus y = aexp { Ast.Plus (x, y) }
+| x = aexp Minus y = aexp { Ast.Minus (x, y) }
+| x = aexp Times y = aexp { Ast.Times (x, y) }
+| Minus x = aexp  { Ast.Neg x }
+| LeftPar x = aexp RightPar { x }
+</pre></div>
+
+
+<p>Sauf que, comme vous l'aurez évidemment remarqué, il y a un problème :
+notre parseur (il paraît que le terme existe en français) ne connait
+pas la priorité de <code>Times</code> sur <code>Plus</code>. En fait, il ne connait même pas
+la « priorité » de <code>Plus</code> sur <code>Plus</code>, c'est-à-dire l'associativité :
+comment réduire <code>1 + 2 + 3</code>, la racine doit-elle être le premier <code>+</code>
+ou le deuxième ?</p>
+<p>Par défaut, Menhir ne soulèvera pas d'erreur, mais seulement un
+warning : il appliquera des règles conventionnelles (du style de
+celles de notre lexeur). Seulement, si tout à l'heure c'était la façon
+canonique de fonctionner, la règle pour l'analyse syntaxique est de ne
+pas laisser passer ce genre de conflits (appelé « severe conflict »)
+où le parseur doit décider tout seul. Pour cela, nous allons déclarer
+dans le <em>header</em> l'associativité et la priorité de nos différents
+opérateurs. Pour cela, nous utiliserons les mots-clefs <code>%left</code>,
+<code>%right</code> et <code>%nonassoc</code> : ils définissent chacun l'associativité du
+lexème qu'ils précèdent, et un lexème écrit après un autre est
+considéré comme prioritaire sur le premier.</p>
+<p>Écrivons donc :</p>
+<div class="highlight"><pre><span></span><span class="nf">%left</span> <span class="n">Plus</span> <span class="n">Minus</span>
+<span class="nf">%left</span> <span class="n">Times</span>
+<span class="nf">%nonassoc</span> <span class="n">neg</span>
+
+<span class="o">%%</span>
+</pre></div>
+
+
+<p>À quoi sert le <code>%nonassoc</code>, puisqu'il n'apporte aucune information
+supplémentaire d'associativité ? Ici, il sert à définir la priorité de
+la négation unaire, qui doit être réduite avant les autres
+opérations. Mais attention, l'opérateur <code>Minus</code> de cette négation est
+le même que celui de la soustraction : on ne peut donc pas s'en servir
+dans notre règle. On écrit donc (arbitrairement) <code>%neg</code> pour nommer la
+règle, et on y fera référence dans la production à l'aide du mot-clef
+<code>%prec</code>.</p>
+<p>Voici donc le code complet à notre stade de l'analyseur syntaxique :</p>
+<div class="highlight"><pre><span></span><span class="nf">%token</span> <span class="n">True</span> <span class="n">False</span> <span class="n">Not</span> <span class="n">And</span> <span class="n">Or</span>
+<span class="nf">%token</span> <span class="n">Greater</span> <span class="n">Equal</span>
+<span class="nf">%token</span> <span class="n">LeftPar</span> <span class="n">RightPar</span> <span class="n">LeftCurly</span> <span class="n">RightCurly</span>
+<span class="nf">%token</span> <span class="n">Affect</span>
+<span class="nf">%token</span> <span class="n">If</span> <span class="n">While</span> <span class="n">Print</span>
+<span class="nf">%token</span> <span class="n">Plus</span> <span class="n">Times</span> <span class="n">Minus</span>
+<span class="nf">%token</span> <span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">Int</span>
+<span class="nf">%token</span> <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span> <span class="n">Var</span>
+<span class="nf">%token</span> <span class="n">Eof</span>
+
+<span class="nf">%left</span> <span class="n">Plus</span> <span class="n">Minus</span>
+<span class="nf">%left</span> <span class="n">Times</span>
+<span class="nf">%nonassoc</span> <span class="n">neg</span>
+
+<span class="o">%%</span>
+
+<span class="nl">aexp</span><span class="p">:</span>
+<span class="o">|</span> <span class="n">x</span> <span class="o">=</span> <span class="n">Int</span> <span class="p">{</span> <span class="n">Ast</span><span class="p">.</span><span class="n">Int</span> <span class="n">x</span> <span class="p">}</span>
+<span class="o">|</span> <span class="n">v</span> <span class="o">=</span> <span class="n">Var</span> <span class="p">{</span> <span class="n">Ast</span><span class="p">.</span><span class="n">Var</span> <span class="n">v</span> <span class="p">}</span>
+<span class="o">|</span> <span class="n">x</span> <span class="o">=</span> <span class="n">aexp</span> <span class="n">Plus</span> <span class="n">y</span> <span class="o">=</span> <span class="n">aexp</span> <span class="p">{</span> <span class="n">Ast</span><span class="p">.</span><span class="n">Plus</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="p">}</span>
+<span class="o">|</span> <span class="n">x</span> <span class="o">=</span> <span class="n">aexp</span> <span class="n">Minus</span> <span class="n">y</span> <span class="o">=</span> <span class="n">aexp</span> <span class="p">{</span> <span class="n">Ast</span><span class="p">.</span><span class="n">Minus</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="p">}</span>
+<span class="o">|</span> <span class="n">x</span> <span class="o">=</span> <span class="n">aexp</span> <span class="n">Times</span> <span class="n">y</span> <span class="o">=</span> <span class="n">aexp</span> <span class="p">{</span> <span class="n">Ast</span><span class="p">.</span><span class="n">Times</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="p">}</span>
+<span class="o">|</span> <span class="n">Minus</span> <span class="n">x</span> <span class="o">=</span> <span class="n">aexp</span>  <span class="p">{</span> <span class="n">Ast</span><span class="p">.</span><span class="n">Neg</span> <span class="n">x</span> <span class="p">}</span> <span class="nf">%prec</span> <span class="n">neg</span>
+<span class="o">|</span> <span class="n">LeftPar</span> <span class="n">x</span> <span class="o">=</span> <span class="n">aexp</span> <span class="n">RightPar</span> <span class="p">{</span> <span class="n">x</span> <span class="p">}</span>
+</pre></div>
+
+
+<p>Les conflits ainsi résolus à l'aide de règles de priorité s'appellent
+les « benign conflicts ». Menhir ne vous préviendra pas de leur
+présence (en réalité, il est possible de les éviter complètement, mais
+ça mènerait à une multiplication assez lourde du nombre de termes qui
+n'est donc pas intéressante d'un point de vue pratique).</p>
+<p>Si vous avez bien compris ce que nous avons fait jusque là, le reste
+ne devrait vous poser aucun problème. Nous pouvons par exemple
+enchaîner directement avec les expressions booléennes :</p>
+<div class="highlight"><pre><span></span><span class="nf">%left</span> <span class="n">Or</span>
+<span class="nf">%left</span> <span class="n">And</span>
+<span class="nf">%nonassoc</span> <span class="n">Not</span>
+<span class="nf">%left</span> <span class="n">Plus</span> <span class="n">Minus</span>
+<span class="nf">%left</span> <span class="n">Times</span>
+<span class="nf">%nonassoc</span> <span class="n">neg</span>
+
+<span class="o">%%</span>
+<span class="nl">bexp</span><span class="p">:</span>
+<span class="o">|</span> <span class="n">True</span> <span class="p">{</span> <span class="n">Ast</span><span class="p">.</span><span class="n">True</span> <span class="p">}</span>
+<span class="o">|</span> <span class="n">False</span> <span class="p">{</span> <span class="n">Ast</span><span class="p">.</span><span class="n">False</span> <span class="p">}</span>
+<span class="o">|</span> <span class="n">x</span> <span class="o">=</span> <span class="n">aexp</span> <span class="n">Equal</span> <span class="n">y</span> <span class="o">=</span> <span class="n">aexp</span> <span class="p">{</span> <span class="n">Ast</span><span class="p">.</span><span class="n">Equal</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="p">}</span>
+<span class="o">|</span> <span class="n">x</span> <span class="o">=</span> <span class="n">aexp</span> <span class="n">Greater</span> <span class="n">y</span> <span class="o">=</span> <span class="n">aexp</span> <span class="p">{</span> <span class="n">Ast</span><span class="p">.</span><span class="n">Greater</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="p">}</span>
+<span class="o">|</span> <span class="n">a</span> <span class="o">=</span> <span class="n">bexp</span> <span class="n">And</span> <span class="n">b</span> <span class="o">=</span> <span class="n">bexp</span> <span class="p">{</span> <span class="n">Ast</span><span class="p">.</span><span class="n">And</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span> <span class="p">}</span>
+<span class="o">|</span> <span class="n">a</span> <span class="o">=</span> <span class="n">bexp</span> <span class="n">Or</span> <span class="n">b</span> <span class="o">=</span> <span class="n">bexp</span> <span class="p">{</span> <span class="n">Ast</span><span class="p">.</span><span class="n">Or</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span> <span class="p">}</span>
+<span class="o">|</span> <span class="n">Not</span> <span class="n">b</span> <span class="o">=</span> <span class="n">bexp</span> <span class="p">{</span> <span class="n">Ast</span><span class="p">.</span><span class="n">Not</span> <span class="n">b</span> <span class="p">}</span>
+<span class="o">|</span> <span class="n">LeftPar</span> <span class="n">b</span> <span class="o">=</span> <span class="n">bexp</span> <span class="n">RightPar</span> <span class="p">{</span> <span class="n">b</span> <span class="p">}</span>
+</pre></div>
+
+
+<h4 id="ou-lon-termine-lecriture-de-notre-ast-avec-les-commandes-du-langage">Où l'on termine l'écriture de notre AST avec les « commandes » du langage</h4>
+<p>Jusqu'ici, le découpage de l'AST était assez intuitif (les expressions
+arithmétiques et booléennes se prêtant naturellement très bien à une
+transformation en arbre). Pour la suite, voici comment nous allons
+procéder : il reste les affectations, les boucles, les conditions, les
+<code>print</code> et les séquences de ces opérations. Tout cela est regroupé
+dans le type <code>Ast.command</code>. Nous aurons un terme <code>command</code>, qui
+correspondra à chacune de ces possibilités prise individuellement
+(donc pas la séquence), une règle <code>sequence</code> qui correspondra à une
+liste de commandes successives, et une règle <code>prgm</code> qui correspond
+à une <code>sequence</code> suivie de <code>Eof</code>.</p>
+<p>Il est important de retenir cette dernière particularité : vous devez
+penser à gérer correctement <code>Eof</code> dans votre parseur, sans quoi vous
+aurez des erreurs de type <code>end-of-stream conflict</code> et, pour faire
+simple, ça ne marchera pas. Une fois ce découpage fait, le codage de
+ce qui reste du parseur est relativement aisé, en voici donc la source
+complète :</p>
+<div class="highlight"><pre><span></span><span class="o">%</span><span class="p">{</span>
+<span class="p">(</span><span class="o">*</span> <span class="n">Here</span> <span class="n">can</span> <span class="n">come</span> <span class="n">OCaml</span> <span class="n">code</span> <span class="o">*</span><span class="p">)</span>
+<span class="o">%</span><span class="p">}</span>
+
+<span class="nf">%token</span> <span class="n">True</span> <span class="n">False</span> <span class="n">Not</span> <span class="n">And</span> <span class="n">Or</span>
+<span class="nf">%token</span> <span class="n">Greater</span> <span class="n">Equal</span>
+<span class="nf">%token</span> <span class="n">LeftPar</span> <span class="n">RightPar</span> <span class="n">LeftCurly</span> <span class="n">RightCurly</span>
+<span class="nf">%token</span> <span class="n">Affect</span>
+<span class="nf">%token</span> <span class="n">If</span> <span class="n">While</span> <span class="n">Print</span>
+<span class="nf">%token</span> <span class="n">Plus</span> <span class="n">Times</span> <span class="n">Minus</span>
+<span class="nf">%token</span> <span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">Int</span>
+<span class="nf">%token</span> <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span> <span class="n">Var</span>
+<span class="nf">%token</span> <span class="n">Eof</span>
+
+<span class="nf">%start</span>
+
+<span class="nf">%left</span> <span class="n">Or</span>
+<span class="nf">%left</span> <span class="n">And</span>
+<span class="nf">%nonassoc</span> <span class="n">Not</span>
+<span class="nf">%left</span> <span class="n">Plus</span> <span class="n">Minus</span>
+<span class="nf">%left</span> <span class="n">Times</span>
+<span class="nf">%nonassoc</span> <span class="n">neg</span>
+
+<span class="o">%%</span>
+
+<span class="nl">prgm</span><span class="p">:</span>
+<span class="o">|</span> <span class="n">s</span> <span class="o">=</span> <span class="n">sequence</span> <span class="n">Eof</span> <span class="p">{</span> <span class="n">s</span> <span class="p">}</span>
+
+<span class="nl">sequence</span><span class="p">:</span>
+<span class="o">|</span> <span class="n">c</span> <span class="o">=</span> <span class="n">command</span> <span class="p">{</span> <span class="n">c</span> <span class="p">}</span>
+<span class="o">|</span> <span class="n">c</span> <span class="o">=</span> <span class="n">command</span> <span class="n">s</span> <span class="o">=</span> <span class="n">sequence</span> <span class="p">{</span> <span class="n">Ast</span><span class="p">.</span><span class="n">Seq</span> <span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span> <span class="p">}</span>
+
+<span class="nl">command</span><span class="p">:</span>
+<span class="o">|</span> <span class="n">v</span> <span class="o">=</span> <span class="n">Var</span> <span class="n">Affect</span> <span class="n">x</span> <span class="o">=</span> <span class="n">aexp</span> <span class="p">{</span> <span class="n">Ast</span><span class="p">.</span><span class="n">Affect</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span> <span class="p">}</span>
+<span class="o">|</span> <span class="n">Print</span> <span class="n">x</span> <span class="o">=</span> <span class="n">aexp</span>  <span class="p">{</span> <span class="n">Ast</span><span class="p">.</span><span class="n">Print</span> <span class="n">x</span> <span class="p">}</span>
+<span class="o">|</span> <span class="n">If</span> <span class="n">b</span> <span class="o">=</span> <span class="n">bexp</span> <span class="n">LeftCurly</span> <span class="n">c</span> <span class="o">=</span> <span class="n">sequence</span> <span class="n">RightCurly</span> <span class="p">{</span> <span class="n">Ast</span><span class="p">.</span><span class="n">If</span> <span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span> <span class="p">}</span>
+<span class="o">|</span> <span class="n">While</span> <span class="n">b</span> <span class="o">=</span> <span class="n">bexp</span> <span class="n">LeftCurly</span> <span class="n">c</span> <span class="o">=</span> <span class="n">sequence</span> <span class="n">RightCurly</span> <span class="p">{</span> <span class="n">Ast</span><span class="p">.</span><span class="n">While</span> <span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span> <span class="p">}</span>
+
+<span class="nl">aexp</span><span class="p">:</span>
+<span class="o">|</span> <span class="n">x</span> <span class="o">=</span> <span class="n">Int</span> <span class="p">{</span> <span class="n">Ast</span><span class="p">.</span><span class="n">Int</span> <span class="n">x</span> <span class="p">}</span>
+<span class="o">|</span> <span class="n">v</span> <span class="o">=</span> <span class="n">Var</span> <span class="p">{</span> <span class="n">Ast</span><span class="p">.</span><span class="n">Var</span> <span class="n">v</span> <span class="p">}</span>
+<span class="o">|</span> <span class="n">x</span> <span class="o">=</span> <span class="n">aexp</span> <span class="n">Plus</span> <span class="n">y</span> <span class="o">=</span> <span class="n">aexp</span> <span class="p">{</span> <span class="n">Ast</span><span class="p">.</span><span class="n">Plus</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="p">}</span>
+<span class="o">|</span> <span class="n">x</span> <span class="o">=</span> <span class="n">aexp</span> <span class="n">Minus</span> <span class="n">y</span> <span class="o">=</span> <span class="n">aexp</span> <span class="p">{</span> <span class="n">Ast</span><span class="p">.</span><span class="n">Minus</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="p">}</span>
+<span class="o">|</span> <span class="n">x</span> <span class="o">=</span> <span class="n">aexp</span> <span class="n">Times</span> <span class="n">y</span> <span class="o">=</span> <span class="n">aexp</span> <span class="p">{</span> <span class="n">Ast</span><span class="p">.</span><span class="n">Times</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="p">}</span>
+<span class="o">|</span> <span class="n">Minus</span> <span class="n">x</span> <span class="o">=</span> <span class="n">aexp</span>  <span class="p">{</span> <span class="n">Ast</span><span class="p">.</span><span class="n">Neg</span> <span class="n">x</span> <span class="p">}</span> <span class="nf">%prec</span> <span class="n">neg</span>
+<span class="o">|</span> <span class="n">LeftPar</span> <span class="n">x</span> <span class="o">=</span> <span class="n">aexp</span> <span class="n">RightPar</span> <span class="p">{</span> <span class="n">x</span> <span class="p">}</span>
+
+<span class="nl">bexp</span><span class="p">:</span>
+<span class="o">|</span> <span class="n">True</span> <span class="p">{</span> <span class="n">Ast</span><span class="p">.</span><span class="n">True</span> <span class="p">}</span>
+<span class="o">|</span> <span class="n">False</span> <span class="p">{</span> <span class="n">Ast</span><span class="p">.</span><span class="n">False</span> <span class="p">}</span>
+<span class="o">|</span> <span class="n">x</span> <span class="o">=</span> <span class="n">aexp</span> <span class="n">Equal</span> <span class="n">y</span> <span class="o">=</span> <span class="n">aexp</span> <span class="p">{</span> <span class="n">Ast</span><span class="p">.</span><span class="n">Equal</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="p">}</span>
+<span class="o">|</span> <span class="n">x</span> <span class="o">=</span> <span class="n">aexp</span> <span class="n">Greater</span> <span class="n">y</span> <span class="o">=</span> <span class="n">aexp</span> <span class="p">{</span> <span class="n">Ast</span><span class="p">.</span><span class="n">Greater</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="p">}</span>
+<span class="o">|</span> <span class="n">a</span> <span class="o">=</span> <span class="n">bexp</span> <span class="n">And</span> <span class="n">b</span> <span class="o">=</span> <span class="n">bexp</span> <span class="p">{</span> <span class="n">Ast</span><span class="p">.</span><span class="n">And</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span> <span class="p">}</span>
+<span class="o">|</span> <span class="n">a</span> <span class="o">=</span> <span class="n">bexp</span> <span class="n">Or</span> <span class="n">b</span> <span class="o">=</span> <span class="n">bexp</span> <span class="p">{</span> <span class="n">Ast</span><span class="p">.</span><span class="n">Or</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span> <span class="p">}</span>
+<span class="o">|</span> <span class="n">Not</span> <span class="n">b</span> <span class="o">=</span> <span class="n">bexp</span> <span class="p">{</span> <span class="n">Ast</span><span class="p">.</span><span class="n">Not</span> <span class="n">b</span> <span class="p">}</span>
+<span class="o">|</span> <span class="n">LeftPar</span> <span class="n">b</span> <span class="o">=</span> <span class="n">bexp</span> <span class="n">RightPar</span> <span class="p">{</span> <span class="n">b</span> <span class="p">}</span>
+</pre></div>
+
+
+<p>Il reste donc deux petites choses à expliquer, que vous aurez
+remarquées vous-mêmes si vous êtes attentifs. Tout d'abord, la
+possibilité d'écrire du code OCaml en tête du parseur. On aurait ainsi
+pu y écrire <code>open Ast</code> pour éviter d'écrire <code>Ast</code> devant chaque noeud
+produit - nous ne l'avons pas fait ici pour qu'on distingue bien les
+noeuds de l'arbre syntaxique des lexèmes, beaucoup ayant le même
+nom. La deuxième chose est la déclaration <code>%start</code> : tout-à-l'heure,
+ocamllex générait une fonction pour chaque règle de notre analyseur
+lexical. Ici, Menhir génèrera une fonction d'analyse syntaxique pour
+chaque terme déclaré à l'aide de cette commande. Vous aurez noté qu'on
+doit écrire nous-mêmes le type de sortie de la fonction produite : en
+l'occurrence, <code>Ast.command</code> (qui est le type auquel appartient le
+constructeur <code>Seq</code>).</p>
+<h4 id="compilons">Compilons !</h4>
+<p>C'est maintenant le moment de vérité : à l'aide de Menhir, vous allez
+pouvoir compiler le fichier que vous venez d'écrire vers le code OCaml
+de l'analyseur syntaxique. Exécutez donc les commandes suivantes :</p>
+<div class="highlight"><pre><span></span>$ ocamlc -c ast.ml
+$ menhir --infer --explain parser.mly
+</pre></div>
+
+
+<p>Si tout se passe bien&#x2026; vous ne verrez rien. Mais si vous listez
+votre répertoire, 4 nouveaux fichiers seront apparus : <code>ast.cmi</code> et
+<code>ast.cmo</code>, qui correspondent à la compilation de notre fichier
+<code>ast.ml</code> (dont Menhir aura besoin à cause du type qu'il définit), et
+<code>parser.ml</code> et <code>parser.mli</code>. Vous pouvez d'ailleurs regarder
+l'interface de notre nouveau <em>parser</em> :</p>
+<div class="highlight"><pre><span></span>$ cat parser.mli
+exception Error
+
+type token =
+  | While
+  | Var of (string)
+  | True
+  | Times
+  | RightPar
+  | RightCurly
+  | Print
+  | Plus
+  | Or
+  | Not
+  | Minus
+  | LeftPar
+  | LeftCurly
+  | Int of (int)
+  | If
+  | Greater
+  | False
+  | Equal
+  | Eof
+  | And
+  | Affect
+
+
+val prgm: (Lexing.lexbuf -&gt; token) -&gt; Lexing.lexbuf -&gt; (Ast.command)
+</pre></div>
+
+
+<p>Comme vous pouvez le constater, on exporte le type de nos lexèmes,
+ainsi que la fonction dont je vous ai parlé tout à l'heure (nous
+étudierons son type et son utilisation dans la dernière partie), et
+une exception qui sera utilisée en cas d'erreur de syntaxe sur les
+codes que nous analyserons.</p>
+<p>Comme je vous l'ai annoncé plus haut, vous pouvez maintenant remplacer
+<code>open Tokens</code> par <code>open Parser</code> dans votre fichier <code>lexer.mll</code> : c'est
+notre fichier Menhir qui aura désormais la lourde responsabilité de
+définir les lexèmes de notre langage.</p>
+<h4 id="au-secours-ca-ne-marche-pas">Au secours, ça ne marche pas !</h4>
+<p>Si vous avez essayé d'écrire votre code Menhir vous-mêmes, je vous en
+félicite. Par contre vous aurez peut-être des erreurs ou des
+avertissements que vous ne comprenez pas. Les options que nous avons
+donné à Menhir servent à cela : <code>--infer</code> lui demande de vérifier
+lui-même la correction de notre typage dans l'analyseur syntaxique (ce
+qui fait plus d'erreur à la compilation vers OCaml, mais garantit que
+le fichier <code>.ml</code> produit est bien typé), et <code>--explain</code> lui demande de
+détailler les conflits dans un fichier <code>parser.conflicts</code>.</p>
+<p>Pour pouvoir bien comprendre ce compte-rendu, il vous faudrait des
+explications plus poussées sur le fonctionnement de l'analyse
+syntaxique et des automates à pile, qui n'ont pas leur place ici. Je
+vous encourage donc encore une fois à vous documenter sur le sujet :
+c'est indispensable pour une bonne maîtrise des outils que nous avons
+présentés.</p>
+<p>Toutefois, en lisant les quelques lignes générées, vous devriez avoir
+une idée des productions qui posent problème. En raisonnant par
+vous-mêmes, vous pourrez trouver les cas qui soulèvent un conflit et
+chercher une manière de les éviter. Ce n'est pas toujours très facile,
+mais c'est important de bien analyser la grammaire que vous avez
+définie : souvent, on a de très bonnes idées à ce sujet, avant de se
+rendre compte qu'elles ne peuvent tout simplement pas être utilisées
+à cause d'une ambiguité qu'on ne voit pas tout de suite « à l'oeil
+nu ».</p>
+<p>Une fois que tout fonctionne bien, ça y est, vous en avez fini avec
+l'analyse syntaxique - et avec ça, le plus gros du travail sur notre
+interpréteur. Encore un dernier petit effort et vous aurez enfin votre
+petit langage de programmation !</p>
+<h1 id="linterpretation">L'interprétation</h1>
+<p>Maintenant que nous avons produit notre AST, il ne nous reste plus
+qu'à effectuer la dernière passe de notre implémentation :
+l'interprétation de cet arbre. Pour cela, nous allons utiliser une
+méthode classique de « parcours en profondeur » : voyons comment faire
+en commençant par les expressions arithmétiques.</p>
+<p>Notre arbre étant une structure récursive (comme sa définition OCaml
+le montre bien), il est naturel d'écrire une fonction récursive pour
+l'interpréter. Les cas de base (les feuilles de l'arbre)sont donc
+<code>Int</code> et <code>Var</code>, et les cas complexes <code>Neg</code>, <code>Minus</code>, <code>Plus</code> et
+<code>Times</code>. Nous allons donc commencer par écrire une fonction qui évalue
+une expression arithmétique en se basant sur ces quelques cas. Elle
+devra bien sûr renvoyer la valeur (de type <code>int</code>) correspondant au
+calcul de l'expression. Le cas <code>Int x</code> est facile à traiter : il
+suffit de renvoyer <code>x</code>. Les cas complexes s'écrivent aussi très
+naturellement par récurrence sur leurs deux branches : par exemple,
+<code>eval_aexp Plus (x, y)</code> vaudra <code>eval_aexp x + eval_aexp y</code> (regardez
+à nouveau la définition du type <code>Ast.aexp</code> si vous ne comprenez pas).</p>
+<p>Il nous reste donc à traiter le cas de base <code>Var x</code>, où <code>x</code> contient
+l'identifiant d'une variable. Cette variable a préalablement été
+affectée et contient une certaine valeur entière, qu'il faudra donc
+renvoyer. Pour cela, notre fonction <code>eval_aexp</code> devra pouvoir
+récupérer sa valeur à partir de son identifiant : le plus simple est
+de lui fournir un <em>environnement</em>, qui contient la valeur de chaque
+identifiant. Nous choisirons pour cela une solution très basique mais
+suffisante dans notre cas : une liste de type <code>(string * int) list</code>,
+qui contiendra des couples <code>(identifiant, valeur)</code>. OCaml nous fournit
+la fonction <code>List.assoc</code>, de type <code>​'a -&gt; ('a * 'b) list -&gt; 'b</code>, qui
+nous fournira la valeur de notre identifiant. Notre fonction
+d'évaluation des expressions arithmétiques prendra cet environnement
+en argument, elle s'écrit donc (dans un fichier <code>eval.ml</code>) :</p>
+<div class="highlight"><pre><span></span>let rec eval_aexp env = function
+  | Int x -&gt; x
+  | Var v -&gt; List.assoc v env
+  | Neg x -&gt; - (eval_aexp env x)
+  | Minus (x, y) -&gt; eval_aexp env x - eval_aexp env y
+  | Plus (x, y) -&gt; eval_aexp env x + eval_aexp env y
+  | Times (x, y) -&gt; eval_aexp env x * eval_aexp env y
+
+(* eval_aexp : (string * int) list -&gt; Ast.aexp -&gt; int *)
+</pre></div>
+
+
+<p>Si vous voulez tester votre fonction tout de suite (ce qui est la
+bonne chose à faire), n'oubliez pas d'ouvrir le module <code>Ast</code> en
+écrivant <code>open Ast</code> avant votre fonction.</p>
+<p>Ne nous arrêtons pas en si bon chemin, et continuons avec les
+expressions booléennes. Les cas de base sont <code>True</code> et <code>False</code>, et les
+cas composés <code>And</code>, <code>Or</code>, <code>Not</code>, <code>Equal</code> et <code>Greater</code>. Les différents
+cas ressemblent beaucoup à ceux de <code>eval_aexp</code>, avec un tout petit
+ajout : <code>Equal</code> et <code>Greater</code> prennent comme paramètres non pas des
+expressions booléennes, mais des expressions arithmétiques. On
+appellera donc <code>eval_aexp</code> sur les deux branches, qu'il faut alors
+avoir défini préalablement. Or, <code>eval_aexp</code> prend comme paramètre
+l'environnement : il faut donc que <code>eval_bexp</code> le connaisse aussi,
+même si elle n'en a pas besoin directement. La fonction s'écrit donc :</p>
+<div class="highlight"><pre><span></span>let rec eval_bexp env = function
+  | True -&gt; true
+  | False -&gt; false
+  | And (a, b) -&gt; eval_bexp env a &amp;&amp; eval_bexp env b
+  | Or (a, b) -&gt; eval_bexp env a || eval_bexp env b
+  | Not a -&gt; not (eval_bexp env a)
+  | Equal (x, y) -&gt; eval_aexp env x = eval_aexp env y
+  | Greater (x, y) -&gt; eval_aexp env x &gt; eval_aexp env y
+
+(* eval_bexp : (string * int) list -&gt; Ast.bexp -&gt; int *)
+</pre></div>
+
+
+<p>Maintenant que nous savons évaluer les expressions booléennes et
+arithmétiques, il ne nous reste plus qu'à exécuter les commandes
+à l'aide d'une dernière fonction <code>eval_prgm</code>. Elle devra s'occuper
+d'évaluer les AST de type <code>Ast.command</code>. Par rapport aux deux
+derniers, ceux-ci sont particuliers : ils peuvent contenir une
+instruction qui agissent par <em>effet de bord</em>, c'est à dire qu'ils
+modifient <em>l'état</em> du programme. En l'occurrence, l'état de notre
+programme est représenté par l'environnement qu'on passe en argument
+aux deux fonctions précédentes : l'instruction <code>Affect</code> modifie cet
+environnement pour y changer la valeur affectée à une variable (en
+créant la variable si elle n'existe pas encore). Il faut donc trouver
+un moyen de rendre ces changements effectifs pour les deux autres
+fonctions : une bonne solution est de passer en argument à <code>eval_prgm</code>
+l'environnement actuel, et de lui faire renvoyer l'environnement
+éventuellement modifié. Notre fonction sera donc de type : <code>(string *
+int) list -&gt; Ast.command -&gt; (string * int) list</code>.</p>
+<p><em>Note de milieu de page (à lire pour les plus curieux)</em></p>
+<p>En réalité, on considère que <code>Print</code> correspond aussi à un effet de
+bord : il modifie l'état de l'affichage, ce qui peut avoir une
+influence sur d'autres parties du programme (qui lisent cet affichage)
+mais surtout impose de faire attention à l'ordre d'évaluation : on
+peut calculer la valeur des deux branches de <code>Add</code> dans l'ordre qu'on
+veut, mais il faut effectuer les <code>Print</code> dans le bon ordre sous peine
+d'afficher n'importe quoi à l'écran.</p>
+<p><em>Fin de la note</em></p>
+<p>Lorsqu'on doit traiter le cas de base <code>Affect(v, x)</code>, il faut donc
+renvoyer l'environnement <code>env</code> qu'on a reçu comme argument en le
+modifiant de la façon suivante :</p>
+<ul>
+<li>Si <code>v</code> n'était pas défini, on y rajoute le couple <code>(v, x)</code></li>
+<li>Si <code>v</code> était défini, on y remplace le couple <code>(v, y)</code> présent par <code>(v, x)</code></li>
+</ul>
+<p>On est ainsi certain que chaque variable n'est présente qu'une seule
+fois dans notre environnement : on évite ainsi de faire exploser sa
+taille en cas de redéfinitions successives d'une variable (dans une
+boucle par exemple). Nous allons commencer par écrire une fonction
+<code>update</code> qui effectuera l'opération précédemment décrite sur un
+environnement :</p>
+<div class="highlight"><pre><span></span>let rec update env v x = match env with
+  | [] -&gt; [(v, x)]
+  | (w, y) :: s -&gt;
+      if v = w then (v, x) :: s
+      else (w, y) :: update s v x
+</pre></div>
+
+
+<p>Cette fonction devrait être assez simple pour que vous la compreniez
+tout seul. Il ne nous reste plus qu'à écrire <code>eval_prgm</code> :</p>
+<div class="highlight"><pre><span></span>let rec eval_prgm env = function
+  | Affect (v, x) -&gt; update env v (eval_aexp env x)
+  | Print x -&gt; print_int (eval_aexp env x); print_newline (); env
+  | If (b, c) -&gt;
+      if eval_bexp env b then eval_prgm env c else env
+  | While (b, c) as w -&gt;
+      if eval_bexp env b then let e = eval_prgm env c in eval_prgm e w else env
+  | Seq (c1, c2) -&gt; let e = eval_prgm env c1 in eval_prgm e c2
+</pre></div>
+
+
+<p>Comme vous pouvez le constater, on fait appel à <code>eval_aexp</code> pour
+évaluer la valeur à affecter à une variable, et à <code>eval_bexp</code> pour
+évaluer les conditions de <code>If</code> et de <code>While</code>. Si vous avez bien
+compris le fonctionnement de la gestion de l'environnement, la ligne
+de <code>Seq</code> ne devrait pas vous poser de problème : on récupère
+l'environnement modifié par <code>c1</code>, qui est la première partie du
+programme (« avant le <code>;</code> »), pour le passer en argument de
+l'évaluation de <code>c2</code>.</p>
+<p>Il ne nous reste plus qu'à appeler notre fonction <code>eval_prgm</code> sur
+l'AST renvoyé par notre parseur (qui, rappelez-vous, est de type
+<code>Ast.command</code>). Comme je vous l'ai dit plus haut, Menhir produit un
+fichier OCaml qui fournit la fonction suivante : <code>val prgm:
+(Lexing.lexbuf -&gt; token) -&gt; Lexing.lexbuf -&gt; (Ast.command)</code>. Vous vous
+souvenez aussi peut-être qu'Ocamllex nous fournissait une fonction
+<code>lexer</code> ayant le type <code>Lexing.lexbuf -&gt; Parser.token</code> : c'est cette
+fonction que vous devrez fournir comme premier argument de
+<code>Parser.prgm</code>. Le deuxième argument est un <em>buffer</em> qui correspondra
+à l'entrée de notre interpréteur : dans notre cas, nous nous
+contenterons d'un fichier qui contiendra notre code Imp. Le module
+<code>Lexing</code> nous fournit une fonction <code>from_channel</code> de type
+<code>in_channel -&gt; lexbuf</code> : nous allons utiliser cette fonction pour
+récupérer le <code>lexbuf</code> correspondant à notre fichier de code, lequel
+aura été ouvert par <code>open_in</code> que vous devez connaître.</p>
+<p>N'oubliez pas qu'<code>eval_prgm</code> prend un environnement en paramètre :
+pour l'appel initial, il faudra donc lui donner la liste vide (aucune
+variable n'existant avant que le programme Imp soit exécuté).</p>
+<p>Voici donc le code final de notre fichier <code>eval.ml</code> :</p>
+<div class="highlight"><pre><span></span>open Ast
+type env = (string * int) list
+
+let rec update (e : env) v x = match e with
+  | [] -&gt; [(v, x)]
+  | (w, y) :: s -&gt;
+      if v = w then (v, x) :: s
+      else (w, y) :: update s v x
+
+
+let rec eval_prgm env = function
+  | Affect (v, x) -&gt; update env v (eval_aexp env x)
+  | Print x -&gt; print_int (eval_aexp env x); print_newline (); env
+  | If (b, c) -&gt;
+      if eval_bexp env b then eval_prgm env c else env
+  | While (b, c) as w -&gt;
+      if eval_bexp env b then let e = eval_prgm env c in eval_prgm e w else env
+  | Seq (c1, c2) -&gt; let e = eval_prgm env c1 in eval_prgm e c2
+
+and eval_bexp env = function
+  | True -&gt; true
+  | False -&gt; false
+  | And (a, b) -&gt; eval_bexp env a &amp;&amp; eval_bexp env b
+  | Or (a, b) -&gt; eval_bexp env a || eval_bexp env b
+  | Not a -&gt; not (eval_bexp env a)
+  | Equal (x, y) -&gt; eval_aexp env x = eval_aexp env y
+  | Greater (x, y) -&gt; eval_aexp env x &gt; eval_aexp env y
+
+and eval_aexp env = function
+  | Int x -&gt; x
+  | Var v -&gt; List.assoc v env
+  | Neg x -&gt; - (eval_aexp env x)
+  | Minus (x, y) -&gt; eval_aexp env x - eval_aexp env y
+  | Plus (x, y) -&gt; eval_aexp env x + eval_aexp env y
+  | Times (x, y) -&gt; eval_aexp env x * eval_aexp env y
+
+
+let _ =
+  eval_prgm [] (Parser.prgm Lexer.lexer (Lexing.from_channel (open_in Sys.argv.(1))))
+</pre></div>
+
+
+<p>Vous aurez noté quelques petits bonus, notamment la définition d'un
+type <code>env</code> pour l'environnement (qui sera plus lisible si vous testez
+vos fonctions dans un terminal OCaml) et l'utilisation de
+<code>Sys.argv.(1)</code> comme nom de fichier : il s'agit du premier argument
+passé à notre programme lorsqu'on l'appellera en ligne de commande
+(ainsi, on évite de devoir écrire le nom du fichier Imp à exécuter en
+dur dans <code>eval.ml</code> et recompiler à chaque fois qu'on souhaite le
+changer).</p>
+<p>Il ne nous reste plus qu'à compiler notre programme et à l'exécuter :</p>
+<div class="highlight"><pre><span></span>$ ocamlbuild -use-menhir eval.native
+Finished, <span class="m">17</span> targets <span class="o">(</span><span class="m">4</span> cached<span class="o">)</span> in <span class="m">00</span>:00:01.
+$ cat test.imp
+// On initialise les variables
+n :<span class="o">=</span> <span class="m">5</span>
+f :<span class="o">=</span> <span class="m">1</span>
+
+/*
+  boucle principale
+  /* commentaire imbriqué */
+*/
+
+<span class="k">while</span> n &gt; <span class="m">0</span> <span class="o">{</span>
+    f :<span class="o">=</span> f * n
+    n :<span class="o">=</span> n - <span class="m">1</span>
+    <span class="o">}</span>
+
+
+print f
+/* On peut même print-er des expressions numériques */
+print <span class="m">3</span> + <span class="m">4</span> * <span class="m">5</span>
+
+$ ./eval.native test.imp
+<span class="m">120</span>
+<span class="m">23</span>
+</pre></div>
+
+
+<p>Si <code>ocamlbuild</code> vous crache un message d'erreur qui commence par
+<code>SANITIZE</code>, exécutez le script <code>_build/sanitize.sh</code> avant de
+recommencer les commandes précédentes.</p>
+<p>Et voilà, vous avez un interpréteur fonctionnel !</p>
+<p>À travers ce court tutoriel, vous avez appris toutes les étapes de
+l'interprétation d'un petit langage : analyse lexicale, analyse
+syntaxique et évaluation. Que faire maintenant ? Après cette rapide
+découverte, je vous invite une dernière fois à vous renseigner plus en
+détail sur les parties qui vous ont intéressé : il y a encore plein de
+choses à dire sur le sujet.</p>
+<p>Vous pouvez aussi améliorer l'interpréteur actuel, qui est très
+minimaliste. Voici une liste non exhaustive de fonctionnalités que
+vous pouvez rajouter pour vous entraîner :</p>
+<ul>
+<li>Implémenter les opérations manquantes : booléennes comme <code>&lt;</code> mais
+    aussi arithmétiques comme le modulo ou la division (attention à zéro !)</li>
+<li>Pouvoir écrire <code>&amp;&amp;</code>, <code>||</code> et <code>!</code> comme raccourcis de <code>and</code>, <code>or</code> et <code>not</code></li>
+<li>Pouvoir manipuler les expressions booléennes comme des expressions
+    arithmétiques (notamment, pouvoir les affecter à des
+    variables). Cela pose la question du typage : on ne pourra plus
+    écrire <code>x + y</code> pour toutes les variables <code>x</code> et <code>y</code></li>
+<li>Ajouter d'autres types de bases : flottants, chaînes de caractères&#x2026;</li>
+<li>Ajouter des types composés, comme les tableaux ou les listes</li>
+<li>Ajouter la commande <code>goto</code> qui permet de sauter à un endroit donné
+    du programme (cela demande de réfléchir un peu plus l'étape
+    d'évaluation)</li>
+<li>Ajouter des procédures/fonctions à Imp. En plus de la définition de
+    ces procédures (qui feront partie de l'environnement), cela pose la
+    question de la portée des variables : si je définis <code>a</code> dans une
+    procédure, je ne veux pas écraser en dehors de cette procédure la
+    valeur qu'il avait.</li>
+</ul>
+<p>Ces différentes possibilités sont classées approximativement par ordre
+de difficulté&#x2026; et donc d'intérêt. Si vous en voulez encore, je vous
+invite à vous renseigner sur la compilation : les deux premières
+étapes sont communes, mais un compilateur fait beaucoup plus de choses
+dans l'analyse sémantique : il ne s'agit plus d'évaluer un AST dans un
+langage fournissant déjà les abstractions nécessaires, mais de
+transformer un programme écrit en Imp en un programme dans un langage
+à la sémantique très différente (et souvent assez pauvre).</p>
+<p>Bon courage !</p>
+        </div>
+    </section>
+        </div>
+        <div class="col-sm-3" id="sidebar">
+            <aside>
+
+<section class="well well-sm">
+    <ul class="list-group list-group-flush">
+
+        <!-- Search bar in low width mode -->
+        <li id="searchSideBar" class="list-group-item"><span>
+                <form class="navbar-search" action="/blog/search">
+                  <input type="text" class="search-query" placeholder="Rechercher" name="q" id="tipue_search_input" required>
+                </form></span>
+        </li>
+
+        <li class="list-group-item"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Social</span></h4>
+              <ul class="list-group" id="social">
+                    <li class="list-group-item"><a href="https://example.org">
+                        <i class="fa fa-comment fa-lg"></i>
+                       Link 1</a>
+                    </li>
+                    <li class="list-group-item"><a href="https://example.org">
+                        <i class="fa fa-comments fa-lg"></i>
+                       Link 2</a>
+                    </li>
+                    <li class="list-group-item"><a href="/page/content">
+                        <i class="fa fa-etc fa-lg"></i>
+                       etc</a>
+                    </li>
+              </ul>
+            </li>
+
+
+            <li class="list-group-item"><a href="http://yliesc.github.io/"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Categories</span></h4></a>
+                <ul class="list-group" id="categories">
+                </ul>
+            </li>
+
+
+
+    <li class="list-group-item"><h4><i class="fa fa-link fa-lg"></i><span class="icon-label">External Links</span></h4>
+      <ul class="list-group" id="links">
+        <li class="list-group-item">
+            <a href="https://example.org" target="_blank">
+                Link 1
+            </a>
+        </li>
+        <li class="list-group-item">
+            <a href="https://example.org" target="_blank">
+                Link 2
+            </a>
+        </li>
+        <li class="list-group-item">
+            <a href="/page/content" target="_blank">
+                etc
+            </a>
+        </li>
+      </ul>
+    </li>
+
+        <li class="list-group-item" id="github">
+            <ul class="list-group">
+                <li class="list-group-item"><h5>Vous voyez une erreur ?</h5></li>
+                <li class="list-group-item">
+                    <a class="btn btn-info github" target="_blank" href="https://github.com/YliesC/website/edit/master/content/pages/pdp/content/interpreter-un-petit-langage-imperatif-avec-ocaml.md">
+                        <i class="fa fa-random"></i> Modifiez la page sur GitHub
+                    </a>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</section>            </aside>
+        </div>
+    </div>
+</div>
+<footer>
+   <div class="container">
+      <hr>
+      <div class="row">
+         <div class="col-xs-10">&copy;  
+            &middot; Powered by <a href="https://github.com/getpelican/pelican-themes/tree/master/pelican-bootstrap3" target="_blank">pelican-bootstrap3</a>,
+            <a href="http://docs.getpelican.com/" target="_blank">Pelican</a>,
+<a href="http://getbootstrap.com" target="_blank">Bootstrap</a>                <p><small>  <a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr"><img alt="Creative Commons License" style="border-width:0" src="//i.creativecommons.org/l/by-sa/4.0/80x15.png" /></a>
+    Content
+  licensed under a <a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">Creative Commons Attribution-ShareAlike 4.0 International License</a>, except where indicated otherwise.
+</small></p>
+         </div>
+         <div class="col-xs-2"><p class="pull-right"><i class="fa fa-arrow-up"></i> <a href="#">Back to top</a></p></div>
+      </div>
+   </div>
+</footer>
+<script src="http://yliesc.github.io/theme/js/jquery.min.js"></script>
+
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="http://yliesc.github.io/theme/js/bootstrap.min.js"></script>
+
+<!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
+<script src="http://yliesc.github.io/theme/js/respond.min.js"></script>
+
+<!--  -->
+
+
+</body>
+</html>

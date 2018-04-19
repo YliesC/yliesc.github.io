@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="fr" prefix="og: http://ogp.me/ns# fb: https://www.facebook.com/2008/fbml">
+<head>
+    <title>Aliasing et pointeurs restreints - The Golden Koala</title>
+    <!-- Using the latest rendering mode for IE -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <link href="http://yliesc.github.io/images/koala-ico.png" rel="icon">
+
+<link rel="canonical" href="http://yliesc.github.io/pages/pdp/content/aliasing-et-pointeurs-restreints/">
+
+        <meta name="author" content="Taurre" />
+        <meta name="description" content="Depuis ses débuts, le langage C pose un problème assez gênant aux compilateurs désireux d&#39;optimiser le code, dû à son utilisation massive des pointeurs : le risque d&#39;aliasing (ou « risque de chevauchement »). Les normes successives ont tenté de l&#39;atténuer à l&#39;aide de la règle de strict aliasing (C89) et des …" />
+
+    <meta property="og:site_name" content="The Golden Koala" />
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="Aliasing et pointeurs restreints"/>
+    <meta property="og:url" content="http://yliesc.github.io/pages/pdp/content/aliasing-et-pointeurs-restreints/"/>
+    <meta property="og:description" content="Depuis ses débuts, le langage C pose un problème assez gênant aux compilateurs désireux d&#39;optimiser le code, dû à son utilisation massive des pointeurs : le risque d&#39;aliasing (ou « risque de chevauchement »). Les normes successives ont tenté de l&#39;atténuer à l&#39;aide de la règle de strict aliasing (C89) et des …" />
+
+
+    <!-- Bootstrap -->
+        <link rel="stylesheet" href="http://yliesc.github.io/theme/css/bootstrap.readable.min.css" type="text/css"/>
+    <link href="http://yliesc.github.io/theme/css/font-awesome.min.css" rel="stylesheet">
+
+    <link href="http://yliesc.github.io/theme/css/pygments/default.css" rel="stylesheet">
+    <link href="http://yliesc.github.io/theme/tipuesearch/tipuesearch.css" rel="stylesheet">
+    <link rel="stylesheet" href="http://yliesc.github.io/theme/css/style.css" type="text/css"/>
+        <link href="http://yliesc.github.io/css/custom.css" rel="stylesheet">
+
+        <link href="http://yliesc.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate"
+              title="The Golden Koala ATOM Feed"/>
+
+
+
+
+</head>
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+	<div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="http://yliesc.github.io/" class="navbar-brand">
+<img class="img-responsive pull-left gap-right" src="http://yliesc.github.io/images/koala-logo.svg" width="38"/> <span id="siteName">The Golden Koala</span>            </a>
+        </div>
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+
+            </ul>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+</div> <!-- /.navbar -->
+<!-- Banner -->
+<!-- End Banner -->
+<div class="container">
+    <div class="row">
+        <div class="col-sm-9">
+    <ol class="breadcrumb">
+        <li><a href="http://yliesc.github.io/" title="The Golden Koala">
+            <i class="fa fa-home fa-lg"></i>
+        </a></li>
+        <li class="active">Aliasing et pointeurs restreints</li>
+    </ol>
+    <section id="content" class="body">
+        <h1 class="entry-title">Aliasing et pointeurs restreints</h1>
+            <div class="entry-content">
+                    <div class="panel">
+                        <div class="panel-body">
+<footer class="post-info">
+    
+    <span class="published">
+        <span class="label label-default"><i class="fa fa-calendar"></i><time datetime="2014-09-27T00:00:00+02:00"> sam. 27 septembre 2014</time></span> | 
+    </span>
+        <span class="label label-default"><i class="fa fa-user-circle"></i> Taurre, Lucas-84</span>  | 
+    <span class="label label-default">
+            <i class="fa fa-cc"></i> 
+        
+            CC-BY-NC-SA
+    </span>
+</footer><!-- /.page-info -->                        </div>
+                    </div>
+            <p>Depuis ses débuts, le langage C pose un problème assez gênant aux compilateurs désireux d'optimiser le code, dû à son utilisation massive des pointeurs : le risque d'<em>aliasing</em> (ou « risque de chevauchement »).</p>
+<p>Les normes successives ont tenté de l'atténuer à l'aide de la règle de strict <em>aliasing</em> (C89) et des pointeurs restreints (C99) ; deux concepts qui vont retenir notre attention dans ce tutoriel.</p>
+<div class="toc">
+<ul>
+<li><a href="#une-histoire-daliasing">Une histoire d'aliasing</a><ul>
+<li><a href="#rappels">Rappels</a><ul>
+<li><a href="#la-notion-dobjet">La notion d'objet</a></li>
+<li><a href="#la-notion-de-lvalue">La notion de lvalue</a></li>
+</ul>
+</li>
+<li><a href="#presentation-de-la-notion-daliasing">Présentation de la notion d'aliasing</a></li>
+<li><a href="#problematique-doptimisation-du-compilateur">Problématique d'optimisation du compilateur</a><ul>
+<li><a href="#problemes-causes-par-les-alias-au-compilateur">Problèmes causés par les alias au compilateur</a></li>
+<li><a href="#analyse-dalias-par-le-compilateur">Analyse d'alias par le compilateur</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#la-regle-de-strict-aliasing">La règle de strict aliasing</a><ul>
+<li><a href="#normalisation-de-la-regle-de-strict-aliasing">Normalisation de la règle de strict aliasing</a><ul>
+<li><a href="#la-norme-c89">La norme C89</a></li>
+<li><a href="#la-norme-c99">La norme C99</a></li>
+<li><a href="#illustrations-de-la-regle-de-strict-aliasing">Illustrations de la règle de strict aliasing</a><ul>
+<li><a href="#exemples">Exemples</a></li>
+<li><a href="#benefices-pour-le-compilateur">Bénéfices pour le compilateur</a></li>
+<li><a href="#parametrage-du-compilateur-gcc">Paramétrage du compilateur gcc</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#les-pointeurs-restreints">Les pointeurs restreints</a><ul>
+<li><a href="#introduction-aux-pointeurs-restreints">Introduction aux pointeurs restreints</a><ul>
+<li><a href="#le-qualificateur-restrict">Le qualificateur restrict</a></li>
+<li><a href="#definition">Définition</a></li>
+<li><a href="#quelques-exemples">Quelques exemples</a></li>
+</ul>
+</li>
+<li><a href="#benefice-des-pointeurs-restreints">Bénéfice des pointeurs restreints</a><ul>
+<li><a href="#la-vectorisation">La vectorisation</a></li>
+<li><a href="#exemple-1">Exemple (1)</a></li>
+<li><a href="#exemple-2">Exemple (2)</a></li>
+</ul>
+</li>
+<li><a href="#dangers-des-pointeurs-restreints">Dangers des pointeurs restreints</a><ul>
+<li><a href="#confusion-entre-appelant-et-appele">Confusion entre appelant et appelé</a></li>
+<li><a href="#precautions-dutilisation">Précautions d'utilisation</a></li>
+</ul>
+</li>
+<li><a href="#une-optimisation-vraiment-valable">Une optimisation vraiment valable ?</a></li>
+<li><a href="#liens-externes">Liens externes</a><ul>
+<li><a href="#alias-et-optimisation">Alias et optimisation</a></li>
+<li><a href="#analyse-dalias">Analyse d'alias</a></li>
+<li><a href="#regle-de-strict-aliasing">Règle de strict aliasing</a></li>
+<li><a href="#parametrage-du-compilateur">Paramétrage du compilateur</a></li>
+<li><a href="#les-pointeurs-restreints_1">Les pointeurs restreints</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<h1 id="une-histoire-daliasing">Une histoire d'aliasing</h1>
+<p>Dans un premier temps, nous allons découvrir cette notion d'<em>aliasing</em> et voir en quoi elle complique le travail du compilateur.</p>
+<h4 id="rappels">Rappels</h4>
+<h5 id="la-notion-dobjet">La notion d'objet</h5>
+<p><strong>C11 (N1570), § 3.15, Terms, definitions, and symbols, al. 1, p. 6.</strong></p>
+<blockquote>
+<p>object: region of data storage in the execution environment, the contents of which can represent values.</p>
+</blockquote>
+<p>Le terme d'<strong>objet</strong>, qui sera au centre de nos discussions futures, désigne simplement une zone mémoire pouvant contenir des données.</p>
+<h5 id="la-notion-de-lvalue">La notion de lvalue</h5>
+<p><strong>C11 (N1570), § 6.3.2.1, Lvalues, arrays, and function designators, al. 1, p. 54.</strong></p>
+<blockquote>
+<p>An lvalue is an expression that [...] designates an object [...].</p>
+</blockquote>
+<p>Une <strong>lvalue</strong> est une expression qui désigne un objet (que ce soit pour un accès ou une modification).</p>
+<div class="highlight"><pre><span></span><span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
+<span class="kt">int</span> <span class="n">j</span><span class="p">;</span>
+<span class="kt">int</span> <span class="o">*</span><span class="n">p</span><span class="p">;</span>
+
+<span class="cm">/*</span>
+<span class="cm"> * `p&#39; est une lvalue car elle modifie un objet.</span>
+<span class="cm"> * `&amp;i&#39; n&#39;est pas une lvalue.</span>
+<span class="cm"> */</span>
+<span class="n">p</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">i</span><span class="p">;</span>
+
+<span class="cm">/* `i&#39; est une lvalue car elle modifie un objet. */</span>
+<span class="n">i</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+
+<span class="cm">/*</span>
+<span class="cm"> * `j&#39; est une lvalue car elle modifie un objet.</span>
+<span class="cm"> * `i&#39; est une lvalue car elle accède à un objet.</span>
+<span class="cm"> */</span>
+<span class="n">j</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
+
+<span class="cm">/* `*p&#39; est une lvalue car elle modifie un objet. */</span>
+<span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="mi">30</span><span class="p">;</span>
+</pre></div>
+
+
+<p>Gardez bien ces deux notions à l'esprit ; nous allons en avoir besoin.</p>
+<h4 id="presentation-de-la-notion-daliasing">Présentation de la notion d'aliasing</h4>
+<p>En programmation, un cas d'<strong>aliasing</strong> se produit lorsque plusieurs <em>lvalues</em> désignent le même objet ; celles-ci sont alors qualifiées d'<strong>alias</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Note</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Certaines de ces situations dépassent le cadre du présent tutoriel. Pour notre part, nous nous intéresserons uniquement aux alias résultant de l'utilisation de pointeurs, car ce sont ceux qui engendrent les difficultés les plus importantes.</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>Par exemple, dans le code source ci-dessous, <code>*p</code> est un alias de <code>n</code>, c'est-à-dire que toute modification de <code>*p</code> aura une répercussion sur la valeur de <code>n</code> et <em>vice versa</em>.</p>
+<div class="highlight"><pre><span></span><span class="kt">int</span> <span class="n">n</span><span class="p">;</span>
+<span class="kt">int</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">n</span><span class="p">;</span>
+</pre></div>
+
+
+<p>Cette définition peut paraître simple, mais elle comporte aussi sa part de subtilités.</p>
+<div class="highlight"><pre><span></span><span class="kt">int</span> <span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">10</span><span class="p">];</span>
+
+<span class="kt">int</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+<span class="kt">int</span> <span class="o">*</span><span class="n">q</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+</pre></div>
+
+
+<p>On serait ici tenté de dire que les <em>lvalues</em> <code>*p</code> et <code>*q</code> accèdent au même objet (le tableau <code>a</code>), pourtant il n'en est rien. En effet, il ne faut pas perdre de vue que la notion d'objet est étrangère à celle de type. Dès lors, un même objet peut être subdivisé en deux autres, indépendants l'un de l'autre. <code>*p</code> et <code>*q</code> ne sont donc pas des alias.</p>
+<p>De la même manière, dans le code ci-dessous, <code>*p</code>, <code>*q</code>, <code>*r</code> et <code>*s</code> ne le sont pas non plus.</p>
+<div class="highlight"><pre><span></span><span class="kt">char</span> <span class="n">a</span><span class="p">[</span><span class="mi">4</span><span class="p">];</span>
+
+<span class="kt">char</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="mi">0</span><span class="p">;</span>
+<span class="kt">char</span> <span class="o">*</span><span class="n">q</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+<span class="kt">char</span> <span class="o">*</span><span class="n">r</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="mi">2</span><span class="p">;</span>
+<span class="kt">char</span> <span class="o">*</span><span class="n">s</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="mi">3</span><span class="p">;</span>
+</pre></div>
+
+
+<p>Cette division fonctionne jusqu'au plus petit objet possible (à savoir un <em>bit</em> dans le cas des champs de <em>bits</em>). Ainsi, <code>a.i</code> n'est pas un alias de <code>a.j</code>.</p>
+<div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">s</span> <span class="p">{</span>
+    <span class="kt">unsigned</span> <span class="kt">int</span> <span class="nl">i</span> <span class="p">:</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="kt">unsigned</span> <span class="kt">int</span> <span class="nl">j</span> <span class="p">:</span> <span class="mi">1</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="k">struct</span> <span class="n">s</span> <span class="n">a</span><span class="p">;</span>
+</pre></div>
+
+
+<h4 id="problematique-doptimisation-du-compilateur">Problématique d'optimisation du compilateur</h4>
+<p>Si les relations d'<em>aliasing</em> qui existent entre les différentes <em>lvalues</em> du programme ne sont pas préoccupantes pour le programmeur, cela l'est plus pour le compilateur, qui peut être gêné dans son travail d'optimisation.</p>
+<h5 id="problemes-causes-par-les-alias-au-compilateur">Problèmes causés par les alias au compilateur</h5>
+<p>Après avoir vérifié que le code source est syntaxiquement correct, le compilateur entre dans une seconde phase : celle de l'<strong>optimisation de code</strong>. Cette étape consiste simplement en la modification du code dans le but que l'exécution du programme se déroule le plus rapidement possible. Pour cela, il va prendre en compte certains éléments de l'implémentation, comme les différentes instructions dont dispose le processeur. Pour le moment, nous nous concentrerons uniquement sur une des optimisations les plus basiques : la <strong>réorganisation du code</strong>. Un exemple vaudra mieux qu'un long discours.</p>
+<div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+
+<span class="kt">void</span>
+<span class="nf">f</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">const</span> <span class="kt">int</span> <span class="n">n</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
+
+    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">n</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Ici, force est de constater que l'instruction de la ligne 6 est inutile, puisque la variable <code>n</code> n'est pas modifiée. Aussi le compilateur pourra-t-il, par exemple, remplacer le code d'appel de cette fonction par un simple <code>printf("%d ", 5)</code>.</p>
+<p>Le problème dans tout cela, c'est que l'aliasing complique cette réorganisation. En effet, dans le code ci-dessous, on peut se dire à première vue que le compilateur pourrait supprimer la ligne 8 et remplacer l'instruction de la ligne 10. Or, si les lvalues <code>*p</code> et <code>n</code> sont des alias, le résultat attendu est complètement différent (10 en l'occurrence). Par conséquent, compte tenu du risque d'aliasing, le compilateur est obligé de laisser ces instructions telles quelles (ce qui peut, à long terme, ralentir l'exécution du programme).</p>
+<div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+
+<span class="k">static</span> <span class="kt">int</span> <span class="n">n</span><span class="p">;</span>
+
+<span class="kt">void</span>
+<span class="nf">f</span><span class="p">(</span><span class="kt">int</span> <span class="o">*</span><span class="n">p</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
+    <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">n</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<h5 id="analyse-dalias-par-le-compilateur">Analyse d'alias par le compilateur</h5>
+<p>L'<strong>analyse d'alias</strong>, c'est-à-dire la recherche des situations d'<em>aliasing</em> dans un programme donné, est donc nécessaire pour le compilateur, afin de pouvoir déterminer quels cas peuvent permettre telle ou telle optimisation.</p>
+<p>Peu importe le résultat de cette analyse (alias ou pas) : dans les deux cas, une optimisation pourra être effectuée. La seule situation problématique se produit lorsqu'on ne peut pas déterminer, lors de la compilation, les relations d'<em>aliasing</em> qui existent entre deux <em>lvalues</em>. Le compilateur est alors obligé de considérer le pire des cas : on parle d'<strong>aliasing pessimiste</strong>.</p>
+<div class="highlight"><pre><span></span><span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
+<span class="o">*</span><span class="n">q</span> <span class="o">=</span> <span class="mi">6</span><span class="p">;</span>
+<span class="n">n</span> <span class="o">=</span> <span class="o">*</span><span class="n">p</span> <span class="o">+</span> <span class="o">*</span><span class="n">q</span><span class="p">;</span>
+</pre></div>
+
+
+<p>Avec uniquement ces informations, le compilateur se retrouve face à trois cas distincts (en supposant que <code>*p</code>, <code>*q</code> et <code>n</code> sont de type <code>int</code>) :</p>
+<ul>
+<li>si <code>*p</code> et <code>*q</code> ne sont pas des alias, alors <code>n = *p + *q</code> pourra être remplacé par <code>n = 10</code> ;</li>
+<li>si <code>*p</code> et <code>*q</code> sont des alias, alors <code>n = *p + *q</code> pourra être remplacé par <code>n = 12</code> ;</li>
+<li>si il est impossible de déterminer les relations d'<em>aliasing</em> qui existent entre <code>*p</code> et <code>*q</code>, alors le code ne pourra pas être modifié.</li>
+</ul>
+<p>Le compilateur se doit donc d'effectuer une analyse d'alias pertinente pour sélectionner une de ces affirmations (et, si possible, une des deux premières). Dans cette optique, beaucoup algorithmes ont été développés. Néanmoins, en pratique, la plupart sont trop lourds pour être intégrés aux compilateurs courants, si bien que ces derniers se contentent généralement d'une analyse superficielle (ce qui peut se révéler pénalisant pour les performances).</p>
+<h1 id="la-regle-de-strict-aliasing">La règle de strict aliasing</h1>
+<p>Nous avons donc vu en quoi il était important pour le travail d'optimisation du compilateur de connaître les relations d'<em>aliasing</em> qui existent entre les <em>lvalues</em> du programme. Cette préoccupation a été au centre de beaucoup de critiques du langage C à ses débuts, qui lui reprochaient son imprécision dans l'analyse des pointeurs. Aussi la norme aide-t-elle l'analyse d'alias avec un premier concept : la <strong>règle de strict aliasing</strong>.</p>
+<h4 id="normalisation-de-la-regle-de-strict-aliasing">Normalisation de la règle de strict aliasing</h4>
+<p>Nous allons maintenant faire un petit tour d'horizon de la définition et de la normalisation de cette règle en suivant un ordre chronologique (de son inauguration dans la norme C89 à sa précision dans la norme C99).</p>
+<h5 id="la-norme-c89">La norme C89</h5>
+<p>C'est en 1989 que le comité de l'ANSI décida de l'instaurer, dans le but de réduire le nombre de cas d'<em>aliasing</em> pessimistes. Grâce à cela, le compilateur a pu affiner son analyse d'alias en présumant des <em>lvalues</em> comme n'étant pas des alias en fonction de leur type et de celui de l'objet qu'elles désignent.</p>
+<table>
+<thead>
+<tr>
+<th>Rappel</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Un objet n'a techniquement pas de type (ce n'est qu'une zone mémoire pouvant contenir des données). Cependant, afin de faciliter l'analyse d'alias, la norme leur en a fixé fictivement un.</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>Voyons maintenant l'énoncé de la règle.</p>
+<p><strong>C89 (X3J11/88-090), § 3.3, Expressions, al. 6.</strong></p>
+<blockquote>
+<p>An object shall have its stored value accessed only by an lvalue that has one of the following types :</p>
+<ul>
+<li>the declared type of the object ;</li>
+<li>a qualified version of the declared type of the object ;</li>
+<li>a type that is the signed or unsigned type corresponding to the declared type of the object ;</li>
+<li>a type that is the signed or unsigned type corresponding to a qualified version of the declared type of the object ;</li>
+<li>an aggregate or union type that includes one of the aforementioned types among its members (including, recursively, a member of a subaggregate or contained union) ; or</li>
+<li>a character type.</li>
+</ul>
+</blockquote>
+<p>Un objet ne peut être accédé que par une <em>lvalue</em> qui a un des types suivants :</p>
+<ul>
+<li>un type identique au type déclaré de l'objet ;</li>
+<li>une version qualifiée du type déclaré de l'objet ;</li>
+<li>un type qui est le type signé ou non signé correspondant au type déclaré de l'objet ;</li>
+<li>un type qui est le type signé ou non signé correspondant à une version qualifiée du type déclaré de l'objet ;</li>
+<li>un agrégat ou une union qui inclut un des types mentionnés ci-dessus parmi ses membres (incluant, de manière récursive, les sous-agrégats ou les sous-unions) ;</li>
+<li>un type caractère.</li>
+</ul>
+<p>La norme se base sur le <strong>type déclaré</strong> de l'objet, qui lui est attribué lors de sa définition. Par exemple, dans le code ci-dessous, deux objets sont créés, ayant respectivement comme type déclaré le type <code>int</code> et le type <code>double</code>.</p>
+<div class="highlight"><pre><span></span><span class="kt">int</span> <span class="n">n</span><span class="p">;</span>
+<span class="kt">double</span> <span class="n">x</span><span class="p">;</span>
+</pre></div>
+
+
+<h5 id="la-norme-c99">La norme C99</h5>
+<p>La norme C99 a peaufiné cette règle en la rapportant, non plus au type déclaré, mais au <strong>type effectif</strong> de l'objet, une nouvelle notion qui permet de mieux gérer le cas dans lequel l'objet ne dispose pas de de type déclaré. Cela vise essentiellement les objets alloués dynamiquement, puisque ces derniers ne sont pas créés lors d'une définition, mais lors d'un appel à une fonction d'allocation.</p>
+<p><strong>C99 (N1256), § 6.5, Expressions, al. 6, pp. 67-68.</strong></p>
+<blockquote>
+<p>The effective type of an object for an access to its stored value is the declared type of the object, if any. If a value is stored into an object having no declared type through an lvalue having a type that is not a character type, then the type of the lvalue becomes the effective type of the object for that access and for subsequent accesses that do not modify the stored value. If a value is copied into an object having no declared type using memcpy or memmove, or is copied as an array of character type, then the effective type of the modified object for that access and for subsequent accesses that do not modify the value is the effective type of the object from which the value is copied, if it has one. For all other accesses to an object having no declared type, the effective type of the object is simply the type of the lvalue used for the access.</p>
+</blockquote>
+<p>Dans le cas où un objet n'a pas de type déclaré, son type effectif est :</p>
+<ul>
+<li>celui de la <em>lvalue</em> le désignant (accès ou modification) ;</li>
+<li>celui de l'objet dont le contenu y a été copié à l'aide de <code>memcpy</code> ou <code>memmove</code>.</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp"></span>
+
+<span class="kt">int</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="n">malloc</span><span class="p">(</span><span class="k">sizeof</span> <span class="o">*</span><span class="n">p</span><span class="p">);</span>
+
+<span class="cm">/*</span>
+<span class="cm"> * Le type de l&#39;objet désigné par la lvalue `*p&#39; prend le type</span>
+<span class="cm"> * `int&#39;.</span>
+<span class="cm"> */</span>
+<span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+
+<span class="cm">/*</span>
+<span class="cm"> * Le type de l&#39;objet désigné par la lvalue `*p&#39; prend le type</span>
+<span class="cm"> * `unsigned int&#39;.</span>
+<span class="cm"> */</span>
+<span class="o">*</span><span class="p">(</span><span class="kt">unsigned</span> <span class="kt">int</span> <span class="o">*</span><span class="p">)</span><span class="n">p</span> <span class="o">=</span> <span class="mi">20U</span><span class="p">;</span>
+</pre></div>
+
+
+<p>Pour conclure, notons que la norme C11 n'a pas changé l'énoncé de la règle.</p>
+<h5 id="illustrations-de-la-regle-de-strict-aliasing">Illustrations de la règle de strict aliasing</h5>
+<p>Vous devriez maintenant être au point avec la définition et la normalisation de la règle de strict <em>aliasing</em>. Pour illustrer un peu nos propos, nous étudierons tout d'abord quelques exemples et contre-exemples, puis nous verrons quel intérêt le compilateur peut tirer de tout cela.</p>
+<h6 id="exemples">Exemples</h6>
+<p>La question sera de savoir, pour chacune des lignes de code ci-dessous, si l'utilisation de l'alias créé est autorisé.</p>
+<div class="highlight"><pre><span></span><span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">n</span><span class="p">;</span>
+
+<span class="cm">/*</span>
+<span class="cm"> * Correct, car la lvalue `*p&#39; a un type qui est une version</span>
+<span class="cm"> * qualifiée du type effectif de l&#39;objet.</span>
+<span class="cm"> */</span>
+<span class="k">const</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">n</span><span class="p">;</span>
+
+<span class="cm">/*</span>
+<span class="cm"> * Incorrect, car la lvalue `*q&#39; a un type qui n&#39;est ni une version</span>
+<span class="cm"> * qualifiée du type déclaré de l&#39;objet, ni le type signé ou non</span>
+<span class="cm"> * signé correspondant, ni un type caractère.</span>
+<span class="cm"> */</span>
+<span class="kt">long</span> <span class="kt">int</span> <span class="o">*</span><span class="n">q</span> <span class="o">=</span> <span class="p">(</span><span class="kt">long</span> <span class="kt">int</span> <span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">n</span><span class="p">;</span>
+
+<span class="cm">/*</span>
+<span class="cm"> * Correct, car la lvalue `*r&#39; a un type qui est le type signé</span>
+<span class="cm"> * correspondant à une version qualifiée du type effectif de l&#39;objet.</span>
+<span class="cm"> */</span>
+<span class="k">const</span> <span class="kt">int</span> <span class="o">*</span><span class="n">r</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">n</span><span class="p">;</span>
+
+<span class="cm">/* Correct, car la lvalue `*s&#39; a un type caractère. */</span>
+<span class="kt">signed</span> <span class="kt">char</span> <span class="o">*</span><span class="n">s</span> <span class="o">=</span> <span class="p">(</span><span class="kt">signed</span> <span class="kt">char</span> <span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">n</span><span class="p">;</span>
+</pre></div>
+
+
+<p>Mentionnons que toutes ces règles s'appliquent uniquement lors du déférencement, ce qui autorise donc en soi l'affectation (bien que, naturellement, le champ d'action du pointeur soit par la suite réduit puisqu'il sera interdit de le déférencer).</p>
+<div class="highlight"><pre><span></span><span class="kt">int</span> <span class="n">n</span><span class="p">;</span>
+
+<span class="cm">/* Correct : `p&#39; n&#39;est pas déférencé. */</span>
+<span class="kt">short</span> <span class="kt">int</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="p">(</span><span class="kt">short</span> <span class="kt">int</span> <span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">n</span><span class="p">;</span>
+
+<span class="cm">/* Incorrect : `p&#39; est déférencé. */</span>
+<span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+</pre></div>
+
+
+<h6 id="benefices-pour-le-compilateur">Bénéfices pour le compilateur</h6>
+<p>Pour le compilateur, le plus intéressant reste la conséquence de cette règle, c'est-à-dire qu'en dehors des accès autorisés mentionnés ci-dessus, deux <em>lvalues</em> ne désigneront jamais un même objet.</p>
+<p>Dans cet exemple, la règle de strict <em>aliasing</em> est brisée car <code>*p</code> a un type qui n'est ni une version qualifiée du type déclaré de l'objet, ni le type signé ou non signé correspondant, ni un type caractère. Les <em>lvalues</em> <code>*p</code> et <code>n</code> ne seront donc pas considérées comme des alias lors de la phase d'optimisation (bien qu'en vérité elles le soient). Voilà qui facilite bien l'analyse d'alias !</p>
+<h6 id="parametrage-du-compilateur-gcc">Paramétrage du compilateur gcc</h6>
+<p>Avec le compilateur gcc, la règle de strict <em>aliasing</em> n'est activée par défaut que dans les niveaux d'optimisation. Toutefois, il est possible pour le programmeur de spécifier explicitement si il veut que son code subisse les vérifications associées, à l'aide des options <code>-fstrict-aliasing</code> (respect strict de la règle) et <code>-fno-strict-aliasing</code> (tolérance de comportements non conformes à la règle).</p>
+<p>Si l'utilisation pertinente de l'option <code>-fno-strict-aliasing</code> peut vous paraître dangereuse, puisque le code n'est alors plus conforme à la norme, l'histoire retient que de grands noms l'ont soutenu (le noyau Linux pour ne citer que lui).</p>
+<p>gcc dispose notamment d'un avertissement permettant de prévenir les situation non conformes à la règle de strict <em>aliasing</em>.</p>
+<blockquote>
+<p>warning: dereferencing type-punned pointer will break strict-aliasing rules</p>
+</blockquote>
+<p>L'option permettant de gérer de tels affichages est <code>-Wstrict-aliasing[=n]</code>, avec <code>n</code> compris entre 1 et 3 (niveau 3 par défaut). Plus <code>n</code> est petit, plus gcc fera de vérifications (par exemple, avec <code>n = 1</code> ou <code>n = 2</code>, l'avertissement peut se déclencher même si le pointeur n'est pas déférencé). De même, le pourcentage de faux positifs et de faux négatifs dépend du niveau utilisé.</p>
+<p>Par exemple, avec gcc 4.4.5, l'avertissement ne se déclare qu'aux niveaux 1 et 2 pour ce code, au niveau de l'instruction d'affectation (ligne 5).</p>
+<div class="highlight"><pre><span></span><span class="kt">int</span>
+<span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">n</span><span class="p">;</span>
+    <span class="kt">long</span> <span class="kt">int</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="p">(</span><span class="kt">long</span> <span class="kt">int</span> <span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">n</span><span class="p">;</span>
+
+    <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="mi">10L</span><span class="p">;</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Si la règle de strict <em>aliasing</em> constitue une aide réelle à l'analyse d'alias des compilateurs, il reste encore le cas des alias de type identique (ou ne différant que par le signe et/ou par le qualificateur, ainsi que celui des types caractères). Il est évident qu'on ne peut pas interdire cette pratique, qui signifierait l'abolition des pointeurs ! Mais c'est à ce moment-là que le programmeur entre en scène avec l'<em>aliasing</em> spécifié, thème qui fera l'objet de notre prochaine sous-partie.</p>
+<h1 id="les-pointeurs-restreints">Les pointeurs restreints</h1>
+<p>Malgré cette règle, il reste donc encore quelques situations d'<em>aliasing</em> compromettantes. Comme la norme et les compilateurs ne peuvent plus faire d'hypothèses supplémentaires, c'est le programmeur lui-même qui est sollicité.</p>
+<h4 id="introduction-aux-pointeurs-restreints">Introduction aux pointeurs restreints</h4>
+<p>L'<em>aliasing</em> spécifié par le développeur est implémenté dans la norme C99 sous la forme de la notion de <strong>pointeur restreint</strong>. L'idée est de permettre la mise en place d'un droit exclusif d'accès sur un objet référencé par un pointeur qualifié de restreint. Ce droit ne peut être transmis qu'à des <em>lvalues</em> dérivées de ce pointeur, c'est-à-dire qui ont obtenu l'adresse de l'objet <em>via</em> celui-ci.</p>
+<h5 id="le-qualificateur-restrict">Le qualificateur restrict</h5>
+<p>Pour déclarer un pointeur restreint, la norme C99 a mis à la disposition des programmeurs un nouveau qualificateur : <code>restrict</code>. Il est applicable uniquement aux pointeurs sur objet ; il doit donc être placé, lors de la déclaration, après le symbole <code>*</code>.</p>
+<div class="highlight"><pre><span></span><span class="cm">/* `p&#39; est un pointeur restreint sur `int&#39;. */</span>
+<span class="kt">int</span> <span class="o">*</span> <span class="kr">restrict</span> <span class="n">p</span><span class="p">;</span>
+
+<span class="cm">/* `q&#39; est un pointeur sur pointeur restreint sur `int&#39;. */</span>
+<span class="kt">int</span> <span class="o">*</span> <span class="kr">restrict</span> <span class="o">*</span><span class="nl">q</span><span class="p">:</span>
+
+<span class="cm">/* `r&#39; est un pointeur restreint sur pointeur sur `int&#39;. */</span>
+<span class="kt">int</span> <span class="o">**</span> <span class="kr">restrict</span> <span class="n">r</span><span class="p">;</span>
+</pre></div>
+
+
+<h5 id="definition">Définition</h5>
+<p>Le passage à propos de <code>restrict</code> dans la norme C99 peut paraître alambiqué et tordu ; nous vous ferons donc grâce des citations. L'essentiel du fonctionnement des pointeurs restreints peut se résumer dans les deux règles suivantes.</p>
+<ol>
+<li>il ne peut y avoir qu'un seul pointeur restreint référençant un même objet dans un même bloc ;</li>
+<li>une <em>lvalue</em> ne peut modifier un objet référencé par un pointeur restreint que si elle est dérivée de ce dernier.</li>
+</ol>
+<h5 id="quelques-exemples">Quelques exemples</h5>
+<p>À ce stade, la définition peut vous paraître encore un peu floue, c'est pourquoi nous vous proposons quelques petits exemples.</p>
+<div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp"></span>
+
+<span class="k">static</span> <span class="kt">char</span> <span class="o">*</span> <span class="kr">restrict</span> <span class="n">r</span><span class="p">,</span> <span class="o">*</span> <span class="kr">restrict</span> <span class="n">s</span><span class="p">;</span>
+
+<span class="kt">void</span>
+<span class="nf">copy</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span> <span class="kr">restrict</span> <span class="n">dst</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span> <span class="kr">restrict</span> <span class="n">src</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">n</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="cm">/*</span>
+<span class="cm">     * Valide car `p&#39; et `q&#39; ne sont pas des pointeurs</span>
+<span class="cm">     * restreints.</span>
+<span class="cm">     */</span>
+    <span class="kt">char</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="n">dst</span><span class="p">;</span>
+    <span class="kt">char</span> <span class="o">*</span><span class="n">q</span> <span class="o">=</span> <span class="n">src</span><span class="p">;</span>
+
+    <span class="k">while</span> <span class="p">(</span><span class="n">n</span><span class="o">--</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+        <span class="cm">/*</span>
+<span class="cm">         * Valide car les lvalues `*p&#39; et `*q&#39; sont</span>
+<span class="cm">         * respectivement basées sur les pointeurs restreints</span>
+<span class="cm">         * `dst&#39; et `src&#39;.</span>
+<span class="cm">         */</span>
+        <span class="o">*</span><span class="n">p</span><span class="o">++</span> <span class="o">=</span> <span class="o">*</span><span class="n">q</span><span class="o">++</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="cm">/*</span>
+<span class="cm">     * Invalide car `r&#39; et `s&#39; sont des pointeurs restreints et</span>
+<span class="cm">     * référencent, respectivement, les mêmes objets que `dst&#39; et</span>
+<span class="cm">     * `src&#39; dans le bloc de la fonction `copy&#39;.</span>
+<span class="cm">     */</span>
+    <span class="o">*</span><span class="n">r</span> <span class="o">=</span> <span class="o">*</span><span class="n">s</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span>
+<span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="cm">/*</span>
+<span class="cm">     * Valide car `r&#39; et `s&#39; référencent deux objets différents</span>
+<span class="cm">     * dans le bloc de la fonction main.</span>
+<span class="cm">     */</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">malloc</span><span class="p">(</span><span class="mi">10</span><span class="p">);</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">malloc</span><span class="p">(</span><span class="mi">10</span><span class="p">);</span>
+
+    <span class="cm">/*</span>
+<span class="cm">     * Valide car `dst&#39; et `src&#39; référencent deux objets</span>
+<span class="cm">     * différents dans le bloc de la fonction `copy&#39;.</span>
+<span class="cm">     */</span>
+    <span class="n">copy</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="mi">10</span><span class="p">);</span>
+
+    <span class="cm">/*</span>
+<span class="cm">     * Invalide car `dst&#39; et `src&#39; référencent le même objet dans</span>
+<span class="cm">     * le bloc de la fonction `copy&#39;.</span>
+<span class="cm">     */</span>
+    <span class="n">copy</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="mi">10</span><span class="p">);</span>
+
+    <span class="cm">/*</span>
+<span class="cm">     * Invalide car `r&#39; et `s&#39; référencent alors le même objet</span>
+<span class="cm">     * dans le bloc de la fonction main.</span>
+<span class="cm">     */</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">s</span><span class="p">;</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>      
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Bien qu'il soit techniquement possible d'assigner des pointeurs restreints à des pointeurs non restreints, c'est une pratique déconseillée car cela peut compliquer le travail d'optimisation du compilateur.</p>
+<h4 id="benefice-des-pointeurs-restreints">Bénéfice des pointeurs restreints</h4>
+<p>À l'instar de la règle de strict <em>aliasing</em>, les pointeurs restreints permettent aux compilateurs d'effectuer des présomptions quant aux relations d'<em>aliasing</em> qui existent entre les pointeurs d'un même bloc. En effet, deux pointeurs restreints sont garantis de ne pas être des alias. Ainsi, c'est toute la phase d'optimisation de code qui en profite, et notamment la réorganisation du code.</p>
+<h5 id="la-vectorisation">La vectorisation</h5>
+<p>De plus, étant donné que le mot-clé <code>restrict</code> vise des pointeurs de même type, cela laisse également place à une optimisation plus poussée faisant intervenir les tableaux : la <strong>vectorisation</strong>. Cette dernière pratique consiste à effectuer des opérations sur des petits tableaux de taille fixe plutôt que sur un seul élément à la fois. Cela est possible sur la plupart des processeurs modernes, qui disposent d'instructions spécialisées travaillant sur plusieurs éléments à la fois : les <strong>instructions vectorielles</strong>.</p>
+<p>Dans les exemples suivants, nous considérerons un processeur disposant d'instructions vectorielles capables de travailler sur 128 <em>bits</em>, c'est-à-dire ici de 16 <code>char</code> ou de 4 <code>int</code>. Elles seront illustrées par les trois fonctions suivantes :</p>
+<ul>
+<li><code>vect_cpy16</code> : copie un tableau de 16 <code>char</code> ;</li>
+<li><code>vect_cpy4</code> : copie un tableau de 4 <code>int</code> ;</li>
+<li><code>vect_add4</code> : additionne deux tableaux de 4 <code>int</code> et stocke le résultat dans le premier.</li>
+</ul>
+<h5 id="exemple-1">Exemple (1)</h5>
+<div class="highlight"><pre><span></span><span class="kt">void</span>
+<span class="nf">memcpy</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span> <span class="kr">restrict</span> <span class="n">dst</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span> <span class="kr">restrict</span> <span class="n">src</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">n</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">char</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="n">dst</span><span class="p">;</span>
+    <span class="kt">char</span> <span class="o">*</span><span class="n">q</span> <span class="o">=</span> <span class="n">src</span><span class="p">;</span>
+
+    <span class="k">while</span> <span class="p">(</span><span class="n">n</span><span class="o">--</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="o">*</span><span class="n">p</span><span class="o">++</span> <span class="o">=</span> <span class="o">*</span><span class="n">q</span><span class="o">++</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Dans le code ci-dessus, la règle de strict <em>aliasing</em> est inutile car les <em>lvalues</em> <code>*p</code> et <code>*q</code> sont toutes deux de type <code>char</code>. En revanche, elles sont basées sur un pointeur restreint et sont donc garanties de ne pas être des alias. Le compilateur pourrait donc vectoriser cette boucle, en copiant des tableaux de taille fixe plutôt que des <code>char</code> un par un.</p>
+<div class="highlight"><pre><span></span><span class="kt">void</span>
+<span class="nf">memcpy</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span> <span class="kr">restrict</span> <span class="n">dst</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span> <span class="kr">restrict</span> <span class="n">src</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">n</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">char</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="n">dst</span><span class="p">;</span>
+    <span class="kt">char</span> <span class="o">*</span><span class="n">q</span> <span class="o">=</span> <span class="n">src</span><span class="p">;</span>
+    <span class="kt">size_t</span> <span class="n">i</span><span class="p">;</span>
+
+    <span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">n</span> <span class="o">-</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="mi">16</span><span class="p">;</span> <span class="n">i</span> <span class="o">+=</span> <span class="mi">16</span><span class="p">)</span>
+        <span class="n">vect_cpy16</span><span class="p">(</span><span class="n">p</span> <span class="o">+</span> <span class="n">i</span><span class="p">,</span> <span class="n">q</span> <span class="o">+</span> <span class="n">i</span><span class="p">);</span>
+
+    <span class="k">for</span> <span class="p">(;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+        <span class="n">p</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">q</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<h5 id="exemple-2">Exemple (2)</h5>
+<div class="highlight"><pre><span></span><span class="kt">void</span>
+<span class="nf">vect_add</span><span class="p">(</span><span class="kt">int</span> <span class="o">*</span> <span class="kr">restrict</span> <span class="n">res</span><span class="p">,</span> <span class="kt">int</span> <span class="o">*</span> <span class="kr">restrict</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="o">*</span> <span class="kr">restrict</span> <span class="n">b</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">n</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">size_t</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+        <span class="n">res</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>De la même manière, le code ci-dessus opère sur des <em>lvalues</em> basées sur des pointeurs restreints. Ainsi, le compilateur pourrait utiliser des instructions vectorielles afin d'optimiser le code comme suit.</p>
+<div class="highlight"><pre><span></span><span class="kt">void</span>
+<span class="nf">vect_add</span><span class="p">(</span><span class="kt">int</span> <span class="o">*</span> <span class="kr">restrict</span> <span class="n">res</span><span class="p">,</span> <span class="kt">int</span> <span class="o">*</span> <span class="kr">restrict</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="o">*</span> <span class="kr">restrict</span> <span class="n">b</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">n</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">size_t</span> <span class="n">i</span><span class="p">;</span>
+
+    <span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">n</span> <span class="o">-</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="mi">4</span><span class="p">;</span> <span class="n">i</span> <span class="o">+=</span> <span class="mi">4</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">vect_cpy4</span><span class="p">(</span><span class="n">res</span> <span class="o">+</span> <span class="n">i</span><span class="p">,</span> <span class="n">a</span> <span class="o">+</span> <span class="n">i</span><span class="p">);</span>
+        <span class="n">vect_add4</span><span class="p">(</span><span class="n">res</span> <span class="o">+</span> <span class="n">i</span><span class="p">,</span> <span class="n">b</span> <span class="o">+</span> <span class="n">i</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">for</span> <span class="p">(;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+        <span class="n">res</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<h4 id="dangers-des-pointeurs-restreints">Dangers des pointeurs restreints</h4>
+<p>Malgré tout, il est important de prendre des précautions lors de l'utilisation des pointeurs restreints ; ils ne doivent en effet pas être utilisés à tout-va.</p>
+<h5 id="confusion-entre-appelant-et-appele">Confusion entre appelant et appelé</h5>
+<p>Si deux pointeurs sont indiqués comme étant restreints mais, qu'en réalité, ils se chevauchent, le résultat est indéterminé et le code produit a de fortes chances d'être incorrect.</p>
+<div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;string.h&gt;</span><span class="cp"></span>
+
+<span class="kt">void</span>
+<span class="nf">f</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">a</span><span class="p">[</span><span class="mi">8</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">45</span><span class="p">,</span> <span class="mi">42</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">89</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">36</span> <span class="p">};</span>
+
+    <span class="cm">/*</span>
+<span class="cm">     * Les deux arguments restreints de `memcpy&#39; se chevauchent,</span>
+<span class="cm">     * c&#39;est une situation de comportement indéterminé.</span>
+<span class="cm">     */</span>
+    <span class="n">memcpy</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">a</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Or, nous pouvons remarquer que c'est à la fonction appelée de préciser si les arguments doivent être restreints, mais seule la fonction appelante peut contrôler si ces arguments sont conformes (le compilateur ne peut pas faire cette vérification par lui-même).</p>
+<h5 id="precautions-dutilisation">Précautions d'utilisation</h5>
+<p>On distingue deux grands cas dans lesquels on peut utiliser les pointeurs restreints.</p>
+<ol>
+<li>Si l'algorithme de la fonction ne fonctionne pas ou n'a aucun sens dans le cas où les paramètres se chevauchent, alors le résultat avec les pointeurs restreints sera toujours incorrect, mais pourra avoir changé. Par exemple, le chevauchement des deux paramètres dans la fonction <code>fopen</code> serait complètement absurde.</li>
+<li>Si le principe de la fonction a un sens dans le cas où les arguments se chevauchent mais que cela est pénalisant pour les optimisations, alors il est préférable de créer deux versions de la fonction (une avec <code>restrict</code> et une sans), à la manière des fonctions <code>memcpy</code> et <code>memmove</code>.</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Attention</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Lors d'un comportement indéterminé, théoriquement, tout peut se passer. Le compilateur a donc tout à fait le droit de produire un code qui arrête brutalement le programme pour éviter de propager une éventuelle erreur. C'est pourquoi il ne faut pas oublier de prévenir l'utilisateur de ces spécifications dans la documentation de la fonction. C'est par exemple le cas pour la fonction <code>memcpy</code>.</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>Au final, on peut représenter tout cela par une sorte de contrat passé entre les deux fonctions. Si il n'est pas respecté par la fonction appelante, alors la fonction appelée se réserve le droit de produire un code incorrect.</p>
+<h4 id="une-optimisation-vraiment-valable">Une optimisation vraiment valable ?</h4>
+<p>Il ne faut pas oublier que <code>restrict</code> est une simple indication et pas une obligation pour le compilateur. Aussi les détracteurs du mot-clé ont-ils souvent souligné le fait que le gain de temps octroyé par l'utilisation des pointeurs restreints n'est pas toujours très important (par exemple, les processeurs qui ne disposent pas d'instructions vectorielles ne jouiront pas de cette optimisation).</p>
+<p>Nous pouvons donc légitimement nous demander si l'utilisation des pointeurs restreints est réellement rentable par rapport à l'effort de réflexion associé (qui est loin d'être négligeable). Plusieurs travaux ont conclu que ce n'était pas le cas, et déconseillent donc l'<em>aliasing</em> spécifié.</p>
+<p>À vous de vous forger votre propre avis ; n'hésitez pas, dans cette optique, à construire vos propres étalonnages suivant votre utilisation du langage. En tout cas, si vous êtes prêts à fournir un effort supplémentaire pour un bénéfice, si minimal qu'il soit, vous voilà informés !</p>
+<p>Ainsi, ce tutoriel touche à sa fin. Nous espérons vous avoir éclairé sur ce difficile sujet d'aliasing et de pointeurs restreints. La norme du langage C est, aujourd'hui encore, une des seules normes de langage de programmation qui prône l'optimisation des compilateurs, le C cherche donc toujours à prouver ses qualités en performances pures.</p>
+<h4 id="liens-externes">Liens externes</h4>
+<h5 id="alias-et-optimisation">Alias et optimisation</h5>
+<ul>
+<li>(en) <a href="http://en.wikipedia.org/wiki/Compiler_optimization">Optimisation de code par le compilateur sur Wikipédia</a>.  </li>
+<li>(en) <a href="http://en.wikipedia.org/wiki/Loop_optimization">Optimisation de boucles sur Wikipédia</a>.  </li>
+<li>(fr) <a href="http://fr.wikipedia.org/wiki/Instruction_pipeline">Pipeline des instructions sur Wikipédia</a>.  </li>
+<li>(en) <a href="http://en.wikipedia.org/wiki/Vector_processor">Les processeurs vectoriels sur Wikipédia</a>.  </li>
+<li>(en) <a href="http://www.drdobbs.com/programming-guidelines-for-vectorizing-c/184401611">Guide de programmation pour la vectorisation des compilateurs C/C++</a>.</li>
+</ul>
+<h5 id="analyse-dalias">Analyse d'alias</h5>
+<ul>
+<li>(en) <a href="http://en.wikipedia.org/wiki/Alias_analysis">Analyse d'alias sur Wikipédia</a>.  </li>
+<li>(en) <a href="http://www.cs.ucla.edu/%7Epalsberg/course/purdue/cs661/F01/papers/das-pldi00.pdf">Exemple d'algorithme effectuant une analyse d'alias performante</a>.  </li>
+<li>(en) <a href="http://gcc.gnu.org/onlinedocs/gccint/Alias-analysis.html">L'analyse d'alias de gcc</a>.</li>
+</ul>
+<h5 id="regle-de-strict-aliasing">Règle de strict aliasing</h5>
+<ul>
+<li>(en) <a href="http://cellperformance.beyond3d.com/articles/2006/06/understanding-strict-aliasing.html">Comprendre le strict aliasing</a>.  </li>
+<li>(en) <a href="http://labs.qt.nokia.com/2011/06/10/type-punning-and-strict-aliasing/">Type-punning et strict aliasing</a>.  </li>
+<li>(en) <a href="http://dbp-consulting.com/StrictAliasing.pdf">Comprendre le strict aliasing en C/C++</a>.</li>
+</ul>
+<h5 id="parametrage-du-compilateur">Paramétrage du compilateur</h5>
+<ul>
+<li>(en) <a href="https://lkml.org/lkml/2003/2/26/158">Voir les raisons de l'utilisation de -fno-strict-aliasing dans le noyau Linux</a>.  </li>
+<li>(en) <a href="http://gcc.gnu.org/onlinedocs/gcc-4.7.1/gcc/Optimize-Options.html#Optimize-Options">Page de manuel de gcc (recherchez « -fstrict-aliasing »)</a>.</li>
+</ul>
+<h5 id="les-pointeurs-restreints_1">Les pointeurs restreints</h5>
+<ul>
+<li>(fr) <a href="http://blog.huoc.org/pointeurs-restrict.html">Le C et ses raisons : les pointeurs restreints</a>.  </li>
+<li>(en) <a href="http://www.lysator.liu.se/c/restrict.html">Les pointeurs restreints en C</a>.  </li>
+<li>(en) <a href="http://www.open-std.org/jtc1/sc22/wg14/www/docs/dr_294.htm">Defect Report #294</a>.  </li>
+<li>(en) <a href="http://cellperformance.beyond3d.com/articles/2006/05/demystifying-the-restrict-keyword.html">Démystification du mot-clé restrict</a>.  </li>
+<li>(en) <a href="http://www.cs.pitt.edu/%7Emock/papers/clei2004.pdf">Pourquoi l'<em>aliasing</em> spécifié est une mauvaise idée</a>.</li>
+</ul>
+        </div>
+    </section>
+        </div>
+        <div class="col-sm-3" id="sidebar">
+            <aside>
+
+<section class="well well-sm">
+    <ul class="list-group list-group-flush">
+
+        <!-- Search bar in low width mode -->
+        <li id="searchSideBar" class="list-group-item"><span>
+                <form class="navbar-search" action="/blog/search">
+                  <input type="text" class="search-query" placeholder="Rechercher" name="q" id="tipue_search_input" required>
+                </form></span>
+        </li>
+
+        <li class="list-group-item"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Social</span></h4>
+              <ul class="list-group" id="social">
+                    <li class="list-group-item"><a href="https://example.org">
+                        <i class="fa fa-comment fa-lg"></i>
+                       Link 1</a>
+                    </li>
+                    <li class="list-group-item"><a href="https://example.org">
+                        <i class="fa fa-comments fa-lg"></i>
+                       Link 2</a>
+                    </li>
+                    <li class="list-group-item"><a href="/page/content">
+                        <i class="fa fa-etc fa-lg"></i>
+                       etc</a>
+                    </li>
+              </ul>
+            </li>
+
+
+            <li class="list-group-item"><a href="http://yliesc.github.io/"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Categories</span></h4></a>
+                <ul class="list-group" id="categories">
+                </ul>
+            </li>
+
+
+
+    <li class="list-group-item"><h4><i class="fa fa-link fa-lg"></i><span class="icon-label">External Links</span></h4>
+      <ul class="list-group" id="links">
+        <li class="list-group-item">
+            <a href="https://example.org" target="_blank">
+                Link 1
+            </a>
+        </li>
+        <li class="list-group-item">
+            <a href="https://example.org" target="_blank">
+                Link 2
+            </a>
+        </li>
+        <li class="list-group-item">
+            <a href="/page/content" target="_blank">
+                etc
+            </a>
+        </li>
+      </ul>
+    </li>
+
+        <li class="list-group-item" id="github">
+            <ul class="list-group">
+                <li class="list-group-item"><h5>Vous voyez une erreur ?</h5></li>
+                <li class="list-group-item">
+                    <a class="btn btn-info github" target="_blank" href="https://github.com/YliesC/website/edit/master/content/pages/pdp/content/aliasing-et-pointeurs-restreints.md">
+                        <i class="fa fa-random"></i> Modifiez la page sur GitHub
+                    </a>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</section>            </aside>
+        </div>
+    </div>
+</div>
+<footer>
+   <div class="container">
+      <hr>
+      <div class="row">
+         <div class="col-xs-10">&copy;  
+            &middot; Powered by <a href="https://github.com/getpelican/pelican-themes/tree/master/pelican-bootstrap3" target="_blank">pelican-bootstrap3</a>,
+            <a href="http://docs.getpelican.com/" target="_blank">Pelican</a>,
+<a href="http://getbootstrap.com" target="_blank">Bootstrap</a>                <p><small>  <a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr"><img alt="Creative Commons License" style="border-width:0" src="//i.creativecommons.org/l/by-sa/4.0/80x15.png" /></a>
+    Content
+  licensed under a <a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">Creative Commons Attribution-ShareAlike 4.0 International License</a>, except where indicated otherwise.
+</small></p>
+         </div>
+         <div class="col-xs-2"><p class="pull-right"><i class="fa fa-arrow-up"></i> <a href="#">Back to top</a></p></div>
+      </div>
+   </div>
+</footer>
+<script src="http://yliesc.github.io/theme/js/jquery.min.js"></script>
+
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="http://yliesc.github.io/theme/js/bootstrap.min.js"></script>
+
+<!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
+<script src="http://yliesc.github.io/theme/js/respond.min.js"></script>
+
+<!--  -->
+
+
+</body>
+</html>

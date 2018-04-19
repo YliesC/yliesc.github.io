@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="fr" prefix="og: http://ogp.me/ns# fb: https://www.facebook.com/2008/fbml">
+<head>
+    <title>C++, auto et decltype - The Golden Koala</title>
+    <!-- Using the latest rendering mode for IE -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <link href="http://yliesc.github.io/images/koala-ico.png" rel="icon">
+
+<link rel="canonical" href="http://yliesc.github.io/pages/pdp/content/c-auto-et-decltype/">
+
+        <meta name="author" content="informaticienzero" />
+        <meta name="description" content="La détection de type par le compilateur est une fonctionnalité intéressante qui nous permet d&#39;éviter de la redondance dans le code. Plusieurs langages modernes intègrent cette fonctionnalité. Or, avant 2011, la seule déduction de type qui existait en C++ était celle des templates. Mais avec C++11 sont apparus deux …" />
+
+    <meta property="og:site_name" content="The Golden Koala" />
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="C++, auto et decltype"/>
+    <meta property="og:url" content="http://yliesc.github.io/pages/pdp/content/c-auto-et-decltype/"/>
+    <meta property="og:description" content="La détection de type par le compilateur est une fonctionnalité intéressante qui nous permet d&#39;éviter de la redondance dans le code. Plusieurs langages modernes intègrent cette fonctionnalité. Or, avant 2011, la seule déduction de type qui existait en C++ était celle des templates. Mais avec C++11 sont apparus deux …" />
+
+
+    <!-- Bootstrap -->
+        <link rel="stylesheet" href="http://yliesc.github.io/theme/css/bootstrap.readable.min.css" type="text/css"/>
+    <link href="http://yliesc.github.io/theme/css/font-awesome.min.css" rel="stylesheet">
+
+    <link href="http://yliesc.github.io/theme/css/pygments/default.css" rel="stylesheet">
+    <link href="http://yliesc.github.io/theme/tipuesearch/tipuesearch.css" rel="stylesheet">
+    <link rel="stylesheet" href="http://yliesc.github.io/theme/css/style.css" type="text/css"/>
+        <link href="http://yliesc.github.io/css/custom.css" rel="stylesheet">
+
+        <link href="http://yliesc.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate"
+              title="The Golden Koala ATOM Feed"/>
+
+
+
+
+</head>
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+	<div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="http://yliesc.github.io/" class="navbar-brand">
+<img class="img-responsive pull-left gap-right" src="http://yliesc.github.io/images/koala-logo.svg" width="38"/> <span id="siteName">The Golden Koala</span>            </a>
+        </div>
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+
+            </ul>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+</div> <!-- /.navbar -->
+<!-- Banner -->
+<!-- End Banner -->
+<div class="container">
+    <div class="row">
+        <div class="col-sm-9">
+    <ol class="breadcrumb">
+        <li><a href="http://yliesc.github.io/" title="The Golden Koala">
+            <i class="fa fa-home fa-lg"></i>
+        </a></li>
+        <li class="active">C++, auto et decltype</li>
+    </ol>
+    <section id="content" class="body">
+        <h1 class="entry-title">C++, auto et decltype</h1>
+            <div class="entry-content">
+                    <div class="panel">
+                        <div class="panel-body">
+<footer class="post-info">
+    
+    <span class="published">
+        <span class="label label-default"><i class="fa fa-calendar"></i><time datetime="2015-09-14T00:00:00+02:00"> lun. 14 septembre 2015</time></span> | 
+    </span>
+        <span class="label label-default"><i class="fa fa-user-circle"></i> informaticienzero</span>  | 
+    <span class="label label-default">
+            <i class="fa fa-cc"></i> 
+        
+            CC-BY-SA
+    </span>
+</footer><!-- /.page-info -->                        </div>
+                    </div>
+            <p>La détection de type par le compilateur est une fonctionnalité intéressante qui nous permet d'éviter de la redondance dans le code. Plusieurs langages modernes intègrent cette fonctionnalité. Or, avant 2011, la seule déduction de type qui existait en C++ était celle des templates. Mais avec C++11 sont apparus deux nouveaux mots-clefs : <code>auto</code> et <code>decltype</code>. Durant ce tutoriel, nous allons voir ce qu'ils peuvent nous apporter, les règles de détection de type qu'ils emploient, les points auxquels faire attention afin que ces deux mots-clefs n'ait plus de secret !</p>
+<p><strong>Information</strong> : Premièrement, les codes montrés en exemple sont inspirés de ceux écrits par Scott Meyers dans son livre <a href="http://shop.oreilly.com/product/0636920033707.do">Effective Modern C++</a>, comme autorisé par l'auteur, tout comme certaines explications.   </p>
+<p>Deuxièmement, pour pouvoir tester les codes mis en exemple, il faut au minimum un compilateur supportant C++11. Pour les exemples illustrant C++14, là encore, il faut un compilateur bien à jour. Dans mon cas, il s'agit de GCC 5.1.0 sous Archlinux. À noter également que bien que facultatif pour la compréhension de ce tutoriel, boost est nécessaire pour tester la partie où l'on affichera le type d'un objet.</p>
+<div class="toc">
+<ul>
+<li><a href="#les-regles-de-deduction-des-templates">Les règles de déduction des templates</a></li>
+<li><a href="#pointeur-ou-reference">Pointeur ou référence</a></li>
+<li><a href="#references-universelles">Références universelles</a></li>
+<li><a href="#passage-par-recopie">Passage par recopie</a></li>
+<li><a href="#les-tableaux-c">Les tableaux C</a></li>
+<li><a href="#les-regles-de-fonctionnement-de-auto">Les règles de fonctionnement de auto</a></li>
+<li><a href="#mais-quest-ce-que-decltype">Mais qu'est-ce que decltype ?</a></li>
+<li><a href="#petite-particularite-de-decltype">Petite particularité de decltype</a></li>
+<li><a href="#connaitre-et-afficher-le-type-exact">Connaître et afficher le type exact</a></li>
+<li><a href="#quand-les-utiliser">Quand les utiliser ?</a></li>
+</ul>
+</div>
+<h1 id="les-regles-de-deduction-des-templates">Les règles de déduction des templates</h1>
+<p>Avant d'aller plus loin, il est important de comprendre comment les templates fonctionnent, puique <code>auto</code> va utiliser quasiment les mêmes règles. Pour cela, nous allons utiliser une bête fonction comme celle-là.</p>
+<div class="highlight"><pre><span></span><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
+<span class="kt">void</span> <span class="n">foo</span><span class="p">(</span><span class="n">ParamType</span> <span class="n">param</span><span class="p">);</span>
+</pre></div>
+
+
+<p>Non seulement il faut déduire le type de T, mais également ParamType, qui n'est pas forcément le même. On peut en effet y trouver <code>const</code> ou une référence par exemple. Ainsi, dans le code suivant, si T est de type <code>int</code>, ParamType est de type <code>const int &amp;</code>.</p>
+<div class="highlight"><pre><span></span><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
+<span class="kt">void</span> <span class="n">foo</span><span class="p">(</span><span class="k">const</span> <span class="n">T</span> <span class="o">&amp;</span> <span class="n">param</span><span class="p">);</span>
+
+<span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="n">foo</span><span class="p">(</span><span class="n">x</span><span class="p">);</span>
+</pre></div>
+
+
+<p>Dans ce cas, c'est tout à fait normal que, donnant un <code>int</code> en argument, T soit déduit comme <code>int</code>. Cependant, T ne dépend pas que de ce qu'on passe en argument à la fonction, mais aussi de la forme de ParamType. Il existe trois cas possibles.</p>
+<ul>
+<li>ParamType est un pointeur ou une référence.</li>
+<li>ParamType est une référence universelle.</li>
+<li>ParamType n'est ni un pointeur ni une référence.</li>
+</ul>
+<p>[[attention]]
+| La notion de référence universelle est trop longue pour être expliquée ici, surtout que Scott Meyers a écrit un <a href="https://isocpp.org/blog/2012/11/universal-references-in-c11-scott-meyers">article</a> dessus. Tout ce qu'il y a à savoir pour lire la suite du tutoriel est qu'une référence universelle peut se comporter comme une rvalue-reference <code>T&amp;&amp;</code> ou comme une lvalue-reference <code>T&amp;</code> ; elles se rencontrent dans deux cas.
+|
+| <code>c++
+| template &lt;typename T&gt;
+| void foo(T &amp;&amp; param);
+| 
+| auto &amp;&amp; y = x;
+|</code></p>
+<h1 id="pointeur-ou-reference">Pointeur ou référence</h1>
+<p>C'est la situation la plus facile à comprendre, puisque les règles sont simples : si l'argument fourni lors de l'appel de <em>foo</em> est une référence ou un pointeur, on ignore la dite référence ou le dit pointeur. Examinons un exemple tout simple.</p>
+<div class="highlight"><pre><span></span><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
+<span class="kt">void</span> <span class="n">foo</span><span class="p">(</span><span class="n">T</span> <span class="o">&amp;</span> <span class="n">param</span><span class="p">);</span>
+
+<span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="c1">// x est de type int</span>
+<span class="n">foo</span><span class="p">(</span><span class="n">x</span><span class="p">);</span> <span class="c1">// T est de type int et ParamType est de type int&amp;</span>
+
+<span class="k">const</span> <span class="kt">int</span> <span class="n">y</span> <span class="o">=</span> <span class="n">x</span><span class="p">;</span> <span class="c1">// y est de type const int</span>
+<span class="n">foo</span><span class="p">(</span><span class="n">y</span><span class="p">);</span> <span class="c1">// T est de type const int, ParamType est de type const int&amp;</span>
+
+<span class="k">const</span> <span class="kt">int</span> <span class="o">&amp;</span> <span class="n">z</span> <span class="o">=</span> <span class="n">x</span><span class="p">;</span> <span class="c1">// z est de type const int&amp;, soit une référence sur un const int</span>
+<span class="n">foo</span><span class="p">(</span><span class="n">z</span><span class="p">);</span> <span class="c1">// T est de type const int, ParamType est de type const int&amp;</span>
+</pre></div>
+
+
+<p>Comme dit précédemment, on remarque bien que la référence est supprimé. Par contre, <code>const</code> est conservé et c'est bien normal : quand on passe un objet <code>const</code> à une fonction prennant une référence comme paramètre, on s'attend bien à ce que l'objet reste <code>const</code> et ne soit pas modifiable, d'où ParamType qui sera de type <code>const T &amp;</code>. </p>
+<p>Le même comportement est observable avec des pointeurs (bien qu'un bon programmeur C++ n'utilise que le moins possible les pointeurs nus).</p>
+<div class="highlight"><pre><span></span><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
+<span class="kt">void</span> <span class="n">foo</span><span class="p">(</span><span class="n">T</span> <span class="o">*</span> <span class="n">param</span><span class="p">);</span>
+
+<span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="c1">// x est de type int</span>
+<span class="n">foo</span><span class="p">(</span><span class="o">&amp;</span><span class="n">x</span><span class="p">);</span> <span class="c1">// T est de type int, ParamType est de type int*</span>
+
+<span class="k">const</span> <span class="kt">int</span> <span class="o">*</span> <span class="n">ptr</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">x</span><span class="p">;</span> <span class="c1">// ptr est de type const int*, soit un pointeur sur un const int</span>
+<span class="n">foo</span><span class="p">(</span><span class="n">ptr</span><span class="p">);</span> <span class="c1">// T est de type const int, ParamType est de type const int*</span>
+</pre></div>
+
+
+<p>Les déductions du compilateur changent un petit peu dans le cas où ParamType est de type <code>const T &amp;</code> (ou <code>const T *</code>). En effet, dans ce cas, puisque ParamType est déjà de type <code>const</code>, alors T n'a plus besoin d'être déduit comme <code>const</code> lui aussi, même si l'argument donné est <code>const</code>. Pas clair ? Voyons ça avec du code.</p>
+<div class="highlight"><pre><span></span><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
+<span class="kt">void</span> <span class="n">foo</span><span class="p">(</span><span class="k">const</span> <span class="n">T</span> <span class="o">&amp;</span> <span class="n">param</span><span class="p">);</span>
+
+<span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="c1">// x est de type int</span>
+<span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">);</span> <span class="c1">// T est de type int et ParamType est de type const int&amp;, tout est normal</span>
+
+<span class="k">const</span> <span class="kt">int</span> <span class="n">y</span> <span class="o">=</span> <span class="n">x</span><span class="p">;</span> <span class="c1">// y est de type const int</span>
+<span class="n">f</span><span class="p">(</span><span class="n">y</span><span class="p">);</span> <span class="c1">// ParamType est déjà const, donc T sera de type, non pas const int, mais simplement int et ParamType sera de type const int&amp;</span>
+
+<span class="k">const</span> <span class="kt">int</span> <span class="o">&amp;</span> <span class="n">z</span> <span class="o">=</span> <span class="n">x</span><span class="p">;</span> <span class="c1">// z est de type const int &amp;, soit une référence sur un const int</span>
+<span class="n">f</span><span class="p">(</span><span class="n">z</span><span class="p">);</span> <span class="c1">// ParamType est déjà const, donc T sera simplement int et ParamType sera de type const int&amp;. On note que les règles sur les références vues juste avant s&#39;appliquent encore ici.</span>
+</pre></div>
+
+
+<p>Quand on y réfléchit, c'est normal. Si ParamType est déjà <code>const</code>, il est superflu et redondant de dire que T l'est aussi. Jusque là, tout est logique et la déduction de type fonctionne exactement comme ce à quoi on s'attend.</p>
+<h1 id="references-universelles">Références universelles</h1>
+<p>Là, les choses se complexifient un peu. En effet, le comportement n'est pas le même en fonction de si l'on passe en argument une lvalue ou une rvalue.</p>
+<ul>
+<li>Dans le cas d'une lvalue, T et ParamType sont déduits comme étant des lvalue-references. C'est le seul cas dans les règles de déduction des templates que T conserve sa référence. L'autre point surprenant est que bien que ParamType soit déclaré comme une rvalue (<code>T &amp;&amp; param</code>), le compilateur en déduit que c'est une lvalue-reference.</li>
+<li>Dans le cas d'une rvalue, les règles vues dans la section pointeurs / références s'appliquent.</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
+<span class="kt">void</span> <span class="n">foo</span><span class="p">(</span><span class="n">T</span> <span class="o">&amp;&amp;</span> <span class="n">param</span><span class="p">);</span>
+
+<span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="c1">// x est une lvalue de type int</span>
+<span class="n">foo</span><span class="p">(</span><span class="n">x</span><span class="p">);</span> <span class="c1">// x étant une lvalue, T et ParamType sont déduits comme int&amp;</span>
+
+<span class="k">const</span> <span class="kt">int</span> <span class="n">y</span> <span class="o">=</span> <span class="n">x</span><span class="p">;</span> <span class="c1">// y est une lvalue de type const int</span>
+<span class="n">foo</span><span class="p">(</span><span class="n">y</span><span class="p">);</span> <span class="c1">// y étant une lvalue, T et ParamType sont déduits comme const int&amp;</span>
+
+<span class="k">const</span> <span class="kt">int</span> <span class="o">&amp;</span> <span class="n">z</span> <span class="o">=</span> <span class="n">x</span><span class="p">;</span> <span class="c1">//z est une lvalue de type const int&amp;</span>
+<span class="n">foo</span><span class="p">(</span><span class="n">z</span><span class="p">);</span> <span class="c1">// z étant une lvalue, T et ParamType sont déduits comme const int&amp;</span>
+
+<span class="n">foo</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span> <span class="c1">// 0 est une rvalue, donc T est déduit comme int et ParamType comme int&amp;&amp;</span>
+</pre></div>
+
+
+<p>La chose importante à retenir est que les règles ne sont pas les mêmes si l'on a affaire à une lvalue ou à une rvalue. Dans le premier cas, les règles que nous venons de voir s'appliquent ; dans le second cas, les règles <em>classiques</em>, celles vues pour les pointeurs et les références, s'appliquent. Le pourquoi exact de ces comportements est néanmoins trop complexes pour être examiné ici ; des recherches sur Internet peuvent néanmoins être menées par ceux désireux de comprendre les raisons.</p>
+<h1 id="passage-par-recopie">Passage par recopie</h1>
+<p>Quand le prototype de notre fonction ne comporte ni pointeur ni référence, alors c'est qu'on à affaire à un passage par copie.</p>
+<div class="highlight"><pre><span></span><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
+<span class="kt">void</span> <span class="n">foo</span><span class="p">(</span><span class="n">T</span> <span class="n">param</span><span class="p">);</span>
+</pre></div>
+
+
+<p>Si l'expression passée en argument contient référence ou pointeur, ceux-ci sont ignorés. Classique. Par contre, et c'est là qu'est la différence, si l'expression contient <code>const</code> (ou plus rarement <code>volatile</code>), ceux-ci sont ignorés également. La raison est toute simple : puisque on recopie les arguments donnés à la fonction, on ne manipule plus l'objet original mais un nouvel objet totalement indépendant du premier ; le fait que l'original ne soit pas modifiable ne veut pas dire que sa copie ne peut pas l'être non plus.</p>
+<div class="highlight"><pre><span></span><span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="c1">// x est de type int</span>
+<span class="n">foo</span><span class="p">(</span><span class="n">x</span><span class="p">);</span> <span class="c1">// T et ParamType sont de type int</span>
+
+<span class="k">const</span> <span class="kt">int</span> <span class="n">y</span> <span class="o">=</span> <span class="n">x</span><span class="p">;</span> <span class="c1">// y est de type const int</span>
+<span class="n">foo</span><span class="p">(</span><span class="n">y</span><span class="p">);</span> <span class="c1">// T et ParamType sont de type int</span>
+
+<span class="k">const</span> <span class="kt">int</span> <span class="o">&amp;</span> <span class="n">z</span> <span class="o">=</span> <span class="n">x</span><span class="p">;</span> <span class="c1">// z est de type const int&amp;</span>
+<span class="n">foo</span><span class="p">(</span><span class="n">z</span><span class="p">);</span> <span class="c1">// T et ParamType sont de type int</span>
+</pre></div>
+
+
+<h1 id="les-tableaux-c">Les tableaux C</h1>
+<p>Bien qu'un bon programmeur C++ moderne utilise <code>std::array</code> à la place des tableaux C, le monde n'est pas parfait et il y aura des cas où l'on devra traiter avec cet héritage du C. Et il y a aussi les curieux qui veulent connaître ces petits détails. Alors soit, explorons. Les tableaux C ne constituent pas un quatrième cas mais rentrent dans les précédents, comme nous allons le voir.</p>
+<p>Tout d'abord, il est important de savoir qu'il est impossible de passer un tableau par recopie. En effet, les règles héritées du C impliquent que dans quasiment toutes les situations, un tableau est converti en un pointeur constant sur son premier élément. Les deux fonctions suivantes sont donc strictement <strong>identiques</strong>.</p>
+<div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">foo</span><span class="p">(</span><span class="kt">int</span> <span class="o">*</span> <span class="n">param</span><span class="p">);</span>
+<span class="kt">void</span> <span class="nf">foo</span><span class="p">(</span><span class="kt">int</span> <span class="n">param</span><span class="p">[]);</span>
+</pre></div>
+
+
+<p>Dans le cas d'une fonction par recopie, si on lui donne un tableau, le compilateur interprètera ça comme un pointeur.</p>
+<div class="highlight"><pre><span></span><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
+<span class="kt">void</span> <span class="n">foo</span><span class="p">(</span><span class="n">T</span> <span class="n">param</span><span class="p">);</span>
+
+<span class="k">const</span> <span class="kt">char</span> <span class="n">string</span><span class="p">[]</span> <span class="o">=</span> <span class="s">&quot;Zeste de Savoir&quot;</span><span class="p">;</span> <span class="c1">// string est de type const char[15]</span>
+<span class="n">foo</span><span class="p">(</span><span class="n">string</span><span class="p">);</span> <span class="c1">// conversion en pointeur, T sera déduit comme un const char*</span>
+</pre></div>
+
+
+<p>Par contre, et là ça devient plus amusant, on peut déclarer une fonction prenant une référence sur un tableau. Comme la logique le veut, on va suivre les règles établies dans le cas 1 et surprise ! le type déduit pour T est celui du tableau ! </p>
+<div class="highlight"><pre><span></span><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
+<span class="kt">void</span> <span class="n">foo</span><span class="p">(</span><span class="n">T</span> <span class="o">&amp;</span> <span class="n">param</span><span class="p">);</span>
+
+<span class="k">const</span> <span class="kt">char</span> <span class="n">string</span><span class="p">[]</span> <span class="o">=</span> <span class="s">&quot;Zeste de Savoir&quot;</span><span class="p">;</span> <span class="c1">// string est de type const char[15]</span>
+<span class="n">foo</span><span class="p">(</span><span class="n">string</span><span class="p">);</span> <span class="c1">// suivant les règles, T sera de type const char[15] lui aussi</span>
+</pre></div>
+
+
+<p>Sur de nombreux forums, on trouve le code suivant qui permet de connaître, à la compilation, la taille d'un tableau C. Maintenant, après avoir lu jusqu'ici, vous êtes en mesure de comprendre et d'expliquer le comment de ce code.</p>
+<div class="highlight"><pre><span></span><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">N</span><span class="o">&gt;</span>
+<span class="kr">inline</span> <span class="k">constexpr</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">array_size</span><span class="p">(</span><span class="n">T</span> <span class="p">(</span><span class="o">&amp;</span><span class="p">)[</span><span class="n">N</span><span class="p">])</span> <span class="k">noexcept</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="n">N</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Désormais, les régles qu'utilise le compilateur n'ont plus de secret pour nous. Enfin presque. Il reste sans doute des cas exotiques et particuliers qui ne sont pas nécessaires pour bien comprendre l'article. Ceux qui le souhaitent peuvent continuer leurs recherches sur le sujet. Pour les autres, passons maintenant à <code>auto</code>.</p>
+<h1 id="les-regles-de-fonctionnement-de-auto">Les règles de fonctionnement de auto</h1>
+<p>Les règles de déduction de <code>auto</code> sont les mêmes que celles des templates ... sauf une petite exception. Mais commençons simple et voyons de comportements tout à fait normaux auxquels on s'attend.</p>
+<div class="highlight"><pre><span></span><span class="c1">// Cas classiques</span>
+<span class="k">auto</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="c1">// 27 est de type int, donc x aussi</span>
+
+<span class="k">const</span> <span class="k">auto</span> <span class="n">y</span> <span class="o">=</span> <span class="n">x</span><span class="p">;</span> <span class="c1">// x est de type int, donc y sera de type const int</span>
+
+<span class="k">const</span> <span class="k">auto</span> <span class="o">&amp;</span> <span class="n">z</span> <span class="o">=</span> <span class="n">x</span><span class="p">;</span> <span class="c1">// x est de type int, donc z sera de type const int&amp;</span>
+
+<span class="c1">// Références unverselles</span>
+<span class="k">auto</span> <span class="o">&amp;&amp;</span> <span class="n">universal_x</span> <span class="o">=</span> <span class="n">x</span><span class="p">;</span> <span class="c1">// x est une lvalue de type int, donc universal_x est de type int&amp;</span>
+
+<span class="k">auto</span> <span class="o">&amp;&amp;</span> <span class="n">universal_y</span> <span class="o">=</span> <span class="n">y</span><span class="p">;</span> <span class="c1">// y est une lvalue de type const int, donc universal_y est de type const int&amp;</span>
+
+<span class="k">auto</span> <span class="o">&amp;&amp;</span> <span class="n">universal_right</span> <span class="o">=</span> <span class="mi">27</span><span class="p">;</span> <span class="c1">// 27 est une rvalue de type int, donc universal_right est de type int&amp;&amp;</span>
+
+<span class="c1">// Tableaux</span>
+<span class="k">const</span> <span class="kt">char</span> <span class="n">site</span><span class="p">[]</span> <span class="o">=</span> <span class="s">&quot;Zeste de Savoir&quot;</span><span class="p">;</span>
+
+<span class="k">auto</span> <span class="n">pointer</span> <span class="o">=</span> <span class="n">site</span><span class="p">;</span> <span class="c1">// pointer est de type const char*</span>
+
+<span class="k">auto</span> <span class="o">&amp;</span> <span class="n">array</span> <span class="o">=</span> <span class="n">site</span><span class="p">;</span> <span class="c1">// array est de type char (&amp;)[15]</span>
+</pre></div>
+
+
+<p>Jusque là, rien de surprenant, les règles appliquées sont bien les mêmes que pour les templates. La seule différence qui existe entre les règles de déduction appliquées aux templates et celles appliquées à <code>auto</code> viennent de la nouvelle façon d'initialiser une variable, introduite avec C++11. En effet, en plus des syntaxes "classiques", on retrouve deux nouvelles formes.</p>
+<div class="highlight"><pre><span></span><span class="kt">int</span> <span class="n">x1</span> <span class="o">=</span> <span class="mi">27</span><span class="p">;</span>
+<span class="kt">int</span> <span class="nf">x2</span><span class="p">(</span><span class="mi">27</span><span class="p">);</span>
+<span class="kt">int</span> <span class="n">x3</span> <span class="o">=</span> <span class="p">{</span><span class="mi">27</span><span class="p">};</span>
+<span class="kt">int</span> <span class="n">x4</span> <span class="p">{</span><span class="mi">27</span><span class="p">};</span>
+</pre></div>
+
+
+<p>Or, en remplaçant <code>int</code> par <code>auto</code>, si l'on obtient bien le type <code>int</code> pour les deux premières formes, on obtient un <code>std::initializer_list&lt;int&gt;</code> dans les deux dernières formes, contenant 27 comme unique élément ! Et pour vous convaincre que les règles de <code>auto</code> et des templates sont bien différentes dans ce cas, examinez le code suivant.</p>
+<div class="highlight"><pre><span></span><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
+<span class="kt">void</span> <span class="n">foo</span><span class="p">(</span><span class="n">T</span> <span class="n">param</span><span class="p">)</span>
+<span class="p">{</span>
+
+<span class="p">}</span>
+
+<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
+<span class="kt">void</span> <span class="n">bar</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">initializer_list</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">list</span><span class="p">)</span>
+<span class="p">{</span>
+
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">auto</span> <span class="n">x</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">};</span> <span class="c1">// x est bien un std::initializer_list&lt;int&gt; contenant 1, 2 et 3</span>
+    <span class="n">foo</span><span class="p">({</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">});</span> <span class="c1">// erreur: no matching function for call to ‘foo(&lt;brace-enclosed initializer list&gt;)’</span>
+    <span class="n">bar</span><span class="p">({</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">});</span> <span class="c1">// ici tout va bien</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Alors que pour <code>auto</code> tout va bien, si l'on tente de faire de même avec <code>foo</code>, alors le compilateur nous envoie boûler. Pour qu'il accepte le code, il faut le même prototype que la fonction <code>bar</code>, soit <code>std::initializer_list&lt;T&gt;</code>. Voilà tout pour C++11</p>
+<p>Mais avec C++14, l'histoire change encore un peu. En effet, avec cette nouvelle révision de la norme, il est possible d'écrire des fonctions dont le type devra être déduit (ou dit vulgairement, retournant <code>auto</code>) ; de même, on peut utiliser <code>auto</code> dans les paramètres des lambdas. Sauf que là, l'utilisation du mot-clef <code>auto</code> n'entraîne pas l'utilisation des règles de déduction de <code>auto</code> mais ... des templates ! Exemples ?</p>
+<div class="highlight"><pre><span></span><span class="k">auto</span> <span class="nf">create_initialisation_list</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">};</span> <span class="c1">// erreur: returning initializer list</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">v</span><span class="p">;</span>
+    <span class="k">auto</span> <span class="n">reset</span> <span class="o">=</span> <span class="p">[</span><span class="o">&amp;</span><span class="n">v</span><span class="p">](</span><span class="k">const</span> <span class="k">auto</span> <span class="o">&amp;</span> <span class="n">new_value</span><span class="p">)</span> <span class="p">{</span> <span class="n">v</span> <span class="o">=</span> <span class="n">new_value</span><span class="p">;</span> <span class="p">};</span>
+
+    <span class="n">reset</span><span class="p">({</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">});</span> <span class="c1">// erreur: no match for call to ‘(main()::&lt;lambda(const auto:1&amp;)&gt;) (&lt;brace-enclosed initializer list&gt;)’</span>
+    <span class="c1">// note: template argument deduction/substitution failed : couldn&#39;t deduce template parameter ‘auto:1’</span>
+
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Compliqué hein ? En vérité, si l'on excepte ces quelques cas particuliers, <code>auto</code> et les templates suivent les mêmes règles. Voici un petit résumé pour aider à bien mémoriser toutes ces informations.</p>
+<ul>
+<li><code>auto</code> et les templates ont les mêmes règles de déductions sauf en présence de crochets {}, auquel cas <code>auto</code> déduit qu'il est en présence de <code>std::initializer_list</code> alors que les templates non.</li>
+<li>En C++14, s'il est le type de retour d'une fonction ou le type d'un argument de lambdas, alors <code>auto</code> utilise les mêmes règles de déduction que les temples (notamment sur les <code>std::initializer_list</code>).</li>
+</ul>
+<h1 id="mais-quest-ce-que-decltype">Mais qu'est-ce que decltype ?</h1>
+<p>Peut-être vous-êtes vous posés la même question que moi la première fois que vous avez vu <code>decltype</code>. Le mot-clef en lui même est très simple : il renvoie le type exact d'une expression ou d'un identificateur qu'on lui donne. Exemples ?</p>
+<div class="highlight"><pre><span></span><span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="c1">// decltype(a) est int</span>
+
+<span class="k">const</span> <span class="kt">int</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="c1">// decltype(b) est const int</span>
+
+<span class="k">class</span> <span class="nc">A</span><span class="p">;</span>
+<span class="n">A</span> <span class="n">instance_de_A</span><span class="p">;</span> <span class="c1">// decltype(instance_de_A) est A;</span>
+
+<span class="k">const</span> <span class="n">A</span> <span class="o">&amp;</span> <span class="n">instance_2_de_A</span> <span class="o">=</span> <span class="n">instance_de_A</span><span class="p">;</span>
+<span class="c1">// decltype(instance_2_de_A) est const A&amp;</span>
+
+<span class="kt">double</span> <span class="nf">foo</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span> <span class="n">value</span><span class="p">);</span> 
+<span class="c1">// decltype(foo) est double(const std::string&amp;)</span>
+
+<span class="k">decltype</span><span class="p">(</span><span class="k">if</span> <span class="p">(</span><span class="mi">0</span> <span class="o">==</span> <span class="mi">0</span><span class="p">))</span> <span class="n">est</span> <span class="kt">bool</span>
+</pre></div>
+
+
+<p>Ces quelques exemples, s'ils illustrent comment <code>decltype</code> fonctionne, sont assez inutiles, avouons-le. La principale utilisation de <code>decltype</code> en C++11 est dans le cas où une fonction template retourne une valeur qui dépend de ses paramètres.</p>
+<div class="highlight"><pre><span></span><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">LHS</span><span class="p">,</span> <span class="k">typename</span> <span class="n">RHS</span><span class="o">&gt;</span>
+<span class="k">auto</span> <span class="n">add</span><span class="p">(</span><span class="n">LHS</span> <span class="n">lhs</span><span class="p">,</span> <span class="n">RHS</span> <span class="n">rhs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="k">decltype</span><span class="p">(</span><span class="n">lhs</span> <span class="o">+</span> <span class="n">rhs</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="n">lhs</span> <span class="o">+</span> <span class="n">rhs</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">auto</span> <span class="n">i</span> <span class="o">=</span> <span class="n">add</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>   <span class="c1">// int</span>
+<span class="k">auto</span> <span class="n">j</span> <span class="o">=</span> <span class="n">add</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">);</span> <span class="c1">// double</span>
+</pre></div>
+
+
+<p><strong>Attention</strong>, l'utilisation de <code>auto</code> ici ne veut pas dire que ce sont les règles vues précédemment pour auto qui s'appliquent, mais plutôt que l'on utilise la syntaxe de déduction avec <code>decltype</code>. En effet, avec <code>decltype</code>, on peut utiliser des paramètres de la fonction pour déterminer le résultat, ce qui ne serait pas possible si on devait écrire le type de retour de la fonction à la place de <code>auto</code>.</p>
+<p>Mais il faut admettre que c'est un peu long à écrire et même redondant, comme le montre le code ci-dessous (tiré d'un <a href="http://scottmeyers.blogspot.fr/2013/07/when-decltype-meets-auto.html">article</a> de Scott Meyers, où l'on répète deux fois la même chose.</p>
+<div class="highlight"><pre><span></span><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">Container</span><span class="p">,</span> <span class="k">typename</span> <span class="n">Index</span><span class="o">&gt;</span>
+<span class="k">auto</span> <span class="n">grab</span><span class="p">(</span><span class="n">ContainerType</span> <span class="o">&amp;&amp;</span> <span class="n">container</span><span class="p">,</span> <span class="n">IndexType</span> <span class="o">&amp;&amp;</span> <span class="n">index</span><span class="p">)</span> <span class="o">-&gt;</span> 
+    <span class="k">decltype</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">forward</span><span class="o">&lt;</span><span class="n">ContainerType</span><span class="o">&gt;</span><span class="p">(</span><span class="n">container</span><span class="p">)[</span><span class="n">std</span><span class="o">::</span><span class="n">forward</span><span class="o">&lt;</span><span class="n">IndexType</span><span class="o">&gt;</span><span class="p">(</span><span class="n">index</span><span class="p">)])</span>
+    <span class="c1">// Déjà que le contenu de decltype est long ...</span>
+<span class="p">{</span>
+    <span class="n">authenticateUser</span><span class="p">();</span>
+    <span class="k">return</span> <span class="n">std</span><span class="o">::</span><span class="n">forward</span><span class="o">&lt;</span><span class="n">ContainerType</span><span class="o">&gt;</span><span class="p">(</span><span class="n">container</span><span class="p">)[</span><span class="n">std</span><span class="o">::</span><span class="n">forward</span><span class="o">&lt;</span><span class="n">IndexType</span><span class="o">&gt;</span><span class="p">(</span><span class="n">index</span><span class="p">)];</span>
+    <span class="c1">// ... mais en plus on doit réécrire la même chose ici !</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>L'idéal serait de faire pour les fonctions ce qui est possible dès C++11 avec les lambdas : ne pas avoir à expliciter le type de retour. </p>
+<div class="highlight"><pre><span></span><span class="p">[](</span><span class="kt">int</span> <span class="n">rhs</span><span class="p">,</span> <span class="kt">int</span> <span class="n">lhs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">int</span> <span class="p">{</span> <span class="k">return</span> <span class="n">rhs</span> <span class="o">+</span> <span class="n">lhs</span><span class="p">;</span> <span class="p">};</span> <span class="c1">// ok</span>
+<span class="p">[](</span><span class="kt">int</span> <span class="n">rhs</span><span class="p">,</span> <span class="kt">int</span> <span class="n">lhs</span><span class="p">)</span>        <span class="p">{</span> <span class="k">return</span> <span class="n">rhs</span> <span class="o">+</span> <span class="n">lhs</span><span class="p">;</span> <span class="p">};</span> <span class="c1">// ok </span>
+</pre></div>
+
+
+<p>Eh bien, avec C++14, c'est possible, en utilisant <code>auto</code>. Maintenant, un code comme celui-ci est parfaitement valide.</p>
+<div class="highlight"><pre><span></span><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">LHS</span><span class="p">,</span> <span class="k">typename</span> <span class="n">RHS</span><span class="o">&gt;</span>
+<span class="k">auto</span> <span class="n">add</span><span class="p">(</span><span class="n">LHS</span> <span class="n">lhs</span><span class="p">,</span> <span class="n">RHS</span> <span class="n">rhs</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="n">lhs</span> <span class="o">+</span> <span class="n">rhs</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Mais du coup, est-ce que <code>decltype</code> est devenu inutile en C++14 ? Eh bien non. Si l'on se souvient bien de la partie précédente, on sait que <code>auto</code> ne conserve pas la référence ou le pointeur de ce qu'il évalue. Et si l'on reprend le code de Scott Meyers vu précédemment, ça peut poser un grave problème. Par exemple, si l'opérateur <code>[]</code> appliqué à un <code>std::vector&lt;int&gt;</code> renvoie bien un <code>int</code>, ce même opérateur appliqué à un <code>std::vector&lt;bool&gt;</code> renvoie un <code>bool&amp;</code>. Si on n'utilise que <code>auto</code>, on perdra la référence. On ne peut pas non plus utiliser <code>decltype</code> avant le début de la fonction, puisque on ne sera pas encore dans sa portée et on ne pourra donc pas utiliser ses paramètres pour la déduction de type.</p>
+<p>Et comme dit le proverbe, "l'union fait la force" ; la réponse est d'utiliser en même temps <code>decltype</code> et <code>auto</code>.</p>
+<div class="highlight"><pre><span></span><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">Container</span><span class="p">,</span> <span class="k">typename</span> <span class="n">Index</span><span class="o">&gt;</span>
+<span class="k">auto</span> <span class="n">grab</span><span class="p">(</span><span class="n">ContainerType</span> <span class="o">&amp;&amp;</span> <span class="n">container</span><span class="p">,</span> <span class="n">IndexType</span> <span class="o">&amp;&amp;</span> <span class="n">index</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="k">decltype</span><span class="p">(</span><span class="k">auto</span><span class="p">)</span>
+    <span class="c1">// Le type de retour est déjà beaucoup moins long et n&#39;est plus redondant</span>
+<span class="p">{</span>
+    <span class="n">authenticateUser</span><span class="p">();</span>
+    <span class="k">return</span> <span class="n">std</span><span class="o">::</span><span class="n">forward</span><span class="o">&lt;</span><span class="n">ContainerType</span><span class="o">&gt;</span><span class="p">(</span><span class="n">container</span><span class="p">)[</span><span class="n">std</span><span class="o">::</span><span class="n">forward</span><span class="o">&lt;</span><span class="n">IndexType</span><span class="o">&gt;</span><span class="p">(</span><span class="n">index</span><span class="p">)];</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Tout est logique : <code>auto</code> indique que le type doit être déduit et <code>decltype</code> précise que les règles de déduction seront les siennes et non celles de <code>auto</code>. Et comme nous sommes des fainéants par nature, nous disposons d'un moyen d'écrire ça encore plus simplement.</p>
+<div class="highlight"><pre><span></span><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">Container</span><span class="p">,</span> <span class="k">typename</span> <span class="n">Index</span><span class="o">&gt;</span>
+<span class="k">decltype</span><span class="p">(</span><span class="k">auto</span><span class="p">)</span> <span class="n">grab</span><span class="p">(</span><span class="n">ContainerType</span> <span class="o">&amp;&amp;</span> <span class="n">container</span><span class="p">,</span> <span class="n">IndexType</span> <span class="o">&amp;&amp;</span> <span class="n">index</span><span class="p">)</span>
+<span class="c1">// Voilà qui est parfait !</span>
+<span class="p">{</span>
+    <span class="n">authenticateUser</span><span class="p">();</span>
+    <span class="k">return</span> <span class="n">std</span><span class="o">::</span><span class="n">forward</span><span class="o">&lt;</span><span class="n">ContainerType</span><span class="o">&gt;</span><span class="p">(</span><span class="n">container</span><span class="p">)[</span><span class="n">std</span><span class="o">::</span><span class="n">forward</span><span class="o">&lt;</span><span class="n">IndexType</span><span class="o">&gt;</span><span class="p">(</span><span class="n">index</span><span class="p">)];</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Et le meilleur dans tout ça, c'est que cette syntaxe peut s'utiliser autre part que dans les retours de fonction ; en fait, elle se place partout où <code>auto</code> peut être utilisé pour une déduction de type, mais reprend le même comportement que <code>decltype</code>.</p>
+<div class="highlight"><pre><span></span><span class="c1">// Fini ça ...</span>
+<span class="k">decltype</span><span class="p">(</span><span class="n">longAndComplexInitializingExpression</span><span class="p">)</span> <span class="n">var</span> <span class="o">=</span> <span class="n">longAndComplexInitializingExpression</span><span class="p">;</span>
+
+<span class="c1">// ... place à la concision !</span>
+<span class="k">decltype</span><span class="p">(</span><span class="k">auto</span><span class="p">)</span> <span class="n">var</span> <span class="o">=</span> <span class="n">longAndComplexInitializingExpression</span><span class="p">;</span>
+</pre></div>
+
+
+<h1 id="petite-particularite-de-decltype">Petite particularité de decltype</h1>
+<p>Comme rien n'est parfait en ce bas-monde, il y aura parfois des moments où <code>decltype</code> vous surprendra en vous donnant un type auquel vous ne vous attendiez pas. S'il retourne bien le type d'un identificateur qu'on lui donne, pour des expressions lvalues un peu plus compliquées, <code>decltype</code> déduit qu'elle est une lvalue-reference ; autrement dit, si une expression un peu complexe est de type <code>T</code>, <code>decltype</code> la déduira comme étant de type <code>T&amp;</code>. </p>
+<div class="highlight"><pre><span></span><span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+<span class="k">decltype</span><span class="p">(</span><span class="n">x</span><span class="p">);</span> <span class="c1">// est bien de type int</span>
+
+<span class="k">decltype</span><span class="p">((</span><span class="n">x</span><span class="p">));</span> <span class="c1">// (x) est une expression lvalue, donc le type déduit est int&amp;</span>
+</pre></div>
+
+
+<p>Le danger se présente avec C++14 et l'utilisation conjointe de <code>decltype</code> et <code>auto</code>. Ainsi, si vous aviez l'habitude d'entourer de parenthèses le retour d'une fonction, vous allez avoir quelques surprises.</p>
+<div class="highlight"><pre><span></span><span class="k">decltype</span><span class="p">(</span><span class="k">auto</span><span class="p">)</span> <span class="n">foo</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+    <span class="p">...</span>
+
+    <span class="k">return</span> <span class="n">x</span><span class="p">;</span> <span class="c1">// decltype(x) est un int, pas de problème</span>
+<span class="p">}</span>
+
+<span class="k">decltype</span><span class="p">(</span><span class="k">auto</span><span class="p">)</span> <span class="n">bar</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+    <span class="p">...</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">x</span><span class="p">);</span> <span class="c1">// decltype((x)) est un int&amp;, une référence sur une variable locale !</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>La leçon ? Rester prudent lorsqu'on utilise <code>decltype</code> et <code>auto</code> ensembles pour éviter les mauvaises surprises.</p>
+<h1 id="connaitre-et-afficher-le-type-exact">Connaître et afficher le type exact</h1>
+<p>Bien que connaître et comprendre les règles des templates, de <code>auto</code> et de <code>decltype</code> puisse grandement nous aider à savoir quel type est déduit, il se peut que l'on ait besoin d'afficher le type d'une expression ou d'un identificateur. La meilleure solution est celle fournie par Boost avec l'en-tête <code>&lt;boost/type_index.hpp&gt;</code>. Bien qu'il faille Boost d'installé, cet en-tête ne nécessite pas d'être compilé pour être utilisé. Et comme un code vaut mille mots, voici une petite illustration compilée avec GCC 5.1.0 sous Archlinux.</p>
+<div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;boost/type_index.hpp&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;memory&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;string&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;vector&gt;</span><span class="cp"></span>
+
+<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
+<span class="kt">void</span> <span class="n">foo</span><span class="p">(</span><span class="k">const</span> <span class="n">T</span> <span class="o">&amp;</span> <span class="n">param</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">using</span> <span class="n">boost</span><span class="o">::</span><span class="n">typeindex</span><span class="o">::</span><span class="n">type_id_with_cvr</span><span class="p">;</span>
+
+    <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;T = &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">type_id_with_cvr</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">().</span><span class="n">pretty_name</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;param = &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">type_id_with_cvr</span><span class="o">&lt;</span><span class="k">decltype</span><span class="p">(</span><span class="n">param</span><span class="p">)</span><span class="o">&gt;</span><span class="p">().</span><span class="n">pretty_name</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">foo</span><span class="p">(</span><span class="mf">3.1415926</span><span class="p">);</span>
+    <span class="n">foo</span><span class="p">(</span><span class="s">&quot;Hello with C-string&quot;</span><span class="p">);</span>
+
+    <span class="k">auto</span> <span class="n">ptr</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">42</span><span class="p">);</span>
+    <span class="n">foo</span><span class="p">(</span><span class="n">ptr</span><span class="p">);</span>
+
+    <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">str</span><span class="p">(</span><span class="s">&quot;Hello with C++ std::string&quot;</span><span class="p">);</span>
+    <span class="n">foo</span><span class="p">(</span><span class="n">str</span><span class="p">);</span>
+
+    <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span> <span class="n">v</span><span class="p">;</span>
+    <span class="n">foo</span><span class="p">(</span><span class="n">v</span><span class="p">);</span>
+
+    <span class="k">auto</span> <span class="n">lambda</span> <span class="o">=</span> <span class="p">[]()</span> <span class="o">-&gt;</span> <span class="kt">int</span> <span class="p">{</span> <span class="k">return</span> <span class="mi">42</span><span class="p">;</span> <span class="p">};</span>
+    <span class="n">foo</span><span class="p">(</span><span class="n">lambda</span><span class="p">);</span>
+
+
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>T = double
+param = double const&amp;
+
+T = char [20]
+param = char const (&amp;) [20]
+
+T = std::unique_ptr&lt;int, std::default_delete&lt;int&gt; &gt;
+param = std::unique_ptr&lt;int, std::default_delete&lt;int&gt; &gt; const&amp;
+
+T = std::string
+param = std::string const&amp;
+
+T = std::vector&lt;float, std::allocator&lt;float&gt; &gt;
+param = std::vector&lt;float, std::allocator&lt;float&gt; &gt; const&amp;
+
+T = main::{lambda()#1}
+param = main::{lambda()#1} const&amp;
+</pre></div>
+
+
+<p>N'hésitez pas à jeter un œil à la <a href="http://www.boost.org/doc/libs/1_58_0/doc/html/boost_typeindex.html">documentation</a> pour en apprendre plus sur cet outil précieux.</p>
+<h1 id="quand-les-utiliser">Quand les utiliser ?</h1>
+<p>Tu ne sais pas penser de ces nouveautés et tu es tout perdu ? Pour t'aider, voici des avis de différents programmeurs, récoltés sur Internet.</p>
+<blockquote>
+<p>Principalement pour les types moches et à rallonge, avec plein de templates dedans. De temps à autre je tente du AAA, mais sans trop me forcer à l'utiliser.</p>
+<p>*[AAA]: Almost Always Auto
+Source: <a href="https://zestedesavoir.com/forums/sujet/3216/c-auto-et-decltype/#p57958">Luthaf</a></p>
+<ul>
+<li>
+<p><code>auto</code> : je l'utilise quand le type est très long, souvent avec la ST(L) et ses noms template à rallonge en retour de fonction. Mais quand je sais ce que je vais manipuler bien sûr (des itérateurs, conteneurs, etc.). Je l'utilise aussi pour des types numériques qui peuvent varier dans le temps (passer de float à double par exemple), ça permet de gagner pas mal de temps !</p>
+</li>
+<li>
+<p><code>decltype</code> : je l'utilise moins que le précédent mais lorsque je m'en sers c'est souvent avec auto (pas decltype(auto)), pour bien montrer que le type d'une variable doit absolument être le même que celui d'une autre.</p>
+</li>
+</ul>
+<p>Source: <a href="https://openclassrooms.com/forum/sujet/c-auto-decltype-et-deduction-de-types#message-88695630">zeFresk</a></p>
+<p>Sinon, je mets <code>auto</code> quand la variable est initialisée avec une autre variable ou avec un retour de fonction. Dans les autres cas, j'appelle directement le constructeur <code>T x{...};</code> et non pas <code>auto x = T{...}</code>.
+Aussi dans les boucles sur intervalle (sauf si l'IDE décide de ne pas reconnaître le type... -_-).</p>
+<p>Je ne le mets pas quand je veux une interface. À la place, je mets le type de l'interface.</p>
+<p>Je ne l'utilise pas quand il y a <code>std::reference_wrapper</code>, sinon il faut mettre machin.get() partout. Je trouve ça regrettable en fait, j'espère que la proposition de surcharge de l'opérateur . va être accepté (pas du tout suivit le truc).
+(D'ailleurs, je remplace souvent reference_wrapper par à un proxy rien que pour cette raison...)</p>
+<p><code>decltype</code> quand j'ai besoin de construire une variable du même type. Généralement, dans un alias (<code>using Truc = decltype(machin)</code>).</p>
+<p>Source: <a href="https://openclassrooms.com/forum/sujet/c-auto-decltype-et-deduction-de-types#message-88695917">jo_link_noir</a></p>
+<p>Salut ! Mon avis :</p>
+<ul>
+<li>
+<p><code>auto</code> : souvent pour les types qui peuvent changer (<code>float</code>, <code>double</code> notamment), presque toujours pour les variables initialisées par un retour de fonction (<code>make_shared</code>, <code>make_unique</code>, <code>begin</code> pour ne donner que des exemples de la SL) ;</p>
+</li>
+<li>
+<p><code>decltype</code> : dans des arguments de fonction qui ont deux fois le même type (exemple : <code>maFonction(UnTypeComplique::iterator first, decltype(first) last))</code>, rarement en d'autres circonstances</p>
+</li>
+<li>
+<p><code>decltype(auto)</code> : je n'ai jamais rencontré un cas de figure ou j'ai eu à l'utiliser, et je préfère l'éviter car je le trouve peu explicite, car il faut aller voir quels qualificateurs (<code>const</code>, <code>volatile</code>, référence) marquent la "variable source", ce qui est peu lisible. Je préfère dans ce cas réécrire <code>auto const&amp;</code> par exemple.</p>
+</li>
+</ul>
+<p>Source: <a href="https://openclassrooms.com/forum/sujet/c-auto-decltype-et-deduction-de-types#message-88695943">mehdidou99</a></p>
+<p>Les <code>auto</code>, c'est bien, mangez-en.
+Source: <a href="https://openclassrooms.com/forum/sujet/c-auto-decltype-et-deduction-de-types#message-88696449">gbdivers</a></p>
+<p>Personnellement, je suis dans la même optique que <strong>@jo_link_noir</strong>, j'utilise <code>auto</code> quand je crée un élément qui est dépendant d'un autre. Pour <code>decltype</code>, j'ajouterai une autre petite utilisation que pour la création d'un alias : une dépendance de type mais où la première utilisation ne nous donne pas l'info. Cas typique :</p>
+<p>```c++
+std::vector<bidule> v;</p>
+<p>//...</p>
+<p>for(decltype(v)::size_type i = 0; i &lt; v.size(); ++i){</p>
+<p>}
+```
+Après, dans ce cas, on aura effectivement envie de définir le type avant avec un using.</p>
+<p>Source: <a href="https://openclassrooms.com/forum/sujet/c-auto-decltype-et-deduction-de-types#message-88701634">Ksass`Peuk</a></p>
+<ul>
+<li>Use <code>auto</code> if a reference type <strong>would never be correct</strong>.</li>
+<li>Use <code>decltype(auto)</code> only if a reference type could be correct.
+  Source:<a href="http://www.aristeia.com/TalkNotes/C++TypeDeductionandWhyYouCareCppCon2014.pdf">Scott Meyers</a></li>
+</ul>
+</blockquote>
+<ul>
+<li>Un peu de <a href="http://stackoverflow.com/questions/21369131/when-should-i-use-decltypex-instead-of-auto-to-declare-the-type-of-a-variable">StackOverflow</a>.</li>
+<li>Encore <a href="http://stackoverflow.com/questions/24109737/what-are-some-uses-of-decltypeauto">un peu plus</a>.</li>
+<li>Et du <a href="http://www.cplusplus.com/forum/general/188645/">cplusplus.com</a> aussi.</li>
+</ul>
+<p>J'espère que, par la lecture de ce tutoriel, vous en savez désormais plus sur le fonctionnement des templates, de <code>auto</code> et de <code>decltype</code>. Ce sont des fonctionnalités vraiment intéressantes qui font du C++ un langage frais et moderne (propos absolument subjectif). Libre à vous désormais de les adopter !</p>
+        </div>
+    </section>
+        </div>
+        <div class="col-sm-3" id="sidebar">
+            <aside>
+
+<section class="well well-sm">
+    <ul class="list-group list-group-flush">
+
+        <!-- Search bar in low width mode -->
+        <li id="searchSideBar" class="list-group-item"><span>
+                <form class="navbar-search" action="/blog/search">
+                  <input type="text" class="search-query" placeholder="Rechercher" name="q" id="tipue_search_input" required>
+                </form></span>
+        </li>
+
+        <li class="list-group-item"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Social</span></h4>
+              <ul class="list-group" id="social">
+                    <li class="list-group-item"><a href="https://example.org">
+                        <i class="fa fa-comment fa-lg"></i>
+                       Link 1</a>
+                    </li>
+                    <li class="list-group-item"><a href="https://example.org">
+                        <i class="fa fa-comments fa-lg"></i>
+                       Link 2</a>
+                    </li>
+                    <li class="list-group-item"><a href="/page/content">
+                        <i class="fa fa-etc fa-lg"></i>
+                       etc</a>
+                    </li>
+              </ul>
+            </li>
+
+
+            <li class="list-group-item"><a href="http://yliesc.github.io/"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Categories</span></h4></a>
+                <ul class="list-group" id="categories">
+                </ul>
+            </li>
+
+
+
+    <li class="list-group-item"><h4><i class="fa fa-link fa-lg"></i><span class="icon-label">External Links</span></h4>
+      <ul class="list-group" id="links">
+        <li class="list-group-item">
+            <a href="https://example.org" target="_blank">
+                Link 1
+            </a>
+        </li>
+        <li class="list-group-item">
+            <a href="https://example.org" target="_blank">
+                Link 2
+            </a>
+        </li>
+        <li class="list-group-item">
+            <a href="/page/content" target="_blank">
+                etc
+            </a>
+        </li>
+      </ul>
+    </li>
+
+        <li class="list-group-item" id="github">
+            <ul class="list-group">
+                <li class="list-group-item"><h5>Vous voyez une erreur ?</h5></li>
+                <li class="list-group-item">
+                    <a class="btn btn-info github" target="_blank" href="https://github.com/YliesC/website/edit/master/content/pages/pdp/content/c-auto-et-decltype.md">
+                        <i class="fa fa-random"></i> Modifiez la page sur GitHub
+                    </a>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</section>            </aside>
+        </div>
+    </div>
+</div>
+<footer>
+   <div class="container">
+      <hr>
+      <div class="row">
+         <div class="col-xs-10">&copy;  
+            &middot; Powered by <a href="https://github.com/getpelican/pelican-themes/tree/master/pelican-bootstrap3" target="_blank">pelican-bootstrap3</a>,
+            <a href="http://docs.getpelican.com/" target="_blank">Pelican</a>,
+<a href="http://getbootstrap.com" target="_blank">Bootstrap</a>                <p><small>  <a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr"><img alt="Creative Commons License" style="border-width:0" src="//i.creativecommons.org/l/by-sa/4.0/80x15.png" /></a>
+    Content
+  licensed under a <a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">Creative Commons Attribution-ShareAlike 4.0 International License</a>, except where indicated otherwise.
+</small></p>
+         </div>
+         <div class="col-xs-2"><p class="pull-right"><i class="fa fa-arrow-up"></i> <a href="#">Back to top</a></p></div>
+      </div>
+   </div>
+</footer>
+<script src="http://yliesc.github.io/theme/js/jquery.min.js"></script>
+
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="http://yliesc.github.io/theme/js/bootstrap.min.js"></script>
+
+<!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
+<script src="http://yliesc.github.io/theme/js/respond.min.js"></script>
+
+<!--  -->
+
+
+</body>
+</html>
