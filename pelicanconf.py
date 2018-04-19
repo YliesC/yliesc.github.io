@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 
 AUTHOR = u'YliesC'
 SITENAME = u'The Golden Koala'
-SITEURL = u'http://yliesc.github.io'
+SITEURL = u'https://yliesc.github.io'
 
 PATH = 'content'
 THEME = "pelican-themes/pelican-bootstrap3"
