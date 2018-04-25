@@ -8,7 +8,7 @@ Author: YliesC
 
 L'intégralité de ce site est sous licence [CC-BY-SA](https://creativecommons.org/licenses/by-sa/4.0/deed.fr) sauf mention contraire explicite.
 
-Son code est par ailleurs intégralement disponible sur le dépôt [github.com/YliesC/website](https://github.com/YliesC/website).
+Son code est par ailleurs intégralement disponible sur le dépôt [github.com/YliesC/yliesc.github.io](https://github.com/YliesC/yliesc.github.io).
 
 ## Images utilisées sur ce site
 
