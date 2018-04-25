@@ -8,9 +8,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 
-    <link href="https://yliesc.github.io/images/koala-ico.png" rel="icon">
+    <link href="../../../images/koala-ico.png" rel="icon">
 
-<link rel="canonical" href="https://yliesc.github.io/pages/pdp/content/maitrisez-les-nombres-a-virgule-en-c">
+<link rel="canonical" href="../../../pages/pdp/content/maitrisez-les-nombres-a-virgule-en-c">
 
         <meta name="author" content="informaticienzero" />
         <meta name="description" content="Le langage C, comme d’autres, propose des types pour représenter les nombres réels. Cependant, leur emploi n’est pas aussi simple qu’on pourrait l’espérer. La norme informatique IEEE 754 décrit le codage en mémoire des nombres dits à « virgule flottante ». On va la passer en revue pour …" />
@@ -18,20 +18,20 @@
     <meta property="og:site_name" content="The Golden Koala" />
     <meta property="og:type" content="article"/>
     <meta property="og:title" content="Les nombres à virgule flottante"/>
-    <meta property="og:url" content="https://yliesc.github.io/pages/pdp/content/maitrisez-les-nombres-a-virgule-en-c"/>
+    <meta property="og:url" content="../../../pages/pdp/content/maitrisez-les-nombres-a-virgule-en-c"/>
     <meta property="og:description" content="Le langage C, comme d’autres, propose des types pour représenter les nombres réels. Cependant, leur emploi n’est pas aussi simple qu’on pourrait l’espérer. La norme informatique IEEE 754 décrit le codage en mémoire des nombres dits à « virgule flottante ». On va la passer en revue pour …" />
 
 
     <!-- Bootstrap -->
-        <link rel="stylesheet" href="https://yliesc.github.io/theme/css/bootstrap.readable.min.css" type="text/css"/>
-    <link href="https://yliesc.github.io/theme/css/font-awesome.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="../../../theme/css/bootstrap.readable.min.css" type="text/css"/>
+    <link href="../../../theme/css/font-awesome.min.css" rel="stylesheet">
 
-    <link href="https://yliesc.github.io/theme/css/pygments/default.css" rel="stylesheet">
-    <link href="https://yliesc.github.io/theme/tipuesearch/tipuesearch.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://yliesc.github.io/theme/css/style.css" type="text/css"/>
-        <link href="https://yliesc.github.io/css/custom.css" rel="stylesheet">
+    <link href="../../../theme/css/pygments/default.css" rel="stylesheet">
+    <link href="../../../theme/tipuesearch/tipuesearch.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../../theme/css/style.css" type="text/css"/>
+        <link href="../../../css/custom.css" rel="stylesheet">
 
-        <link href="https://yliesc.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate"
+        <link href="../../../feeds/all.atom.xml" type="application/atom+xml" rel="alternate"
               title="The Golden Koala ATOM Feed"/>
 
 
@@ -49,22 +49,22 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a href="https://yliesc.github.io/" class="navbar-brand">
-<img class="img-responsive pull-left gap-right" src="https://yliesc.github.io/images/koala-logo.svg" width="38"/> <span id="siteName">The Golden Koala</span>            </a>
+            <a href="../../../" class="navbar-brand">
+<img class="img-responsive pull-left gap-right" src="../../../images/koala-logo.svg" width="38"/> <span id="siteName">The Golden Koala</span>            </a>
         </div>
         <div class="collapse navbar-collapse navbar-ex1-collapse">
             <ul class="nav navbar-nav">
 
-                         <li class="active"><a href="https://yliesc.github.io/pages/pdp">
+                         <li class="active"><a href="../../../pages/pdp">
                              Progdupeupl
                           </a></li>
-                         <li><a href="https://yliesc.github.io/pages/contact">
+                         <li><a href="../../../pages/contact">
                              Contact
                           </a></li>
-                         <li><a href="https://yliesc.github.io/pages/a-propos">
+                         <li><a href="../../../pages/a-propos">
                              À propos
                           </a></li>
-                         <li><a href="https://yliesc.github.io/pages/wiki">
+                         <li><a href="../../../pages/wiki">
                              Wiki
                           </a></li>
             </ul>
@@ -79,7 +79,7 @@
     <div class="row">
         <div class="col-sm-9">
     <ol class="breadcrumb">
-        <li><a href="https://yliesc.github.io/" title="The Golden Koala">
+        <li><a href="../../../" title="The Golden Koala">
             <i class="fa fa-home fa-lg"></i>
         </a></li>
         <li class="active">Les nombres à virgule flottante</li>
@@ -691,8 +691,8 @@ Pour comprendre cette expression, il faut en fait la lire de droite à gauche :<
 <p>Maintenant, du code avec ce que je viens de vous dire :</p>
 <div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;   // pour la fonction abs, renvoyant la valeur absolue d&#39;un entier</span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&lt;stdint.h&gt;   /* header du C99, qui fournit des types entiers de taille fixe :</span><span class="cp"></span>
-                         <span class="err">—</span>  <span class="kt">int32_t</span><span class="p">,</span>  <span class="nl">int64_t</span> <span class="p">:</span> <span class="n">entier</span> <span class="n">signé</span> <span class="n">de</span> <span class="mi">32</span> <span class="n">ou</span> <span class="mi">64</span> <span class="n">bits</span> <span class="p">;</span>
-                         <span class="err">—</span> <span class="kt">uint32_t</span><span class="p">,</span> <span class="nl">uint64_t</span> <span class="p">:</span> <span class="n">entier</span> <span class="n">non</span><span class="o">-</span><span class="n">signé</span> <span class="n">de</span> <span class="mi">32</span> <span class="n">ou</span> <span class="mi">64</span> <span class="n">bits</span><span class="p">.</span> <span class="err">*/</span>
+                         <span class="err">—</span>  <span class="kt">int32_t</span><span class="p">,</span>  <span class="nl">int64_t</span> <span class="p">:</span> <span class="n">entier</span> <span class="n">sign</span><span class="err">é</span> <span class="n">de</span> <span class="mi">32</span> <span class="n">ou</span> <span class="mi">64</span> <span class="n">bits</span> <span class="p">;</span>
+                         <span class="err">—</span> <span class="kt">uint32_t</span><span class="p">,</span> <span class="nl">uint64_t</span> <span class="p">:</span> <span class="n">entier</span> <span class="n">non</span><span class="o">-</span><span class="n">sign</span><span class="err">é</span> <span class="n">de</span> <span class="mi">32</span> <span class="n">ou</span> <span class="mi">64</span> <span class="n">bits</span><span class="p">.</span> <span class="err">*/</span>
 
 <span class="cp">#define  INTREPOFFLOAT(f)   ( *(int32_t*)&amp;(f) )   </span><span class="c1">// représentation entière d&#39;un float (32 bits)</span>
 <span class="cp">#define  INTREPOFDOUBLE(d)  ( *(int64_t*)&amp;(d) )   </span><span class="c1">// représentation entière d&#39;un double (64 bits)</span>
@@ -740,7 +740,7 @@ Pour comprendre cette expression, il faut en fait la lire de droite à gauche :<
 
 <p>Comme vous le voyez, le dernier nombre est inférieur à l'avant-dernier, et pourtant sa représentation entière (en <code>signed</code> comme en <code>unsigned</code>) est supérieure ! En vérité, cela ne porte pas à conséquence si l'on compare deux nombres négatifs, car on ne s'intéresse qu'à l'écart entre les représentations entières, qui lui ne change pas ; le problème se pose lorsque l'on compare deux nombres de signes opposés.</p>
 <p>Heureusement, il existe une solution. Il suffit de convertir les nombres négatifs selon la règle du bit de signe, en nombres négatifs selon la règle du complément à 2. Je vous laisse chercher ; aidez-vous de l'exemple ci-dessus. Trouvé ? Il suffit de garder la valeur telle quelle si le flottant est positif, ou s'il est négatif de soustraire $0x 80 00 00 00$ à la représentation entière puis d'inverser le signe de cette représentation. Cela revient à faire l'opération suivante :</p>
-<div class="highlight"><pre><span></span><span class="n">représentation</span> <span class="o">=</span> <span class="mi">0</span><span class="n">x</span> <span class="mi">8000</span> <span class="mo">0000</span> <span class="o">-</span> <span class="n">représentation</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><span class="n">repr</span><span class="err">é</span><span class="n">sentation</span> <span class="o">=</span> <span class="mi">0</span><span class="n">x</span> <span class="mi">8000</span> <span class="mo">0000</span> <span class="o">-</span> <span class="n">repr</span><span class="err">é</span><span class="n">sentation</span><span class="p">;</span>
 </pre></div>
 
 
@@ -968,7 +968,7 @@ Les macros CMP…_GTEQUAL de remplacement sont très bizarres. En fait, c'est un
 
 
 
-            <li class="list-group-item"><a href="https://yliesc.github.io/"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Categories</span></h4></a>
+            <li class="list-group-item"><a href="../../../"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Categories</span></h4></a>
                 <ul class="list-group" id="categories">
                 </ul>
             </li>
@@ -1007,13 +1007,13 @@ Les macros CMP…_GTEQUAL de remplacement sont très bizarres. En fait, c'est un
       </div>
    </div>
 </footer>
-<script src="https://yliesc.github.io/theme/js/jquery.min.js"></script>
+<script src="../../../theme/js/jquery.min.js"></script>
 
 <!-- Include all compiled plugins (below), or include individual files as needed -->
-<script src="https://yliesc.github.io/theme/js/bootstrap.min.js"></script>
+<script src="../../../theme/js/bootstrap.min.js"></script>
 
 <!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
-<script src="https://yliesc.github.io/theme/js/respond.min.js"></script>
+<script src="../../../theme/js/respond.min.js"></script>
 
 <!--  -->
 
